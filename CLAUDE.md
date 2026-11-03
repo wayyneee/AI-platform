@@ -5,7 +5,7 @@
 
 ## 新專案開工步驟
 
-1. 複製 `CLAUDE.md` 到新專案根目錄，複製 `structure.md` 到 `docs/`。
+1. 複製 `CLAUDE.md`、`.gitattributes` 到新專案根目錄，複製 `structure.md` 到 `docs/`。
 2. 依 `docs/structure.md` 建立資料夾。
 3. 依「工作流程」開始討論產品。
 

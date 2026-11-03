@@ -20,6 +20,14 @@
 - 只放 `CLAUDE.md` 與**必要的專案設定檔**（工具規定要放在根目錄才讀得到的檔案，例如 `package.json`、`.gitignore`、`.env.example`）。
 - 不放任何實作程式碼、文件或資源。
 
+### 通用設定檔
+
+以下設定檔為跨專案共用，與 `CLAUDE.md`、`structure.md` 一同複製到新專案：
+
+| 檔案 | 用途 |
+|---|---|
+| `.gitattributes` | 統一換行符號為 LF（Windows 批次檔 `.bat`、`.cmd` 例外使用 CRLF），避免不同作業系統間產生無意義的差異 |
+
 ## docs/ — 文件
 
 ```

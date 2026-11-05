@@ -1,0 +1,5 @@
+# 執行期資料（見 docs/structure.md）
+data/
+
+# 機密資訊（見 CLAUDE.md 規則 10）
+.env

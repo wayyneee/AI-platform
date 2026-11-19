@@ -1,0 +1,6 @@
+# 統一換行符號：所有文字檔一律使用 LF
+* text=auto eol=lf
+
+# 例外：Windows 批次檔必須使用 CRLF 才能正確執行
+*.bat text eol=crlf
+*.cmd text eol=crlf

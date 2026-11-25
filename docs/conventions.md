@@ -32,8 +32,12 @@
 <project>/
 ├── CLAUDE.md                    AI 協作規則
 ├── README.md                    安裝、啟動、測試
-├── package.json 等              工具規定要放根目錄的設定檔
+├── package.json                 套件清單、指令、格式設定（package-lock.json 由 npm 自動產生）
+├── eslint.config.js             lint 規則（第 6、9 段的機器版）
+├── .dependency-cruiser.cjs      模組邊界規則（第 4 段的機器版）
 ├── .env.example                 需要哪些環境變數（真正的 .env 不進 git）
+├── .gitignore、.gitattributes    哪些檔案不進 git、統一換行符號
+├── .claude/                     Claude 的設定：hooks、預覽伺服器
 ├── docs/
 │   ├── design.md
 │   ├── conventions.md
@@ -47,6 +51,7 @@
 │   ├── shared/                  前後端都要用的：介面型別、錯誤格式定義（不放邏輯）
 │   │   └── <Module>/types       各模組對外的資料型別
 │   ├── server/                  後端（一個程式）
+│   │   ├── tsconfig.json        後端的型別檢查設定
 │   │   ├── main                 進入點：啟動、登記各模組，不放功能
 │   │   └── <Module>/
 │   │       ├── index            這個模組後端的唯一入口
@@ -55,6 +60,7 @@
 │   │           ├── <檔案>
 │   │           └── <檔案>.test
 │   └── client/                  前端（一個 app，例如 React）
+│       ├── tsconfig.json        前端的型別檢查設定
 │       ├── main                 進入點：外框、登記各模組頁面，不放功能
 │       └── <Module>/
 │           ├── index            這個模組前端的唯一入口
@@ -79,7 +85,7 @@
 - **跨模組的完整流程測試** → `tests/e2e/`
 - **產品附帶的圖片、主題** → `public/theme/`
 - **執行時產生的資料、使用者資料** → `data/<Module>/`，資料夾不存在時由程式自動建立
-- 根目錄只放 CLAUDE.md、README.md，以及工具規定要放在根目錄的設定檔。
+- 根目錄只放第 2 段列出的檔案。工具的設定優先寫進既有的檔案（例如 `package.json`）；只屬於前端或後端的設定放在 `src/client/`、`src/server/`；工具一定要在根目錄另外放設定檔時，先問 PM。
 - 找不到合適的位置時，先問 PM，不新開資料夾。
 
 ## 4. 模組邊界
@@ -237,4 +243,15 @@ function upgradeToLatest(raw: unknown): ModelsFile { /* ... */ }
 - **儲存回饋**：按下儲存一定要有回應：儲存中按鈕轉圈、不能重複按；成功顯示綠色小字，失敗顯示紅色小字和錯誤訊息。沒有修改時儲存按鈕不能按。
 
 ### 自動檢查指令
-- 尚未設定。寫第一行 code 前，用 project-init 的 B 段設定。
+| 指令 | 檢查 | 抓什麼 |
+|---|---|---|
+| `npm run typecheck` | 型別（TypeScript） | 介面的輸入輸出對不上；前端、後端各一份設定，`src/shared/` 兩邊都檢查 |
+| `npm run lint` | lint（ESLint） | 常見錯誤、巢狀超過三層、直接用 `console`；檔案超過 400 行、函式超過 50 行只提醒 |
+| `npm run format` | 格式化（Prettier） | 自動整理縮排、空白、換行；`npm run format:check` 只檢查不改 |
+| `npm run boundaries` | 模組邊界（dependency-cruiser） | 第 4 段的規則：跨模組或小模組沒透過 `index`、前後端互相引用、shared 引用前後端、循環依賴 |
+| **`npm run check`** | 總檢查 | 依序跑型別、lint、格式檢查、邊界 |
+| `npm test` | 測試（Vitest） | 行為不符合驗收條件；不包含在 check 裡，另外跑 |
+
+- 只檢查 code 和設定檔，不檢查 `docs/`、`public/`。
+- Claude 改完 `src/`、`tests/` 或根目錄設定檔後，hook（`.claude/settings.json`）會自動整理那個檔案的格式並跑 `npm run check`，失敗時立刻看到錯誤。
+- 後端直接用 Node 內建的 TypeScript 執行，所以 import 要寫 `.ts` 副檔名，不用 enum、namespace 這類需要轉譯的寫法。

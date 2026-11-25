@@ -1,0 +1,35 @@
+{
+  "name": "ai-platform",
+  "version": "0.0.0",
+  "private": true,
+  "description": "開源、在本機運行的綜合 AI 應用平台",
+  "type": "module",
+  "engines": {
+    "node": ">=24"
+  },
+  "scripts": {
+    "typecheck": "tsc -p src/server && tsc -p src/client",
+    "lint": "eslint .",
+    "format": "prettier --write --no-error-on-unmatched-pattern src tests",
+    "format:check": "prettier --check --no-error-on-unmatched-pattern src tests",
+    "boundaries": "depcruise src tests",
+    "check": "npm run typecheck && npm run lint && npm run format:check && npm run boundaries",
+    "test": "vitest run --dir src --passWithNoTests"
+  },
+  "prettier": {
+    "singleQuote": true,
+    "printWidth": 100
+  },
+  "devDependencies": {
+    "@eslint/js": "^10.0.1",
+    "@types/node": "^24.19.3",
+    "dependency-cruiser": "^18.9.0",
+    "eslint": "^10.15.0",
+    "eslint-config-prettier": "^10.1.8",
+    "globals": "^17.14.0",
+    "prettier": "^3.10.1",
+    "typescript": "^6.0.3",
+    "typescript-eslint": "^8.74.0",
+    "vitest": "^5.1.1"
+  }
+}

@@ -1,0 +1,21 @@
+{
+  // 前端（React + Vite）的型別檢查設定：用瀏覽器的型別，不用 Node 的型別；src/shared/ 也一起檢查，確保前端能用。
+  "compilerOptions": {
+    "target": "es2024",
+    "lib": ["es2024", "dom", "dom.iterable"],
+    "module": "esnext",
+    "moduleResolution": "bundler",
+    "jsx": "react-jsx",
+    "types": [],
+    "strict": true,
+    "noEmit": true,
+    // 和後端一致：import 寫 .ts 副檔名，不用需要轉譯的寫法，src/shared/ 兩邊才都能用
+    "allowImportingTsExtensions": true,
+    "erasableSyntaxOnly": true,
+    "verbatimModuleSyntax": true,
+    "isolatedModules": true,
+    "forceConsistentCasingInFileNames": true,
+    "skipLibCheck": true
+  },
+  "include": ["**/*", "../shared/**/*"]
+}

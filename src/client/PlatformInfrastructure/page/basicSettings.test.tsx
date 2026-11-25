@@ -4,6 +4,7 @@
 import { act, cleanup, fireEvent, render, screen, waitFor } from '@testing-library/react';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
+import { OverlayHost } from '../SharedComponents/index.ts';
 import { BasicSettings } from './BasicSettings.tsx';
 
 type Route = (body: unknown) => Response | Promise<Response>;
@@ -85,7 +86,7 @@ describe('BasicSettings', () => {
     expect(reload).toHaveBeenCalledOnce();
   });
 
-  it('儲存失敗時顯示紅色小字的錯誤說明，修改保留', async () => {
+  it('儲存失敗時顯示紅色小字「儲存失敗」和錯誤訊息，修改保留', async () => {
     routes.updateSettings = () =>
       Response.json(
         {
@@ -98,13 +99,24 @@ describe('BasicSettings', () => {
         },
         { status: 400 },
       );
-    render(<BasicSettings />);
+    render(
+      <>
+        <BasicSettings />
+        <OverlayHost />
+      </>,
+    );
     await screen.findByRole('button', { name: '主題' });
     chooseTheme('sakura');
     await act(async () => fireEvent.click(saveButton()));
 
-    const feedback = screen.getByText('找不到選擇的主題');
+    const feedback = screen.getByText('儲存失敗');
     expect(feedback.className).toContain('is-danger');
+    const alert = screen.getByRole('alert');
+    expect(alert.textContent).toContain('找不到選擇的主題');
+    expect(alert.textContent).toContain(
+      'PlatformInfrastructure／updateSettings（代碼：SETTINGS_THEME_NOT_FOUND）',
+    );
+    expect(screen.getByRole('button', { name: '主題' }).textContent).toBe('sakura');
     expect(saveButton().disabled).toBe(false);
   });
 

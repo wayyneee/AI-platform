@@ -7,9 +7,23 @@ export type {
   PlatformError,
   PlatformSettings,
 } from '../../shared/PlatformInfrastructure/types.ts';
-export { registerModule, startAppShell } from './AppShell/index.ts';
+export { registerModule, startAppShell, useLeaveGuard } from './AppShell/index.ts';
 export type { ModuleRegistration, PageRegistration } from './AppShell/index.ts';
 export { getModuleRegistration } from './page/moduleRegistration.ts';
-export { useSharedComponents } from './SharedComponents/index.ts';
+export {
+  closeAllModals,
+  showConfirm,
+  showError,
+  showModal,
+  showToast,
+  useSharedComponents,
+} from './SharedComponents/index.ts';
+export type {
+  ConfirmOptions,
+  ModalControls,
+  ModalHandle,
+  ModalOptions,
+  ToastType,
+} from './SharedComponents/index.ts';
 export { createError, defineErrorCodes, isPlatformError, writeLog } from './SystemLog/index.ts';
 export { getAssetUrl, getSettings, getText, registerTextTable } from './ThemeAndLanguage/index.ts';

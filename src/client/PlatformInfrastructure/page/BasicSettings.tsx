@@ -1,4 +1,5 @@
 // 基礎設定頁：選擇主題、語言；儲存後顯示「已儲存，即將重新整理套用」，1.5 秒後重新整理頁面套用。
+// 有未儲存的修改時，離開前由外殼詢問。
 
 import { useCallback, useEffect, useState } from 'react';
 
@@ -7,6 +8,7 @@ import type {
   PlatformSettings,
   SettingOptions,
 } from '../../../shared/PlatformInfrastructure/types.ts';
+import { useLeaveGuard } from '../AppShell/index.ts';
 import {
   Button,
   EmptyState,
@@ -14,6 +16,7 @@ import {
   joinClassNames,
   LoadingState,
   Select,
+  showError,
 } from '../SharedComponents/index.ts';
 import { toPlatformError } from '../SystemLog/index.ts';
 import {
@@ -42,10 +45,7 @@ type LoadState =
   | { status: 'ready'; saved: PlatformSettings; options: SettingOptions };
 
 type SaveState =
-  | { status: 'idle' }
-  | { status: 'saving' }
-  | { status: 'saved' }
-  | { status: 'failed'; error: PlatformError };
+  { status: 'idle' } | { status: 'saving' } | { status: 'saved' } | { status: 'failed' };
 
 // ===== 頁面 =====
 
@@ -98,6 +98,7 @@ function SettingsForm({ initial, options }: SettingsFormProps) {
 
   // 改回原樣就不算未儲存的修改（conventions.md 第 9 段）
   const isDirty = draft.theme !== saved.theme || draft.language !== saved.language;
+  useLeaveGuard(isDirty);
 
   const changeDraft = (changes: Partial<PlatformSettings>) => {
     setDraft({ ...draft, ...changes });
@@ -113,11 +114,10 @@ function SettingsForm({ initial, options }: SettingsFormProps) {
       setSaveState({ status: 'saved' });
       // 主題、語言要重新整理才生效（spec 規則）
       window.setTimeout(() => window.location.reload(), RELOAD_DELAY_MS);
-    } catch (error) {
-      setSaveState({
-        status: 'failed',
-        error: toPlatformError(error, MODULE_NAME, 'updateSettings'),
-      });
+    } catch (thrown) {
+      // 失敗時紅色小字只寫「儲存失敗」，白話說明和來源由錯誤訊息顯示，避免同一句話出現兩次
+      setSaveState({ status: 'failed' });
+      showError(toPlatformError(thrown, MODULE_NAME, 'updateSettings'));
     }
   };
 
@@ -210,7 +210,7 @@ function describeSaveFeedback(saveState: SaveState): { text: string; className: 
     return { text: getText('PlatformInfrastructure.basicSettings.saved'), className: 'is-success' };
   }
   if (saveState.status === 'failed') {
-    return { text: getText(`errors.${saveState.error.code}`), className: 'is-danger' };
+    return { text: getText('PlatformInfrastructure.common.saveFailed'), className: 'is-danger' };
   }
   return null;
 }

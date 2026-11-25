@@ -1,4 +1,4 @@
-// 基本元件：按鈕（主要、次要、危險；儲存中會轉圈並擋住重複點擊）、分頁標籤、標籤。
+// 基本元件：按鈕（主要、次要、危險；儲存中會轉圈並擋住重複點擊）、輸入框、開關、分頁標籤、標籤。
 
 import type { ReactNode } from 'react';
 
@@ -55,6 +55,72 @@ export function Button({
       {isBusy && <span className="platform-infrastructure-spinner" />}
       {isBusy && busyLabel ? busyLabel : children}
     </button>
+  );
+}
+
+// ===== 輸入框 =====
+
+export type TextInputType = 'text' | 'password' | 'number';
+
+export interface TextInputProps {
+  value: string;
+  onChange: (value: string) => void;
+  /** 一般、密碼、數字；數字也以文字交回，由畫面自己檢查格式 */
+  type?: TextInputType;
+  placeholder?: string;
+  /** 必填沒填、格式錯誤時紅框 */
+  isInvalid?: boolean;
+  isDisabled?: boolean;
+  ariaLabel?: string;
+}
+
+/** 輸入框：一般、密碼、數字；格式錯誤時紅框。 */
+export function TextInput({
+  value,
+  onChange,
+  type = 'text',
+  placeholder,
+  isInvalid = false,
+  isDisabled = false,
+  ariaLabel,
+}: TextInputProps) {
+  return (
+    <input
+      className={joinClassNames('platform-infrastructure-input', isInvalid && 'is-invalid')}
+      type={type}
+      value={value}
+      placeholder={placeholder}
+      disabled={isDisabled}
+      aria-label={ariaLabel}
+      aria-invalid={isInvalid}
+      // 密碼框不讓瀏覽器自動填入或記住：這裡填的是 API key，不是登入密碼
+      autoComplete={type === 'password' ? 'new-password' : undefined}
+      onChange={(event) => onChange(event.target.value)}
+    />
+  );
+}
+
+// ===== 開關 =====
+
+export interface ToggleProps {
+  isOn: boolean;
+  onChange: (isOn: boolean) => void;
+  isDisabled?: boolean;
+  ariaLabel?: string;
+}
+
+/** 開關：開的時候是漸層、圓點在右邊。 */
+export function Toggle({ isOn, onChange, isDisabled = false, ariaLabel }: ToggleProps) {
+  return (
+    <button
+      type="button"
+      role="switch"
+      aria-checked={isOn}
+      aria-label={ariaLabel}
+      className={joinClassNames('platform-infrastructure-toggle', isOn && 'is-on')}
+      disabled={isDisabled}
+      onClick={() => onChange(!isOn)}
+    />
   );
 }
 

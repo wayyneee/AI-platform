@@ -1,9 +1,10 @@
-// 回饋類元件：讀取中、空狀態（預設插圖＋文字＋選填的按鈕）、錯誤訊息（白話說明＋來源）。
+// 回饋類元件：讀取中、空狀態（預設插圖＋文字＋選填的按鈕）、長時間任務的進度、錯誤訊息（白話說明＋來源）。
 
 import type { ReactNode } from 'react';
 
 import type { PlatformError } from '../../../shared/PlatformInfrastructure/types.ts';
 import { getAssetUrl, getText } from '../ThemeAndLanguage/index.ts';
+import { Badge, type BadgeTone } from './basicControls.tsx';
 
 const MODULE_NAME = 'PlatformInfrastructure';
 const EMPTY_STATE_ASSET = 'emptyStateIllustration';
@@ -46,6 +47,60 @@ export function EmptyState({ text, children }: EmptyStateProps) {
       {children}
     </div>
   );
+}
+
+// ===== 長時間任務的進度 =====
+
+export type TaskProgressStatus = 'queued' | 'running' | 'completed' | 'failed';
+
+export interface TaskProgressProps {
+  status: TaskProgressStatus;
+  /** 0～100；供應商有提供百分比時才給，沒給時處理中顯示等待動畫 */
+  percent?: number;
+  /** 失敗的原因 */
+  error?: PlatformError;
+}
+
+const TASK_STATUS_BADGES: Record<TaskProgressStatus, BadgeTone> = {
+  queued: 'neutral',
+  running: 'primary',
+  completed: 'success',
+  failed: 'danger',
+};
+
+/** 長時間任務的等待與進度：排隊中、處理中（有百分比時顯示進度條）、完成、失敗與原因。 */
+export function TaskProgress({ status, percent, error }: TaskProgressProps) {
+  const isWaiting = status === 'queued' || status === 'running';
+  const hasPercent = status === 'running' && percent !== undefined;
+  return (
+    <div className="platform-infrastructure-task-progress" role="status">
+      <div className="platform-infrastructure-task-progress-status">
+        {isWaiting && !hasPercent && <span className="platform-infrastructure-spinner" />}
+        <Badge tone={TASK_STATUS_BADGES[status]}>
+          {getText(`PlatformInfrastructure.task.${status}`)}
+        </Badge>
+        {hasPercent && <span>{Math.round(clampPercent(percent))}%</span>}
+        {status === 'failed' && error && (
+          <span className="platform-infrastructure-task-progress-reason">
+            {getText(`errors.${error.code}`)}
+          </span>
+        )}
+      </div>
+      {hasPercent && (
+        <div className="platform-infrastructure-progress">
+          <div
+            className="platform-infrastructure-progress-fill"
+            style={{ width: `${clampPercent(percent)}%` }}
+          />
+        </div>
+      )}
+    </div>
+  );
+}
+
+/** 供應商偶爾回報超過 100 或負數，畫面上一律限制在 0～100。 */
+function clampPercent(percent: number): number {
+  return Math.min(100, Math.max(0, percent));
 }
 
 // ===== 錯誤訊息 =====

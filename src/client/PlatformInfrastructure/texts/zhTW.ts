@@ -37,9 +37,21 @@ export const platformInfrastructureTexts = {
   'PlatformInfrastructure.common.retry': '重試',
   'PlatformInfrastructure.common.save': '儲存',
   'PlatformInfrastructure.common.saving': '儲存中',
+  'PlatformInfrastructure.common.saveFailed': '儲存失敗',
   'PlatformInfrastructure.common.close': '關閉',
+  'PlatformInfrastructure.common.cancel': '取消',
+  'PlatformInfrastructure.common.confirm': '確認',
   'PlatformInfrastructure.common.selectPlaceholder': '-- 請選擇 --',
   'PlatformInfrastructure.common.errorSource': '{module}／{interfaceName}（代碼：{code}）',
+  // 有未儲存的修改時，任何離開方式都用這組文字詢問（conventions.md 第 9 段）
+  'PlatformInfrastructure.leaveConfirm.title': '尚未儲存',
+  'PlatformInfrastructure.leaveConfirm.message': '修改還沒儲存，確定不儲存並離開嗎？',
+  'PlatformInfrastructure.leaveConfirm.confirm': '不儲存並離開',
+  // 長時間任務的狀態
+  'PlatformInfrastructure.task.queued': '排隊中',
+  'PlatformInfrastructure.task.running': '處理中',
+  'PlatformInfrastructure.task.completed': '完成',
+  'PlatformInfrastructure.task.failed': '失敗',
   // 暫時的：API 串接、花費統計在之後的分段實作，完成時移除
   'PlatformInfrastructure.common.comingSoon': '這個頁面還在製作中',
 

@@ -1,4 +1,5 @@
 // 下拉選單：依 conventions.md 第 9 段的下拉選單規則；可以用滑鼠或 ↑↓、Enter、Esc 操作，下方空間不夠時往上展開。
+// 可搜尋的選單打開時焦點在搜尋框，只列出符合的選項；搜尋時不顯示「-- 請選擇 --」。
 
 import {
   useCallback,
@@ -37,6 +38,8 @@ export interface SelectProps {
   /** 必填卻沒選、或值不正確時紅框 */
   isInvalid?: boolean;
   ariaLabel?: string;
+  /** 有給才可以搜尋：搜尋框的提示文字，例如「搜尋供應商」 */
+  searchPlaceholder?: string;
 }
 
 // ===== 元件 =====
@@ -49,16 +52,26 @@ export function Select({
   hasPlaceholder = false,
   isInvalid = false,
   ariaLabel,
+  searchPlaceholder,
 }: SelectProps) {
   const rootRef = useRef<HTMLDivElement>(null);
   const listRef = useRef<HTMLUListElement>(null);
-  const allOptions = hasPlaceholder ? [placeholderOption(), ...options] : options;
-  const control = useSelectControl(value, allOptions, onChange);
+  const searchRef = useRef<HTMLInputElement>(null);
+  const [keyword, setKeyword] = useState('');
+  const visibleOptions = listVisibleOptions(options, hasPlaceholder, keyword);
+  const control = useSelectControl(value, visibleOptions, onChange);
   const [isOpenUp, setIsOpenUp] = useState(false);
+  const isSearchable = searchPlaceholder !== undefined;
 
   useCloseOnOutsideClick(rootRef, control.isOpen, control.collapse);
   useOpenUpIfNoRoom(control.isOpen, rootRef, listRef, setIsOpenUp);
   useScrollHighlightedIntoView(control.isOpen, listRef, control.highlighted);
+  useResetSearchOnToggle(control.isOpen, searchRef, setKeyword);
+
+  const changeKeyword = (nextKeyword: string) => {
+    setKeyword(nextKeyword);
+    control.setHighlighted(0);
+  };
 
   const selected = options.find((option) => option.value === value);
   const isShowingPlaceholder = hasPlaceholder && !selected;
@@ -89,7 +102,16 @@ export function Select({
         {isShowingPlaceholder ? placeholderOption().label : (selected?.label ?? value)}
       </button>
       <ul ref={listRef} className="platform-infrastructure-select-list" role="listbox">
-        {allOptions.map((option, index) => (
+        {isSearchable && (
+          <SelectSearchBox
+            inputRef={searchRef}
+            keyword={keyword}
+            placeholder={searchPlaceholder}
+            onChange={changeKeyword}
+            onKeyDown={control.handleKeyDown}
+          />
+        )}
+        {visibleOptions.map((option, index) => (
           <SelectOptionItem
             key={option.value}
             option={option}
@@ -103,7 +125,38 @@ export function Select({
   );
 }
 
-// ===== 選項 =====
+// ===== 搜尋框、選項 =====
+
+interface SelectSearchBoxProps {
+  inputRef: RefObject<HTMLInputElement | null>;
+  keyword: string;
+  placeholder: string;
+  onChange: (keyword: string) => void;
+  onKeyDown: (event: KeyboardEvent) => void;
+}
+
+/** 列表最上方的搜尋框；在搜尋框裡也能用 ↑↓、Enter、Esc 操作選單。 */
+function SelectSearchBox({
+  inputRef,
+  keyword,
+  placeholder,
+  onChange,
+  onKeyDown,
+}: SelectSearchBoxProps) {
+  return (
+    <li className="platform-infrastructure-select-search-item" role="presentation">
+      <input
+        ref={inputRef}
+        className="platform-infrastructure-input platform-infrastructure-select-search"
+        value={keyword}
+        placeholder={placeholder}
+        aria-label={placeholder}
+        onChange={(event) => onChange(event.target.value)}
+        onKeyDown={onKeyDown}
+      />
+    </li>
+  );
+}
 
 interface SelectOptionItemProps {
   option: SelectOption;
@@ -137,7 +190,7 @@ function SelectOptionItem({ option, isSelected, isHighlighted, onChoose }: Selec
 /** 選單的開合、目前反白的選項、選擇，以及 ↑↓、Enter、Esc 的鍵盤操作。 */
 function useSelectControl(
   value: string,
-  allOptions: SelectOption[],
+  visibleOptions: SelectOption[],
   onChange: (value: string) => void,
 ) {
   const triggerRef = useRef<HTMLButtonElement>(null);
@@ -147,7 +200,7 @@ function useSelectControl(
   const collapse = useCallback(() => setIsOpen(false), []);
 
   const open = () => {
-    const selectedIndex = allOptions.findIndex((option) => option.value === value);
+    const selectedIndex = visibleOptions.findIndex((option) => option.value === value);
     setHighlighted(Math.max(0, selectedIndex));
     setIsOpen(true);
   };
@@ -172,25 +225,63 @@ function useSelectControl(
     }
     if (!NAVIGATION_KEYS.includes(event.key)) return;
     event.preventDefault();
-    if (event.key === 'ArrowDown') setHighlighted(Math.min(highlighted + 1, allOptions.length - 1));
-    if (event.key === 'ArrowUp') setHighlighted(Math.max(highlighted - 1, 0));
-    if (event.key === 'Enter' && allOptions[highlighted]) choose(allOptions[highlighted]);
-    if (event.key === 'Escape') {
-      // 選單內按 Esc 只收合選單，不讓外層視窗收到
-      event.stopPropagation();
-      close();
-    }
+    // 選單內按 Esc 只收合選單，不讓外層視窗收到
+    if (event.key === 'Escape') event.stopPropagation();
+    handleNavigationKey(event.key);
+  };
+
+  const handleNavigationKey = (key: string) => {
+    const lastIndex = visibleOptions.length - 1;
+    if (key === 'ArrowDown') setHighlighted(Math.min(highlighted + 1, lastIndex));
+    if (key === 'ArrowUp') setHighlighted(Math.max(highlighted - 1, 0));
+    if (key === 'Enter' && visibleOptions[highlighted]) choose(visibleOptions[highlighted]);
+    if (key === 'Escape') close();
   };
 
   const toggle = () => (isOpen ? close() : open());
 
-  return { triggerRef, isOpen, highlighted, collapse, choose, toggle, handleKeyDown };
+  return {
+    triggerRef,
+    isOpen,
+    highlighted,
+    setHighlighted,
+    collapse,
+    choose,
+    toggle,
+    handleKeyDown,
+  };
 }
 
 // ===== 輔助 =====
 
 function placeholderOption(): SelectOption {
   return { value: NO_VALUE, label: getText('PlatformInfrastructure.common.selectPlaceholder') };
+}
+
+/** 列表上要顯示的選項：有「-- 請選擇 --」時放最上方；搜尋時只列符合的，不顯示「-- 請選擇 --」。 */
+function listVisibleOptions(
+  options: SelectOption[],
+  hasPlaceholder: boolean,
+  keyword: string,
+): SelectOption[] {
+  const normalizedKeyword = keyword.trim().toLowerCase();
+  if (!normalizedKeyword) return hasPlaceholder ? [placeholderOption(), ...options] : options;
+  // 提示小字也一起比對，例如用「思考」找出支援思考的模型
+  return options.filter((option) =>
+    `${option.label} ${option.hint ?? ''}`.toLowerCase().includes(normalizedKeyword),
+  );
+}
+
+/** 打開時把焦點放進搜尋框；收合時清空搜尋，下次打開看到完整的列表。 */
+function useResetSearchOnToggle(
+  isOpen: boolean,
+  searchRef: RefObject<HTMLInputElement | null>,
+  setKeyword: (keyword: string) => void,
+): void {
+  useEffect(() => {
+    if (isOpen) searchRef.current?.focus();
+    else setKeyword('');
+  }, [isOpen, searchRef, setKeyword]);
 }
 
 /** 點選單以外的地方時收合。 */
@@ -238,7 +329,8 @@ function useScrollHighlightedIntoView(
 ): void {
   useEffect(() => {
     if (!isOpen) return;
-    const option = listRef.current?.children[highlighted] as HTMLElement | undefined;
+    // 用 role 找選項：可搜尋的選單第一列是搜尋框，不是選項
+    const option = listRef.current?.querySelectorAll<HTMLElement>('[role="option"]')[highlighted];
     // 測試環境（jsdom）沒有 scrollIntoView
     option?.scrollIntoView?.({ block: 'nearest' });
   }, [isOpen, listRef, highlighted]);

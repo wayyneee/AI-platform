@@ -730,6 +730,36 @@
   height: 100%;
   border-radius: var(--radius-pill);
   background: var(--gradient-brand);
+  transition: width var(--transition-fast);
+}
+
+.platform-infrastructure-task-progress {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.platform-infrastructure-task-progress-status {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-bold);
+  color: var(--color-text-muted);
+}
+
+.platform-infrastructure-task-progress-status .platform-infrastructure-spinner {
+  color: var(--color-primary);
+}
+
+.platform-infrastructure-task-progress-reason {
+  color: var(--color-danger);
+}
+
+/* 開關不能用時 */
+.platform-infrastructure-toggle:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
 }
 
 /* ===== 垂直排列的區塊 ===== */

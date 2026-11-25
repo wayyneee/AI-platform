@@ -1,11 +1,15 @@
 // @vitest-environment jsdom
-// 外殼：網址與換頁、側邊欄、內容區的錯誤畫面、log 列的顯示與篩選。
+// 外殼：網址與換頁、未儲存離開確認、側邊欄、內容區的錯誤畫面、前端錯誤攔截、log 列的顯示與篩選。
 
 import { act, cleanup, fireEvent, render, screen, waitFor, within } from '@testing-library/react';
+import { useEffect, useState } from 'react';
 import { afterAll, afterEach, beforeAll, beforeEach, describe, expect, it, vi } from 'vitest';
 
 import type { LogEntry } from '../../../shared/PlatformInfrastructure/types.ts';
+import { closeAllModals, showModal, type ModalControls } from '../SharedComponents/index.ts';
 import { AppShell } from './AppShell.tsx';
+import { reportFrontendError } from './globalErrorHandling.ts';
+import { useLeaveGuard } from './leaveGuard.ts';
 import { formatDuration, formatLogTime, MAX_LOG_ENTRIES, mergeLogEntries } from './logFormat.ts';
 import { registerModule } from './moduleRegistry.ts';
 
@@ -18,7 +22,49 @@ function CrashingPage() {
   return <p>正常的頁面</p>;
 }
 
+/** 視窗內容：一打開就算有未儲存的修改，像填了一半的新增模型視窗。 */
+function UnsavedModalContent({ controls }: { controls: ModalControls }) {
+  useEffect(() => controls.setHasUnsavedChanges(true), [controls]);
+  return <p>填了一半的視窗</p>;
+}
+
+/** 可以製造未儲存修改的頁面。 */
+function EditorPage() {
+  const [isDirty, setIsDirty] = useState(false);
+  useLeaveGuard(isDirty);
+  return (
+    <>
+      <p>編輯頁</p>
+      <button onClick={() => setIsDirty(true)}>修改</button>
+      <button onClick={() => setIsDirty(false)}>改回原樣</button>
+      <button
+        onClick={() =>
+          showModal({
+            title: '新增模型',
+            content: (controls) => <UnsavedModalContent controls={controls} />,
+          })
+        }
+      >
+        開有修改的視窗
+      </button>
+      <button onClick={() => showModal({ title: '說明', content: <p>沒有修改的視窗</p> })}>
+        開沒有修改的視窗
+      </button>
+    </>
+  );
+}
+
 beforeAll(() => {
+  registerModule({
+    module: 'TestEditor',
+    path: 'editor',
+    labelKey: 'TestEditor.nav',
+    position: 'right',
+    pages: [
+      { path: 'form', labelKey: 'TestEditor.form', component: EditorPage },
+      { path: 'other', labelKey: 'TestEditor.other', component: () => <p>另一頁</p> },
+    ],
+  });
   registerModule({
     module: 'TestChat',
     path: 'chat',
@@ -69,6 +115,7 @@ beforeEach(() => {
 });
 
 afterEach(() => {
+  act(() => closeAllModals());
   cleanup();
   vi.unstubAllGlobals();
 });
@@ -127,6 +174,126 @@ describe('AppShell 網址與換頁', () => {
     await goTo('/settings/second');
     expect(screen.getByText('第二頁')).toBeTruthy();
     expect(screen.queryByText('這個頁面發生錯誤')).toBeNull();
+  });
+});
+
+// ===== 未儲存離開確認 =====
+
+/** 模擬瀏覽器上一頁：網址先被瀏覽器改掉，接著才收到 hashchange。 */
+async function pressBrowserBack(path: string): Promise<void> {
+  await act(async () => {
+    window.history.replaceState(null, '', `#${path}`);
+    window.dispatchEvent(new HashChangeEvent('hashchange'));
+  });
+}
+
+/** 打開編輯頁並做一個修改。 */
+async function openEditorWithChanges(): Promise<HTMLElement> {
+  await goTo('/editor/form');
+  const { container } = render(<AppShell />);
+  fireEvent.click(screen.getByText('修改'));
+  return container;
+}
+
+describe('AppShell 未儲存離開確認', () => {
+  it('有未儲存的修改時，點側邊欄先詢問；取消就留在原頁', async () => {
+    const container = await openEditorWithChanges();
+    const sidebar = container.querySelector<HTMLElement>('.platform-infrastructure-sidebar')!;
+    await act(async () => fireEvent.click(within(sidebar).getByText('TestEditor.other')));
+
+    expect(screen.getByRole('dialog').textContent).toContain('修改還沒儲存，確定不儲存並離開嗎？');
+    expect(screen.getByRole('heading', { name: '尚未儲存' })).toBeTruthy();
+    await act(async () => fireEvent.click(screen.getByRole('button', { name: '取消' })));
+    expect(window.location.hash).toBe('#/editor/form');
+    expect(screen.getByText('編輯頁')).toBeTruthy();
+  });
+
+  it('有未儲存的修改時，點 navbar 先詢問；按「不儲存並離開」後換頁', async () => {
+    await openEditorWithChanges();
+    await act(async () => fireEvent.click(screen.getByText('TestChat.nav')));
+    expect(screen.getByRole('dialog')).toBeTruthy();
+
+    await act(async () => fireEvent.click(screen.getByRole('button', { name: '不儲存並離開' })));
+    await act(async () => window.dispatchEvent(new HashChangeEvent('hashchange')));
+    expect(window.location.hash).toBe('#/chat/room');
+    expect(screen.getByText('聊天室頁面')).toBeTruthy();
+    expect(screen.queryByRole('dialog')).toBeNull();
+  });
+
+  it('改回原樣後不算未儲存的修改，換頁不詢問', async () => {
+    await openEditorWithChanges();
+    fireEvent.click(screen.getByText('改回原樣'));
+    await act(async () => fireEvent.click(screen.getByText('TestChat.nav')));
+    await act(async () => window.dispatchEvent(new HashChangeEvent('hashchange')));
+    expect(screen.queryByRole('dialog')).toBeNull();
+    expect(screen.getByText('聊天室頁面')).toBeTruthy();
+  });
+
+  it('有未儲存的修改時按瀏覽器上一頁：網址改回原頁並詢問，確定後才到上一頁', async () => {
+    await openEditorWithChanges();
+    await pressBrowserBack('/chat/room');
+    expect(window.location.hash).toBe('#/editor/form');
+    expect(screen.getByText('編輯頁')).toBeTruthy();
+
+    // 詢問中再按一次上一頁，不會跳出第二個確認視窗
+    await pressBrowserBack('/chat/room');
+    expect(screen.getAllByRole('dialog')).toHaveLength(1);
+
+    await act(async () => fireEvent.click(screen.getByRole('button', { name: '不儲存並離開' })));
+    expect(window.location.hash).toBe('#/chat/room');
+    expect(screen.getByText('聊天室頁面')).toBeTruthy();
+  });
+
+  it('有修改的視窗開著時按瀏覽器上一頁，確定離開後視窗一起關閉', async () => {
+    await goTo('/editor/form');
+    render(<AppShell />);
+    fireEvent.click(screen.getByText('開有修改的視窗'));
+    expect(screen.getByText('填了一半的視窗')).toBeTruthy();
+
+    await pressBrowserBack('/chat/room');
+    expect(screen.getAllByRole('dialog')).toHaveLength(2);
+    await act(async () => fireEvent.click(screen.getByRole('button', { name: '不儲存並離開' })));
+    expect(screen.queryByRole('dialog')).toBeNull();
+    expect(screen.getByText('聊天室頁面')).toBeTruthy();
+  });
+
+  it('換頁時外殼關閉所有視窗', async () => {
+    await goTo('/editor/form');
+    render(<AppShell />);
+    fireEvent.click(screen.getByText('開沒有修改的視窗'));
+    expect(screen.getByRole('dialog')).toBeTruthy();
+
+    await pressBrowserBack('/chat/room');
+    expect(screen.queryByRole('dialog')).toBeNull();
+    expect(screen.getByText('聊天室頁面')).toBeTruthy();
+  });
+
+  it('有未儲存的修改時，重新整理或關閉分頁會出現瀏覽器的離開提示；沒有修改時不會', async () => {
+    await openEditorWithChanges();
+    const dirtyUnload = new Event('beforeunload', { cancelable: true });
+    window.dispatchEvent(dirtyUnload);
+    expect(dirtyUnload.defaultPrevented).toBe(true);
+
+    fireEvent.click(screen.getByText('改回原樣'));
+    const cleanUnload = new Event('beforeunload', { cancelable: true });
+    window.dispatchEvent(cleanUnload);
+    expect(cleanUnload.defaultPrevented).toBe(false);
+  });
+});
+
+// ===== 前端錯誤攔截 =====
+
+describe('AppShell 前端錯誤攔截', () => {
+  it('畫面中沒接住的錯誤寫進 log，並顯示錯誤訊息', async () => {
+    await goTo('/chat/room');
+    render(<AppShell />);
+    act(() => reportFrontendError(new Error('按鈕的處理壞掉了')));
+
+    expect(screen.getByRole('alert').textContent).toContain(
+      '畫面發生未預期的錯誤，可以在 log 查看細節',
+    );
+    const sentLog = fetchMock.mock.calls.find(([url]) => String(url).endsWith('/writeLog'));
+    expect(JSON.parse(sentLog?.[1].body).error.message).toContain('按鈕的處理壞掉了');
   });
 });
 

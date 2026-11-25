@@ -1,13 +1,14 @@
 // 外殼：上方 navbar 切換核心模組、側邊欄切換子頁面、中間是內容區、最下方是 log 列，整個外殼有背景圖。
+// 視窗和提示區也由外殼放一份。
 
 import './appShell.css';
 
 import { useEffect, type MouseEvent } from 'react';
 
-import { joinClassNames } from '../SharedComponents/index.ts';
+import { joinClassNames, OverlayHost } from '../SharedComponents/index.ts';
 import { getAssetUrl, getText } from '../ThemeAndLanguage/index.ts';
 import { ContentErrorBoundary } from './ContentErrorBoundary.tsx';
-import { navigateTo, useHashPath } from './hashRoute.ts';
+import { navigateTo, requestNavigation, useHashPath } from './hashRoute.ts';
 import { LogBar } from './LogBar.tsx';
 import {
   buildModulePath,
@@ -54,6 +55,7 @@ export function AppShell() {
         </main>
       </div>
       <LogBar />
+      <OverlayHost />
     </div>
   );
 }
@@ -124,11 +126,11 @@ interface ShellLinkProps {
   children: string;
 }
 
-/** navbar 和側邊欄的連結：換頁一律經過 navigateTo，點目前所在的項目不動作。 */
+/** navbar 和側邊欄的連結：有未儲存的修改時先詢問；點目前所在的項目不動作。 */
 function ShellLink({ className, path, isActive, children }: ShellLinkProps) {
   const handleClick = (event: MouseEvent<HTMLAnchorElement>) => {
     event.preventDefault();
-    if (!isActive) navigateTo(path);
+    if (!isActive) void requestNavigation(path);
   };
   return (
     <a

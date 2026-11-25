@@ -216,6 +216,7 @@ graph LR
 | openDatabase | 後端 | 開啟模組自己的資料庫檔，不存在時建立，並自動升級結構 | 模組、檔名、各版本的升級內容 → 讀寫方法 | PlatformBootstrap |
 | createError | 前後端 | 建立錯誤物件 | 模組、介面、代碼、訊息、細節 → 錯誤物件 | SystemLog |
 | isPlatformError | 前後端 | 判斷某個值是不是錯誤物件 | 任意值 → 是／否 | SystemLog |
+| defineErrorCodes | 前後端 | 登記模組自己的錯誤代碼和等級（警告或錯誤）；同一個代碼重複登記時啟動就報錯 | 代碼與等級 → 代碼 | SystemLog |
 | writeLog | 前後端 | 寫入一筆系統 log | 一筆 log | SystemLog |
 | getSettings | 前後端 | 查詢主題、語言 | 無 → 設定 | ThemeAndLanguage |
 | registerTextTable | 前端 | 登記模組自己的文字表 | 文字表 | ThemeAndLanguage |
@@ -258,6 +259,8 @@ graph LR
 
 ## 9. 驗收條件
 
+- 六家供應商都依官方文件串接，自動測試用官方文件的請求與回應範例。真實 key 的手動驗收只做 OpenRouter、Grok 和本地 Forge；OpenAI、Gemini、Claude 只有自動測試，README 註明尚未用真實 key 驗證。
+
 ### SystemLog
 - [ ] 寫入的 log 查得到，新的在前，可以依等級篩選
 - [ ] 紀錄檔超過 10MB 時換新檔，最多只留 2 個檔
@@ -297,9 +300,9 @@ graph LR
 - [ ] 能力跟著模型存下，`listModels` 查得到
 - [ ] 支援思考的模型，可調參數有「思考程度」；網頁搜尋不是「不支援」的模型，可調參數有「網頁搜尋」
 - [ ] 偵測、測試各剛好一筆 log
-- [ ] 每家供應商用真的 key 新增一個 LLM 模型並測試成功，七項能力的顯示和官方文件相符（手動）
+- [ ] OpenRouter、Grok 用真的 key 新增一個 LLM 模型並測試成功，七項能力的顯示和官方文件相符（手動）
 - [ ] Grok 自動帶入的 LLM 價格和官網價格頁相同（手動）
-- [ ] 無效的 key、餘額不足的 key 測試時，分別顯示 key 無效、額度不足（手動）
+- [ ] OpenRouter 或 Grok 用無效的 key 測試時，顯示 key 無效（手動）
 
 ### UsageAndCost
 - [ ] 花費計算正確；沒填價格只統計用量；Forge 不記錄用量
@@ -315,7 +318,7 @@ graph LR
 - [ ] 任務依序從排隊到完成；完成後只能取一次；同一個 Forge 一次只跑一個；影片超過 30 分鐘標為失敗
 - [ ] 每件事剛好一筆 log：一次呼叫、一次串流、一個任務各一筆；工具每來回一次各一筆；排隊和查進度期間沒有 log
 - [ ] 已取得結果但記錄用量失敗時，結果照常回傳，log 為錯誤並註明
-- [ ] 每家支援的 LLM：傳圖片、傳 PDF、調用工具、網頁搜尋、思考各試一次，結果都拿得到，花費統計出現用量（手動）
+- [ ] （ChatRoom 串接後）OpenRouter、Grok 的 LLM：傳圖片、傳 PDF、調用工具、網頁搜尋、思考各試一次，結果都拿得到，花費統計出現用量（手動）
 - [ ] （ChatRoom 串接後）Gemini 兩輪對話，回覆有接續上文（手動）
 - [ ] （MediaCreation 串接後）Grok、OpenRouter 各生成圖片、短影片、語音都拿得到檔案，影片等待中有進度（手動）
 - [ ] （MediaCreation 串接後）Forge 選模型檔、LoRA 生成圖片，有進度、拿得到圖片（手動）

@@ -1,14 +1,14 @@
 # 專案進度
 
 ## 1. 進度概括
-PlatformInfrastructure 的 spec.md 和 page.md 已完成，還沒開始實作。default 主題和「基礎設定」「API 串接」「新增模型視窗」「花費統計」四個 demo 已全部完成並經 PM 確認。自動檢查（型別、lint、格式、模組邊界、測試）和改檔後自動檢查的 hook 已設定並驗證。B001（頁首白框）已修正。2026-11-25 補上模型能力（七項）、工具、圖片與 PDF、網頁搜尋、思考的傳輸，ModelService 切成 ProviderConnectors、ModelRegistry、UsageAndCost、ModelInvocation；核心分工（所有 AI 呼叫都經過平台）寫進 design.md。下一步：implement PlatformInfrastructure。
+PlatformInfrastructure 實作中，分成 9 段（見第 3 段）。spec、page.md、default 主題、四個 demo、自動檢查都已完成；真實 key 的手動驗收只做 OpenRouter、Grok 和本地 Forge。第 1 段後端地基已完成。下一步：第 2 段 第一個能操作的畫面（ThemeAndLanguage、AppShell、BasicSettings）。
 
 ## 2. 模組
 | 模組 | 狀態 |
 |---|---|
-| **PlatformInfrastructure** | spec 完成 |
-| └ SystemLog | spec 完成 |
-| └ PlatformBootstrap | spec 完成 |
+| **PlatformInfrastructure** | 實作中 |
+| └ SystemLog | 實作中 |
+| └ PlatformBootstrap | 完成 |
 | └ ThemeAndLanguage | spec 完成 |
 | └ ProviderConnectors | spec 完成 |
 | └ ModelRegistry | spec 完成 |
@@ -21,18 +21,36 @@ PlatformInfrastructure 的 spec.md 和 page.md 已完成，還沒開始實作。
 | **NovelStudio** | |
 | **MediaCreation** | |
 
-## 3. 待串接
+## 3. 實作分段
+（只放正在實作的模組，完成時清空）
+
+**PlatformInfrastructure**
+| 段 | 做什麼 | 狀態 |
+|---|---|---|
+| 1 | 後端地基：SystemLog 後端（錯誤物件、寫 log、換檔、即時推送、錯誤攔截）、PlatformBootstrap（建立 data/、資料庫工具與升級） | 完成 |
+| 2 | 第一個能操作的畫面：ThemeAndLanguage、AppShell（navbar、側邊欄、log 列、路由、錯誤畫面）、BasicSettings 和它用到的共用元件 | 未開始 |
+| 3 | 共用元件補齊（視窗、確認、可搜尋選單、提示、錯誤訊息、任務進度）＋未儲存離開確認 | 未開始 |
+| 4 | ProviderConnectors：六家供應商一起串接（OpenAI、Gemini、Claude、Grok、OpenRouter、Forge） | 未開始 |
+| 5 | API key：ModelRegistry 的 key 部分、API key 分頁 | 未開始 |
+| 6 | 模型：ModelRegistry 的模型部分（偵測、測試、能力、參數、價格）、模型分頁、新增模型視窗 | 未開始 |
+| 7 | 用量與花費：UsageAndCost、花費統計頁 | 未開始 |
+| 8 | 模型呼叫：ModelInvocation（呼叫、串流與中止、工具、搜尋、長時間任務） | 未開始 |
+| 9 | 收尾：啟動檔、README（含 OpenAI、Gemini、Claude 尚未用真實 key 驗證）、手動驗收、刪除 page-demo | 未開始 |
+
+## 4. 待串接
 | 等待的模組 | 需要的介面 | 提供者 | 暫代方式 |
 |---|---|---|---|
+| PlatformInfrastructure | 對話畫面（真實 key 驗收：OpenRouter、Grok 的圖片、PDF、工具、搜尋、思考；Gemini 兩輪對話） | ChatRoom | 先以自動測試驗證，ChatRoom 串接後手動驗收 |
+| PlatformInfrastructure | 生成畫面（真實 key 驗收：圖片、影片、語音、Forge；任務進度顯示） | MediaCreation | 先以自動測試驗證，MediaCreation 串接後手動驗收 |
 
-## 4. Bug 發現列表
+## 5. Bug 發現列表
 （目前無）
 
-## 5. Bug 解決列表
+## 6. Bug 解決列表
 | 編號 | 模組 | 問題 | 解決方式 | 日期 |
 |---|---|---|---|---|
 | B001 | PlatformInfrastructure / Page | 設定頁頁首的看板角色上方有一塊白色方框：`.platform-infrastructure-body` 的 `z-index: 1` 形成獨立圖層，角色的 multiply 碰不到外殼背景圖 | 拿掉 body 的 z-index；demo 切換列的背景佔位文字改插在外殼最前面（skill 副本同步）；log 列 z-index 提高到 20，page.css 註明頁面內元件 z-index 不超過 10 | 2026-11-25 |
 
-## 6. 想法牆
+## 7. 想法牆
 | 日期 | 想法 | 相關模組 |
 |---|---|---|

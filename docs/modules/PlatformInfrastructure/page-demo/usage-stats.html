@@ -1,0 +1,715 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>花費統計 — PlatformInfrastructure demo</title>
+  <script src="../../../page-demo-kit/demo-toolbar.js" data-module="PlatformInfrastructure"></script>
+  <link rel="stylesheet" href="page.css">
+  <script src="demo.js"></script>
+</head>
+<body>
+  <!-- ===== 外殼 ===== -->
+  <div class="platform-infrastructure-shell" data-asset-bg="appBackground" data-ratio="16:9">
+
+    <!-- Navbar：logo、功能模組靠左、設定靠右（功能模組是假資料，之後由各模組登記） -->
+    <header class="platform-infrastructure-navbar">
+      <img class="platform-infrastructure-navbar-logo" data-asset="platformLogo" data-ratio="1:1" alt="平台標誌">
+      <a class="platform-infrastructure-navbar-item" href="#" data-nav>聊天室</a>
+      <a class="platform-infrastructure-navbar-item" href="#" data-nav>小說工作室</a>
+      <a class="platform-infrastructure-navbar-item" href="#" data-nav>多媒體創作</a>
+      <span class="platform-infrastructure-navbar-spacer"></span>
+      <a class="platform-infrastructure-navbar-item is-active" href="basic-settings.html" data-nav>設定</a>
+    </header>
+
+    <div class="platform-infrastructure-body">
+      <!-- 側邊欄：設定的子頁面 -->
+      <nav class="platform-infrastructure-sidebar">
+        <div class="platform-infrastructure-sidebar-header">
+          <div class="platform-infrastructure-eyebrow">Settings</div>
+          <div class="platform-infrastructure-sidebar-title">設定</div>
+        </div>
+        <a class="platform-infrastructure-sidebar-item" href="basic-settings.html" data-nav>基礎設定</a>
+        <a class="platform-infrastructure-sidebar-item" href="api-settings.html" data-nav>API 串接</a>
+        <a class="platform-infrastructure-sidebar-item is-active" href="usage-stats.html" data-nav>花費統計</a>
+      </nav>
+
+      <!-- 內容區 -->
+      <main class="platform-infrastructure-content">
+        <div class="platform-infrastructure-page">
+
+          <!-- 頁首：漸層底、裝飾、標題，看板角色在右邊破框 -->
+          <section class="platform-infrastructure-hero">
+            <div class="platform-infrastructure-hero-decor">
+              <span class="platform-infrastructure-display-text">Usage</span>
+            </div>
+            <span class="platform-infrastructure-sparkle"></span>
+            <span class="platform-infrastructure-sparkle"></span>
+            <span class="platform-infrastructure-sparkle"></span>
+            <div class="platform-infrastructure-hero-title">
+              <span class="platform-infrastructure-eyebrow">Usage &amp; Cost</span>
+              <h1>花費統計</h1>
+              <p>依 API key 查看用量和花費，每一分錢花在哪裡都清清楚楚</p>
+            </div>
+            <img class="platform-infrastructure-hero-character" data-asset="usageStatsBanner" data-ratio="3:4" alt="">
+          </section>
+
+          <!-- 狀態：正常 -->
+          <div data-state="normal" class="platform-infrastructure-stack">
+
+            <!-- 篩選列 -->
+            <div class="platform-infrastructure-usage-filter">
+              <span class="platform-infrastructure-usage-filter-label">API key</span>
+              <div class="platform-infrastructure-select" id="key-select" data-value="">
+                <button type="button" class="platform-infrastructure-select-trigger"></button>
+                <ul class="platform-infrastructure-select-list" id="key-options"></ul>
+              </div>
+              <button type="button" class="platform-infrastructure-button platform-infrastructure-button-subtle-danger platform-infrastructure-button-small" id="delete-records-button" hidden>刪除紀錄</button>
+              <span class="platform-infrastructure-usage-filter-spacer"></span>
+              <div class="platform-infrastructure-tabs" id="unit-tabs">
+                <button type="button" class="platform-infrastructure-tab" data-unit="hour">每小時</button>
+                <button type="button" class="platform-infrastructure-tab is-active" data-unit="day">每天</button>
+                <button type="button" class="platform-infrastructure-tab" data-unit="week">每週</button>
+                <button type="button" class="platform-infrastructure-tab" data-unit="month">每月</button>
+              </div>
+            </div>
+
+            <!-- 圖表區（換 key 或時間單位時蓋上讀取中） -->
+            <div class="platform-infrastructure-usage-charts" id="charts">
+              <div class="platform-infrastructure-usage-overlay">
+                <div class="platform-infrastructure-loading">
+                  <span class="platform-infrastructure-spinner platform-infrastructure-spinner-large"></span>
+                  <span>讀取中…</span>
+                </div>
+              </div>
+
+              <!-- 部分用量沒有價格 -->
+              <div class="platform-infrastructure-usage-notice" id="partial-notice" hidden>
+                <span class="platform-infrastructure-usage-notice-icon">!</span>
+                <span>部分用量沒有設定價格，花費只計算有價格的部分</span>
+              </div>
+
+              <!-- 有用量時：兩張長條圖 -->
+              <div class="platform-infrastructure-stack" id="chart-cards">
+                <section class="platform-infrastructure-card">
+                  <div class="platform-infrastructure-card-header">
+                    <h2 class="platform-infrastructure-card-title">
+                      花費
+                      <span class="platform-infrastructure-eyebrow">Cost</span>
+                    </h2>
+                    <span class="platform-infrastructure-card-header-spacer"></span>
+                    <div class="platform-infrastructure-usage-legend" id="cost-legend">
+                      <span class="platform-infrastructure-usage-legend-item" id="cost-flag-legend" hidden><span class="platform-infrastructure-usage-swatch is-flag"></span>含未計價的用量</span>
+                      <span class="platform-infrastructure-usage-unit">單位：美元</span>
+                    </div>
+                  </div>
+                  <div id="cost-chart"></div>
+                  <div class="platform-infrastructure-usage-notice platform-infrastructure-usage-no-price" id="no-price-notice" hidden>
+                    <span class="platform-infrastructure-usage-notice-icon">!</span>
+                    <span>這組 key 用到的模型沒有設定價格，無法計算花費，只顯示用量</span>
+                  </div>
+                </section>
+
+                <section class="platform-infrastructure-card" id="token-card">
+                  <div class="platform-infrastructure-card-header">
+                    <h2 class="platform-infrastructure-card-title">
+                      Token 用量
+                      <span class="platform-infrastructure-eyebrow">Tokens</span>
+                    </h2>
+                    <span class="platform-infrastructure-card-header-spacer"></span>
+                    <div class="platform-infrastructure-usage-legend">
+                      <span class="platform-infrastructure-usage-legend-item"><span class="platform-infrastructure-usage-swatch is-input"></span>輸入</span>
+                      <span class="platform-infrastructure-usage-legend-item"><span class="platform-infrastructure-usage-swatch is-output"></span>輸出</span>
+                    </div>
+                  </div>
+                  <div id="token-chart"></div>
+                </section>
+              </div>
+
+              <!-- 這段期間沒有用量 -->
+              <section class="platform-infrastructure-card" id="no-usage" hidden>
+                <div class="platform-infrastructure-empty">
+                  <img class="platform-infrastructure-empty-image" data-asset="emptyStateIllustration" data-ratio="1:1" alt="">
+                  <p class="platform-infrastructure-empty-text">這段期間沒有用量</p>
+                  <div class="platform-infrastructure-hint">換一個時間單位或 API key 看看</div>
+                </div>
+              </section>
+
+              <!-- 用量摘要 -->
+              <section class="platform-infrastructure-card">
+                <h2 class="platform-infrastructure-card-title">
+                  用量摘要
+                  <span class="platform-infrastructure-eyebrow">Summary</span>
+                  <span class="platform-infrastructure-card-title-line"></span>
+                  <span class="platform-infrastructure-usage-unit" id="summary-range"></span>
+                </h2>
+                <div class="platform-infrastructure-usage-summary" id="summary"></div>
+                <div class="platform-infrastructure-usage-notice" id="summary-notice" hidden>
+                  <span class="platform-infrastructure-usage-notice-icon">!</span>
+                  <span id="summary-notice-text"></span>
+                </div>
+              </section>
+            </div>
+          </div>
+
+          <!-- 狀態：載入中（頁首照常） -->
+          <div data-state="loading" class="platform-infrastructure-card">
+            <div class="platform-infrastructure-loading">
+              <span class="platform-infrastructure-spinner platform-infrastructure-spinner-large"></span>
+              <span>讀取中…</span>
+            </div>
+          </div>
+
+          <!-- 狀態：沒有任何 key 也沒有用量紀錄（篩選列和圖表區都換成空狀態） -->
+          <div data-state="empty" class="platform-infrastructure-card">
+            <div class="platform-infrastructure-empty">
+              <img class="platform-infrastructure-empty-image" data-asset="emptyStateIllustration" data-ratio="1:1" alt="">
+              <p class="platform-infrastructure-empty-text">還沒有任何用量紀錄</p>
+              <div class="platform-infrastructure-hint">在平台上使用模型後，這裡會依 API key 統計用量和花費</div>
+            </div>
+          </div>
+
+          <!-- 狀態：載入失敗 -->
+          <div data-state="error" class="platform-infrastructure-card">
+            <div class="platform-infrastructure-empty">
+              <img class="platform-infrastructure-empty-image" data-asset="emptyStateIllustration" data-ratio="1:1" alt="">
+              <p class="platform-infrastructure-empty-text">載入失敗</p>
+              <div class="platform-infrastructure-error-message">
+                <span class="platform-infrastructure-error-message-icon">!</span>
+                <div class="platform-infrastructure-error-message-body">
+                  <div class="platform-infrastructure-error-message-title">讀取用量紀錄時發生問題，請稍後再試</div>
+                  <div class="platform-infrastructure-error-message-source">PlatformInfrastructure／getUsageStats（代碼：USAGE_READ_FAILED）</div>
+                </div>
+                <button type="button" class="platform-infrastructure-icon-button" aria-label="關閉">×</button>
+              </div>
+              <button type="button" class="platform-infrastructure-button platform-infrastructure-button-primary" id="retry-button">重試</button>
+            </div>
+          </div>
+
+        </div>
+      </main>
+    </div>
+
+    <!-- log 列：收合時只顯示最新一筆，點一下往上展開 -->
+    <footer class="platform-infrastructure-logbar" data-logbar>
+      <div class="platform-infrastructure-logbar-panel">
+        <div class="platform-infrastructure-logbar-toolbar">
+          <div class="platform-infrastructure-tabs">
+            <button type="button" class="platform-infrastructure-tab is-active" data-log-filter="all">全部</button>
+            <button type="button" class="platform-infrastructure-tab" data-log-filter="success">正確</button>
+            <button type="button" class="platform-infrastructure-tab" data-log-filter="warning">警告</button>
+            <button type="button" class="platform-infrastructure-tab" data-log-filter="error">錯誤</button>
+          </div>
+          <span class="platform-infrastructure-hint">最多保留最近 1000 筆</span>
+        </div>
+        <ul class="platform-infrastructure-logbar-list"></ul>
+      </div>
+      <button type="button" class="platform-infrastructure-logbar-summary">
+        <span data-log-latest></span>
+        <span class="platform-infrastructure-logbar-arrow">▲ 展開</span>
+      </button>
+    </footer>
+  </div>
+
+  <script>
+    // 花費統計的假互動：換 key、換時間單位 → 讀取中 → 重畫兩張長條圖與摘要；已刪除的 key 可以刪除紀錄。
+    // 用量是依固定亂數種子產生的假資料，每組 key 對應一種要給 PM 看的情況。
+    (function () {
+      var PREFIX = 'platform-infrastructure-';
+      var LOADING_DELAY = 500;
+      var CHART_TICKS = 4;
+      // demo 的「現在」固定，畫面才會每次一樣
+      var NOW = new Date(2026, 10, 25, 14, 32);
+      var WEEKDAYS = ['日', '一', '二', '三', '四', '五', '六'];
+
+      // ===== 假資料：key 與用量設定 =====
+
+      // 每組 key 一種情況；rates 是每 100 萬 token 的美元價格，null 代表沒填價格
+      var KEYS = [
+        {
+          id: 'k2', name: '工作用', provider: 'OpenAI', note: '全部有價格，只有 LLM',
+          llm: { input: 42000, output: 9000, rates: { input: 0.4, output: 1.6 } }
+        },
+        {
+          id: 'k3', name: '工作用', provider: 'Claude',
+          llm: { input: 26000, output: 5200, rates: { input: 3, output: 15 } }
+        },
+        {
+          id: 'k1', name: '個人', provider: 'OpenRouter', note: '語音沒填價格 → 部分沒有價格',
+          llm: { input: 58000, output: 14000, rates: { input: 0.3, output: 0.88 } },
+          voice: { amount: 1800, chance: 0.35, rate: null }
+        },
+        {
+          id: 'k4', name: '個人', provider: 'Grok', note: '有圖片、影片',
+          llm: { input: 18000, output: 4600, rates: { input: 3, output: 15 } },
+          images: { amount: 3, chance: 0.45, rate: 0.07 },
+          video: { amount: 8, chance: 0.2, rate: 0.05 }
+        },
+        { id: 'k5', name: '測試用', provider: 'OpenRouter', note: '沒有用量' },
+        {
+          id: 'd1', name: '舊帳號', provider: 'Gemini', isDeleted: true, note: '全部沒有價格',
+          llm: { input: 47000, output: 11000, rates: null },
+          activeUntil: { hour: 0, day: 0.6, week: 0.75, month: 0.9 }
+        },
+        {
+          id: 'd2', name: '插圖用', provider: 'OpenRouter', isDeleted: true, note: '只有圖片，沒有 token',
+          images: { amount: 4, chance: 0.6, rate: 0.039 },
+          activeUntil: { hour: 0.5, day: 0.5, week: 0.6, month: 0.8 }
+        }
+      ];
+
+      // 各時間單位：格數、相對每小時的用量倍數、X 軸每幾格標一次
+      var UNITS = {
+        hour: { count: 24, scale: 1, labelEvery: 3 },
+        day: { count: 30, scale: 9, labelEvery: 3 },
+        week: { count: 12, scale: 55, labelEvery: 1 },
+        month: { count: 12, scale: 230, labelEvery: 1 }
+      };
+
+      var current = { keyId: KEYS[0].id, unit: 'day' };
+
+      // ===== 主要流程 =====
+
+      document.addEventListener('DOMContentLoaded', function () {
+        renderKeyOptions();
+        bindFilters();
+        bindTooltip(document.getElementById('cost-chart'));
+        bindTooltip(document.getElementById('token-chart'));
+        document.getElementById('retry-button').addEventListener('click', function () {
+          window.PlatformDemo.setState('loading');
+          setTimeout(function () { window.PlatformDemo.setState('normal'); }, LOADING_DELAY);
+        });
+        renderStats();
+      });
+
+      // 換 key、換時間單位、刪除紀錄
+      function bindFilters() {
+        document.getElementById('key-select').addEventListener('change', function (event) {
+          current.keyId = event.currentTarget.getAttribute('data-value');
+          reloadStats();
+        });
+        document.querySelectorAll('#unit-tabs [data-unit]').forEach(function (tab) {
+          tab.addEventListener('click', function () {
+            if (tab.classList.contains('is-active')) return;
+            document.querySelectorAll('#unit-tabs [data-unit]').forEach(function (t) { t.classList.toggle('is-active', t === tab); });
+            current.unit = tab.getAttribute('data-unit');
+            reloadStats();
+          });
+        });
+        document.getElementById('delete-records-button').addEventListener('click', confirmDeleteRecords);
+      }
+
+      // 模擬向後端查詢：圖表區蓋上讀取中，篩選列照常
+      function reloadStats() {
+        var charts = document.getElementById('charts');
+        charts.classList.add('is-loading');
+        setTimeout(function () {
+          renderStats();
+          charts.classList.remove('is-loading');
+        }, LOADING_DELAY);
+      }
+
+      // 依目前的 key 和時間單位畫出整個統計區
+      function renderStats() {
+        var key = findKey(current.keyId);
+        var slots = buildSlots(key, current.unit);
+        var totals = sumSlots(slots);
+        var priceState = priceStateOf(totals);
+        var hasUsage = totals.hasPriced || totals.hasUnpriced;
+
+        document.getElementById('delete-records-button').hidden = !key.isDeleted;
+        document.getElementById('chart-cards').hidden = !hasUsage;
+        document.getElementById('no-usage').hidden = hasUsage;
+        document.getElementById('partial-notice').hidden = priceState !== 'partial';
+
+        renderCostChart(slots, priceState);
+        renderTokenChart(slots, totals);
+        renderSummary(slots, totals, priceState);
+      }
+
+      // ===== 刪除紀錄（只有已刪除的 key 可以） =====
+
+      function confirmDeleteRecords() {
+        var key = findKey(current.keyId);
+        window.PlatformDemo.showConfirm({
+          title: '刪除用量紀錄',
+          message: '確定要刪除「' + keyLabel(key) + '」的所有用量紀錄嗎？刪除後無法復原，花費統計也不會再列出這組 key。',
+          confirmText: '刪除',
+          isDanger: true
+        }).then(function (isConfirmed) {
+          if (!isConfirmed) return;
+          KEYS = KEYS.filter(function (k) { return k.id !== key.id; });
+          current.keyId = KEYS[0].id;
+          renderKeyOptions();
+          window.PlatformDemo.showToast('success', '已刪除「' + keyLabel(key) + '」的用量紀錄');
+          reloadStats();
+        });
+      }
+
+      // ===== key 選單 =====
+
+      // 顯示「名稱（供應商）」，已刪除的 key 標示「已刪除」；沒有「-- 請選擇 --」，預設第一個
+      function renderKeyOptions() {
+        var list = document.getElementById('key-options');
+        list.innerHTML = KEYS.map(function (key) {
+          var label = keyLabel(key);
+          var badge = key.isDeleted ? ' <span class="' + PREFIX + 'badge is-danger">已刪除</span>' : '';
+          var triggerLabel = key.isDeleted ? label + '・已刪除' : label;
+          return '<li class="' + PREFIX + 'select-option" data-value="' + key.id + '" data-label="' + triggerLabel + '">' +
+            label + badge + '</li>';
+        }).join('');
+        var select = document.getElementById('key-select');
+        select.setAttribute('data-value', current.keyId);
+        // 選單由這裡畫出來，所以自己呼叫 setupSelect（不加 data-select，避免 demo.js 重複綁一次）
+        if (!select.hasAttribute('data-ready')) {
+          select.setAttribute('data-ready', '');
+          window.PlatformDemo.setupSelect(select);
+        } else {
+          select.querySelector('.' + PREFIX + 'select-trigger').textContent = findOption(current.keyId).getAttribute('data-label');
+        }
+      }
+
+      function findOption(keyId) {
+        return document.querySelector('#key-options [data-value="' + keyId + '"]');
+      }
+
+      // ===== 假用量資料 =====
+
+      // 產生每一格的用量；沒有用量的格子也要有（全部為 0）
+      function buildSlots(key, unit) {
+        var config = UNITS[unit];
+        var random = seededRandom(key.id + unit);
+        var slots = [];
+        for (var index = 0; index < config.count; index++) {
+          var start = slotStart(unit, config.count - 1 - index);
+          var slot = { start: start, unit: unit, cost: 0, input: 0, output: 0, images: 0, video: 0, voice: 0, hasPriced: false, hasUnpriced: false };
+          var activity = activityOf(key, unit, index / config.count, start, random) * config.scale;
+          if (activity > 0) fillSlot(slot, key, activity, random);
+          slots.push(slot);
+        }
+        return slots;
+      }
+
+      // 這一格的活躍程度：深夜、週末比較少，偶爾整格沒有用量
+      function activityOf(key, unit, position, start, random) {
+        var limit = key.activeUntil ? key.activeUntil[unit] : 1;
+        if (position >= limit) return 0;
+        if (random() < 0.15) return 0;
+        if (unit === 'hour' && start.getHours() >= 1 && start.getHours() <= 8) return 0;
+        var isWeekend = start.getDay() === 0 || start.getDay() === 6;
+        if (unit === 'day' && isWeekend) return 0.3 + random() * 0.4;
+        return 0.5 + random();
+      }
+
+      function fillSlot(slot, key, activity, random) {
+        if (key.llm) {
+          slot.input = Math.round(key.llm.input * activity * (0.6 + random() * 0.8));
+          slot.output = Math.round(key.llm.output * activity * (0.6 + random() * 0.8));
+          addCost(slot, key.llm.rates ? (slot.input * key.llm.rates.input + slot.output * key.llm.rates.output) / 1e6 : null);
+        }
+        fillCountable(slot, 'images', key.images, activity, random, 1);
+        fillCountable(slot, 'video', key.video, activity, random, 1);
+        fillCountable(slot, 'voice', key.voice, activity, random, 1e6);
+      }
+
+      // 圖片（張）、影片（秒）、語音（字）：有一定機率出現；perUnit 是價格的計價單位
+      function fillCountable(slot, field, usage, activity, random, perUnit) {
+        if (!usage || random() > usage.chance) return;
+        var amount = Math.max(1, Math.round(usage.amount * activity * (0.5 + random())));
+        slot[field] = amount;
+        addCost(slot, usage.rate === null ? null : amount * usage.rate / perUnit);
+      }
+
+      // cost 為 null 代表這筆用量的模型沒有價格
+      function addCost(slot, cost) {
+        if (cost === null) {
+          slot.hasUnpriced = true;
+          return;
+        }
+        slot.cost += cost;
+        slot.hasPriced = true;
+      }
+
+      function sumSlots(slots) {
+        return slots.reduce(function (total, slot) {
+          ['cost', 'input', 'output', 'images', 'video', 'voice'].forEach(function (f) { total[f] += slot[f]; });
+          total.hasPriced = total.hasPriced || slot.hasPriced;
+          total.hasUnpriced = total.hasUnpriced || slot.hasUnpriced;
+          return total;
+        }, { cost: 0, input: 0, output: 0, images: 0, video: 0, voice: 0, hasPriced: false, hasUnpriced: false });
+      }
+
+      // none：全部算不出花費；partial：部分沒有價格；full：全部有價格
+      function priceStateOf(totals) {
+        if (totals.hasUnpriced && !totals.hasPriced) return 'none';
+        if (totals.hasUnpriced) return 'partial';
+        return 'full';
+      }
+
+      // ===== 長條圖 =====
+
+      function renderCostChart(slots, priceState) {
+        var chart = document.getElementById('cost-chart');
+        var isNoPrice = priceState === 'none';
+        chart.hidden = isNoPrice;
+        document.getElementById('no-price-notice').hidden = !isNoPrice;
+        document.getElementById('cost-flag-legend').hidden = priceState !== 'partial';
+        document.getElementById('cost-legend').querySelector('.' + PREFIX + 'usage-unit').hidden = isNoPrice;
+        if (isNoPrice) return;
+        renderBarChart(chart, slots, {
+          segments: [{ field: 'cost', className: 'is-cost' }],
+          formatTick: formatMoneyTick,
+          isFlagged: function (slot) { return priceState === 'partial' && slot.hasUnpriced; }
+        });
+      }
+
+      // 沒有 token 用量時整張不顯示
+      function renderTokenChart(slots, totals) {
+        var hasTokens = totals.input + totals.output > 0;
+        document.getElementById('token-card').hidden = !hasTokens;
+        if (!hasTokens) return;
+        renderBarChart(document.getElementById('token-chart'), slots, {
+          segments: [{ field: 'input', className: 'is-input' }, { field: 'output', className: 'is-output' }],
+          formatTick: formatTokenTick,
+          isFlagged: function () { return false; }
+        });
+      }
+
+      // 畫一張長條圖：Y 軸刻度、格線、每格一根（可疊加）、X 軸標籤
+      function renderBarChart(container, slots, options) {
+        var totals = slots.map(function (slot) {
+          return options.segments.reduce(function (sum, s) { return sum + slot[s.field]; }, 0);
+        });
+        var max = niceMax(Math.max.apply(null, totals));
+        var labelEvery = UNITS[slots[0].unit].labelEvery;
+
+        var ticksHtml = '';
+        var gridHtml = '';
+        for (var tick = 0; tick <= CHART_TICKS; tick++) {
+          var percent = tick / CHART_TICKS * 100;
+          ticksHtml += '<span class="' + PREFIX + 'usage-chart-y-label" style="bottom:' + percent + '%">' + options.formatTick(max * tick / CHART_TICKS, max) + '</span>';
+          if (tick > 0) gridHtml += '<span class="' + PREFIX + 'usage-chart-grid" style="bottom:' + percent + '%"></span>';
+        }
+
+        var slotsHtml = slots.map(function (slot, index) {
+          var height = max > 0 ? totals[index] / max * 100 : 0;
+          var segmentsHtml = options.segments.map(function (s) {
+            if (slot[s.field] <= 0) return '';
+            // flex-grow 用占比（加總為 1）：總和小於 1 時長條不會被填滿，所以不能直接放金額
+            var share = slot[s.field] / totals[index];
+            return '<span class="' + PREFIX + 'usage-chart-segment ' + s.className + '" style="flex-grow:' + share + '"></span>';
+          }).join('');
+          var flagHtml = options.isFlagged(slot) ? '<span class="' + PREFIX + 'usage-chart-flag"></span>' : '';
+          return '<div class="' + PREFIX + 'usage-chart-slot" data-slot="' + index + '">' + flagHtml +
+            '<span class="' + PREFIX + 'usage-chart-bar" style="height:' + height + '%">' + segmentsHtml + '</span></div>';
+        }).join('');
+
+        // 最後一格（現在）一定標出來，其餘每隔幾格標一次
+        var labelsHtml = slots.map(function (slot, index) {
+          var isShown = (slots.length - 1 - index) % labelEvery === 0;
+          return '<span class="' + PREFIX + 'usage-chart-x-label">' + (isShown ? axisLabel(slot) : '') + '</span>';
+        }).join('');
+
+        container.innerHTML =
+          '<div class="' + PREFIX + 'usage-chart">' +
+          '  <div class="' + PREFIX + 'usage-chart-y">' + ticksHtml + '</div>' +
+          '  <div class="' + PREFIX + 'usage-chart-area">' + gridHtml + slotsHtml + '</div>' +
+          '  <div class="' + PREFIX + 'usage-chart-x">' + labelsHtml + '</div>' +
+          '  <div class="' + PREFIX + 'usage-tooltip"></div>' +
+          '</div>';
+        container.slotData = slots;
+      }
+
+      // 刻度最大值 = 整齊的間距（1、1.5、2、2.5、3、4、5 × 10 的次方）× 刻度數，每條格線都是整齊的數字，上方也不會空太多
+      function niceMax(value) {
+        if (value <= 0) return CHART_TICKS;
+        var rawStep = value / CHART_TICKS;
+        var power = Math.pow(10, Math.floor(Math.log10(rawStep)));
+        var steps = [1, 1.5, 2, 2.5, 3, 4, 5, 10];
+        for (var i = 0; i < steps.length; i++) {
+          if (steps[i] * power >= rawStep) return steps[i] * power * CHART_TICKS;
+        }
+        return 10 * power * CHART_TICKS;
+      }
+
+      // ===== 滑鼠移到長條上的說明 =====
+
+      function bindTooltip(container) {
+        container.addEventListener('mouseover', function (event) {
+          var slotElement = event.target.closest('[data-slot]');
+          if (!slotElement) return;
+          var slot = container.slotData[Number(slotElement.getAttribute('data-slot'))];
+          showTooltip(container, slotElement, slot);
+        });
+        container.addEventListener('mouseleave', function () {
+          var tooltip = container.querySelector('.' + PREFIX + 'usage-tooltip');
+          if (tooltip) tooltip.classList.remove('is-visible');
+        });
+      }
+
+      // 一定顯示時間、花費、token；圖片、影片、語音有值才顯示
+      function showTooltip(container, slotElement, slot) {
+        var tooltip = container.querySelector('.' + PREFIX + 'usage-tooltip');
+        var priceState = priceStateOf(sumSlots(container.slotData));
+        var rows = [
+          ['花費', priceState === 'none' ? '無法計算' : formatMoney(slot.cost)],
+          ['<span class="' + PREFIX + 'usage-swatch is-input"></span>輸入 token', formatNumber(slot.input)],
+          ['<span class="' + PREFIX + 'usage-swatch is-output"></span>輸出 token', formatNumber(slot.output)]
+        ];
+        if (slot.images) rows.push(['圖片', formatNumber(slot.images) + ' 張']);
+        if (slot.video) rows.push(['影片', formatNumber(slot.video) + ' 秒']);
+        if (slot.voice) rows.push(['語音', formatNumber(slot.voice) + ' 字']);
+
+        tooltip.innerHTML =
+          '<div class="' + PREFIX + 'usage-tooltip-title">' + tooltipTitle(slot) + '</div>' +
+          rows.map(function (row) {
+            return '<div class="' + PREFIX + 'usage-tooltip-row"><span>' + row[0] + '</span><span>' + row[1] + '</span></div>';
+          }).join('') +
+          (priceState === 'partial' && slot.hasUnpriced
+            ? '<div class="' + PREFIX + 'usage-tooltip-note"><span class="' + PREFIX + 'usage-swatch is-flag"></span>含未設定價格的用量，花費未計入</div>'
+            : '');
+
+        // 對齊在這一格的正上方；靠左右邊緣時往內收，不超出卡片
+        var chartRect = tooltip.parentElement.getBoundingClientRect();
+        var slotRect = slotElement.getBoundingClientRect();
+        var halfWidth = tooltip.offsetWidth / 2 || 100;
+        var center = slotRect.left + slotRect.width / 2 - chartRect.left;
+        tooltip.style.left = Math.min(Math.max(center, halfWidth), chartRect.width - halfWidth) + 'px';
+        tooltip.style.top = (slotRect.top - chartRect.top) + 'px';
+        tooltip.classList.add('is-visible');
+      }
+
+      // ===== 用量摘要 =====
+
+      function renderSummary(slots, totals, priceState) {
+        var stats = [
+          { label: '總花費', value: priceState === 'none' ? '無法計算' : formatMoney(totals.cost), isHighlight: true,
+            note: priceState === 'partial' ? '只計算有價格的部分' : '' },
+          { label: '輸入 token', value: formatNumber(totals.input) },
+          { label: '輸出 token', value: formatNumber(totals.output) }
+        ];
+        if (totals.images) stats.push({ label: '圖片', value: formatNumber(totals.images) + ' 張' });
+        if (totals.video) stats.push({ label: '影片', value: formatNumber(totals.video) + ' 秒' });
+        if (totals.voice) stats.push({ label: '語音', value: formatNumber(totals.voice) + ' 字' });
+
+        document.getElementById('summary').innerHTML = stats.map(function (stat) {
+          return '<div class="' + PREFIX + 'usage-stat' + (stat.isHighlight ? ' is-highlight' : '') + '">' +
+            '<div class="' + PREFIX + 'usage-stat-label">' + stat.label + '</div>' +
+            '<div class="' + PREFIX + 'usage-stat-value">' + stat.value + '</div>' +
+            (stat.note ? '<div class="' + PREFIX + 'usage-stat-note">' + stat.note + '</div>' : '') +
+            '</div>';
+        }).join('');
+
+        document.getElementById('summary-range').textContent = rangeLabel(slots);
+        var notices = {
+          none: '這組 key 用到的模型沒有設定價格，無法計算花費，只顯示用量',
+          partial: '部分用量沒有設定價格，花費只計算有價格的部分'
+        };
+        document.getElementById('summary-notice').hidden = !notices[priceState];
+        document.getElementById('summary-notice-text').textContent = notices[priceState] || '';
+      }
+
+      // ===== 時間格 =====
+
+      // 往前第 back 格的開始時間（依電腦的當地時間分格；每週從週一開始）
+      function slotStart(unit, back) {
+        var d = new Date(NOW.getTime());
+        if (unit === 'hour') return new Date(d.getFullYear(), d.getMonth(), d.getDate(), d.getHours() - back);
+        if (unit === 'day') return new Date(d.getFullYear(), d.getMonth(), d.getDate() - back);
+        if (unit === 'week') {
+          var daysSinceMonday = (d.getDay() + 6) % 7;
+          return new Date(d.getFullYear(), d.getMonth(), d.getDate() - daysSinceMonday - back * 7);
+        }
+        return new Date(d.getFullYear(), d.getMonth() - back, 1);
+      }
+
+      // X 軸：每小時 HH:00、每天 MM/DD、每週為週一的 MM/DD、每月 YYYY/MM
+      function axisLabel(slot) {
+        var d = slot.start;
+        if (slot.unit === 'hour') return pad(d.getHours()) + ':00';
+        if (slot.unit === 'month') return d.getFullYear() + '/' + pad(d.getMonth() + 1);
+        return monthDay(d);
+      }
+
+      function tooltipTitle(slot) {
+        var d = slot.start;
+        if (slot.unit === 'hour') return monthDay(d) + ' ' + pad(d.getHours()) + ':00～' + pad((d.getHours() + 1) % 24) + ':00';
+        if (slot.unit === 'day') return monthDay(d) + '（' + WEEKDAYS[d.getDay()] + '）';
+        if (slot.unit === 'week') return monthDay(d) + '～' + monthDay(new Date(d.getFullYear(), d.getMonth(), d.getDate() + 6));
+        return d.getFullYear() + ' 年 ' + (d.getMonth() + 1) + ' 月';
+      }
+
+      var RANGE_NAMES = { hour: '最近 24 小時', day: '最近 30 天', week: '最近 12 週', month: '最近 12 個月' };
+
+      function rangeLabel(slots) {
+        var first = slots[0];
+        var last = slots[slots.length - 1];
+        var format = first.unit === 'month'
+          ? function (s) { return s.start.getFullYear() + '/' + pad(s.start.getMonth() + 1); }
+          : function (s) { return monthDay(s.start); };
+        // 每週的範圍結尾寫到最後一週的週日，不是週一
+        var end = first.unit === 'week'
+          ? monthDay(new Date(last.start.getFullYear(), last.start.getMonth(), last.start.getDate() + 6))
+          : format(last);
+        return RANGE_NAMES[first.unit] + '（' + format(first) + '～' + end + '）';
+      }
+
+      // ===== 輔助 =====
+
+      function findKey(keyId) {
+        return KEYS.filter(function (k) { return k.id === keyId; })[0];
+      }
+
+      function keyLabel(key) {
+        return key.name + '（' + key.provider + '）';
+      }
+
+      function formatMoney(value) {
+        if (value > 0 && value < 0.01) return '< $0.01';
+        return '$' + value.toFixed(2);
+      }
+
+      // Y 軸刻度：至少兩位小數，間距是 0.025 這類數字時才多一位
+      function formatMoneyTick(value) {
+        var text = value.toFixed(3).replace(/0$/, '');
+        return '$' + text;
+      }
+
+      function formatTokenTick(value) {
+        if (value >= 1e6) return trimZero(value / 1e6) + 'M';
+        if (value >= 1e3) return trimZero(value / 1e3) + 'K';
+        return String(Math.round(value));
+      }
+
+      function trimZero(value) {
+        return String(Math.round(value * 10) / 10);
+      }
+
+      function formatNumber(value) {
+        return Math.round(value).toLocaleString('en-US');
+      }
+
+      function monthDay(d) {
+        return pad(d.getMonth() + 1) + '/' + pad(d.getDate());
+      }
+
+      function pad(value) {
+        return value < 10 ? '0' + value : String(value);
+      }
+
+      // 固定種子的亂數：同一組 key 和時間單位每次產生一樣的資料
+      function seededRandom(text) {
+        var seed = 0;
+        for (var i = 0; i < text.length; i++) seed = (seed * 31 + text.charCodeAt(i)) >>> 0;
+        return function () {
+          seed = (seed + 0x6D2B79F5) >>> 0;
+          var t = seed;
+          t = Math.imul(t ^ (t >>> 15), t | 1);
+          t ^= t + Math.imul(t ^ (t >>> 7), t | 61);
+          return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+        };
+      }
+    })();
+  </script>
+</body>
+</html>

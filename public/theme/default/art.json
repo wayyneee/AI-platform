@@ -1,0 +1,26 @@
+{
+  "forge": {
+    "url": "http://127.0.0.1:7860",
+    "model": "",
+    "baseSize": 1024,
+    "sampler": "DPM++ 2M",
+    "scheduler": "Karras",
+    "steps": 30,
+    "cfgScale": 6
+  },
+  "style": {
+    "prompt": "",
+    "negativePrompt": ""
+  },
+  "assets": {
+    "PlatformInfrastructure": {
+      "platformLogo": { "description": "外殼 Navbar 最左側：平台的標誌圖形，不含文字", "prompt": "", "ratio": "1:1" },
+      "appBackground": { "description": "外殼整個畫面的背景：淡淡的背景圖，不干擾畫面上的文字", "prompt": "", "ratio": "16:9" },
+      "emptyStateIllustration": { "description": "空狀態的預設插圖（全平台共用）：一個角色看著空空的箱子，表示這裡還沒有東西", "prompt": "", "ratio": "1:1" },
+      "basicSettingsBanner": { "description": "基礎設定頁首：角色在整理房間、調整擺設", "prompt": "", "ratio": "4:1" },
+      "apiSettingsBanner": { "description": "API 串接頁首：角色拿著一串鑰匙，連接到發光的傳送門", "prompt": "", "ratio": "4:1" },
+      "usageStatsBanner": { "description": "花費統計頁首：角色拿著帳本看著長條圖", "prompt": "", "ratio": "4:1" },
+      "addModelHeader": { "description": "新增模型視窗頂部：新的 AI 夥伴從光中登場", "prompt": "", "ratio": "3:1" }
+    }
+  }
+}

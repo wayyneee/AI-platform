@@ -51,3 +51,26 @@ export interface LogEntry extends LogInput {
   /** ISO 8601（含時區） */
   time: string;
 }
+
+// ===== 主題與語言 =====
+
+/** 沒有設定時使用的主題；主題載入失敗時也改用它。 */
+export const DEFAULT_THEME = 'default';
+/** 沒有設定時使用的語言（conventions.md 第 9 段：預設語言 zh-TW）。 */
+export const DEFAULT_LANGUAGE = 'zh-TW';
+/** 平台有文字表的語言；新增語言時在這裡加上語言代碼，並在各模組的 texts/ 加一份文字表。 */
+export const SUPPORTED_LANGUAGES: readonly string[] = ['zh-TW'];
+
+/** 平台設定：主題資料夾名稱、語言代碼。 */
+export interface PlatformSettings {
+  theme: string;
+  language: string;
+}
+
+/** 設定可以選的值。 */
+export interface SettingOptions {
+  /** 含有 theme.css 的主題資料夾名稱 */
+  themes: string[];
+  /** 語言代碼 */
+  languages: string[];
+}

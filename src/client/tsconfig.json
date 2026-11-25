@@ -6,7 +6,7 @@
     "module": "esnext",
     "moduleResolution": "bundler",
     "jsx": "react-jsx",
-    "types": [],
+    "types": ["vite/client"],
     "strict": true,
     "noEmit": true,
     // 和後端一致：import 寫 .ts 副檔名，不用需要轉譯的寫法，src/shared/ 兩邊才都能用

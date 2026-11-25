@@ -21,6 +21,15 @@
         "dev:server"
       ],
       "port": 4317
+    },
+    {
+      "name": "platform-client",
+      "runtimeExecutable": "npm",
+      "runtimeArgs": [
+        "run",
+        "dev:client"
+      ],
+      "port": 5173
     }
   ]
 }

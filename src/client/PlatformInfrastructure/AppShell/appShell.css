@@ -1,0 +1,350 @@
+/*
+ * 外殼（AppShell）的樣式：整體版面、navbar、側邊欄、內容區、log 列。從 page-demo/page.css 搬來。
+ * 只使用 theme.css 的變數；class 一律加 platform-infrastructure- 前綴。
+ */
+
+/* ===== 外殼：整體版面 ===== */
+
+.platform-infrastructure-shell {
+  height: 100vh;
+  display: grid;
+  grid-template-rows: var(--navbar-height) 1fr var(--logbar-height);
+  background-color: var(--color-bg);
+  background-size: cover;
+  background-position: center;
+  position: relative;
+}
+
+/* 背景圖上的白紗，讓插圖淡淡的 */
+.platform-infrastructure-shell::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: var(--background-veil);
+  pointer-events: none;
+}
+
+.platform-infrastructure-body {
+  display: flex;
+  gap: var(--space-5);
+  min-height: 0;
+  padding: var(--space-5) var(--space-5) 0;
+  /* 不設 z-index：設了會變成獨立的圖層群組，頁首角色的 multiply 碰不到外殼背景圖，
+     超出頁首的那截會露出白底（B001）。照畫面順序本來就會疊在背景與白紗上面。 */
+  position: relative;
+}
+
+/* ===== 外殼：Navbar ===== */
+
+.platform-infrastructure-navbar {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: 0 var(--space-5);
+  background: var(--color-surface-glass);
+  backdrop-filter: blur(14px);
+  box-shadow: var(--shadow-sm);
+  position: relative;
+  z-index: 2;
+}
+
+/* navbar 底部的漸層細線 */
+.platform-infrastructure-navbar::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 2px;
+  background: var(--gradient-brand);
+  opacity: 0.55;
+}
+
+.platform-infrastructure-navbar-logo {
+  width: 40px;
+  height: 40px;
+  border-radius: var(--radius-md);
+  margin-right: var(--space-5);
+  flex-shrink: 0;
+  object-fit: cover;
+  box-shadow: var(--shadow-sm);
+}
+
+.platform-infrastructure-navbar-spacer {
+  flex: 1;
+}
+
+.platform-infrastructure-navbar-item {
+  padding: var(--space-2) var(--space-5);
+  border-radius: var(--radius-pill);
+  color: var(--color-text-muted);
+  text-decoration: none;
+  font-weight: var(--font-weight-bold);
+  transition:
+    background var(--transition-fast),
+    color var(--transition-fast),
+    box-shadow var(--transition-fast);
+}
+
+.platform-infrastructure-navbar-item:hover {
+  background: var(--color-primary-soft);
+  color: var(--color-primary);
+}
+
+.platform-infrastructure-navbar-item.is-active {
+  background: var(--gradient-brand);
+  color: var(--color-text-on-primary);
+  box-shadow: var(--shadow-glow);
+}
+
+/* ===== 外殼：側邊欄（浮動卡片） ===== */
+
+.platform-infrastructure-sidebar {
+  width: var(--sidebar-width);
+  flex-shrink: 0;
+  align-self: flex-start;
+  padding: var(--space-5) var(--space-3) var(--space-4);
+  background: var(--color-surface-glass);
+  backdrop-filter: blur(14px);
+  border: 1px solid var(--color-surface);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-md);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+  position: relative;
+  overflow: hidden;
+}
+
+/* 側邊欄上方的點點底紋 */
+.platform-infrastructure-sidebar::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 110px;
+  height: 80px;
+  background: var(--pattern-dots);
+  background-size: var(--pattern-dots-size);
+  mask-image: linear-gradient(225deg, black, transparent 70%);
+  pointer-events: none;
+}
+
+.platform-infrastructure-sidebar-header {
+  position: relative;
+  padding: 0 var(--space-3) var(--space-4);
+}
+
+.platform-infrastructure-sidebar-title {
+  font-size: var(--font-size-xl);
+  font-weight: var(--font-weight-black);
+  line-height: var(--line-height-tight);
+}
+
+.platform-infrastructure-sidebar-item {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  padding: var(--space-3) var(--space-4);
+  border-radius: var(--radius-md);
+  color: var(--color-text-muted);
+  text-decoration: none;
+  font-weight: var(--font-weight-bold);
+  transition:
+    background var(--transition-fast),
+    color var(--transition-fast);
+}
+
+/* 每個項目前的小圓點，選中時變成漸層 */
+.platform-infrastructure-sidebar-item::before {
+  content: '';
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--color-border-strong);
+  flex-shrink: 0;
+  transition:
+    background var(--transition-fast),
+    transform var(--transition-fast);
+}
+
+.platform-infrastructure-sidebar-item:hover {
+  background: var(--color-primary-soft);
+  color: var(--color-primary);
+}
+
+.platform-infrastructure-sidebar-item.is-active {
+  background: var(--color-surface);
+  color: var(--color-primary);
+  box-shadow: var(--shadow-sm);
+}
+
+.platform-infrastructure-sidebar-item.is-active::before {
+  background: var(--gradient-brand);
+  transform: scale(1.3);
+}
+
+/* ===== 外殼：內容區 ===== */
+
+.platform-infrastructure-content {
+  flex: 1;
+  min-width: 0;
+  overflow-y: auto;
+  /* 上方留空間給頁首角色破框（內容區會捲動，超出的部分會被裁掉） */
+  padding: calc(var(--space-7) + var(--space-3)) var(--space-2) var(--space-5);
+}
+
+.platform-infrastructure-page {
+  max-width: var(--content-max-width);
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-5);
+}
+
+/* ===== 外殼：log 列 ===== */
+
+.platform-infrastructure-logbar {
+  position: relative;
+  /* 展開時會蓋在內容區上面，所以要高過頁面內的所有元件。
+     內容區沒有獨立圖層（見 .platform-infrastructure-body 的說明），頁面內元件的 z-index 一律不超過 10。 */
+  z-index: 20;
+  background: var(--color-surface-glass);
+  backdrop-filter: blur(14px);
+  box-shadow: var(--shadow-sm);
+}
+
+.platform-infrastructure-logbar-summary {
+  width: 100%;
+  height: var(--logbar-height);
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  padding: 0 var(--space-5);
+  border: 0;
+  background: transparent;
+  cursor: pointer;
+  font-size: var(--font-size-sm);
+  text-align: left;
+}
+
+.platform-infrastructure-logbar-summary:hover {
+  background: var(--color-primary-soft);
+}
+
+.platform-infrastructure-logbar-arrow {
+  margin-left: auto;
+  color: var(--color-primary);
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-bold);
+}
+
+.platform-infrastructure-logbar-panel {
+  display: none;
+  position: absolute;
+  left: var(--space-3);
+  right: var(--space-3);
+  bottom: calc(100% + var(--space-2));
+  height: 50vh;
+  flex-direction: column;
+  background: var(--color-surface);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-lg);
+  overflow: hidden;
+}
+
+.platform-infrastructure-logbar.is-expanded .platform-infrastructure-logbar-panel {
+  display: flex;
+}
+
+.platform-infrastructure-logbar-toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--space-3) var(--space-5);
+  border-bottom: 1px solid var(--color-border);
+}
+
+.platform-infrastructure-logbar-list {
+  flex: 1;
+  overflow-y: auto;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.platform-infrastructure-log-entry {
+  padding: var(--space-2) var(--space-5);
+  border-bottom: 1px solid var(--color-surface-muted);
+  font-size: var(--font-size-sm);
+}
+
+.platform-infrastructure-log-entry-main {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+}
+
+.platform-infrastructure-log-time {
+  font-family: var(--font-family-mono);
+  color: var(--color-text-muted);
+  font-size: var(--font-size-xs);
+  white-space: nowrap;
+}
+
+.platform-infrastructure-log-module {
+  color: var(--color-text-muted);
+  white-space: nowrap;
+}
+
+.platform-infrastructure-log-meta {
+  margin-left: auto;
+  display: flex;
+  gap: var(--space-3);
+  color: var(--color-text-muted);
+  font-size: var(--font-size-xs);
+  white-space: nowrap;
+}
+
+.platform-infrastructure-log-error {
+  margin-top: var(--space-1);
+  padding-left: calc(var(--space-3) + 108px);
+  color: var(--color-danger);
+}
+
+/* 白話說明和來源之間的間隔（demo 用全形空白，格式化工具會把行尾空白清掉，改用 CSS） */
+.platform-infrastructure-log-error .platform-infrastructure-error-message-source {
+  margin-left: var(--space-3);
+}
+
+.platform-infrastructure-log-error-toggle {
+  border: 0;
+  background: transparent;
+  color: var(--color-primary);
+  cursor: pointer;
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-bold);
+  padding: 0 var(--space-1);
+}
+
+.platform-infrastructure-log-detail {
+  display: none;
+  margin: var(--space-2) 0 0 calc(var(--space-3) + 108px);
+  padding: var(--space-3);
+  background: var(--color-surface-muted);
+  border-radius: var(--radius-sm);
+  font-family: var(--font-family-mono);
+  font-size: var(--font-size-xs);
+  white-space: pre-wrap;
+  color: var(--color-text);
+}
+
+.platform-infrastructure-log-entry.is-detail-open .platform-infrastructure-log-detail {
+  display: block;
+}
+
+/* 有 hidden 屬性的元素一定隱藏（元件自己設的 display 不能蓋過它） */
+.platform-infrastructure-shell [hidden] {
+  display: none !important;
+}

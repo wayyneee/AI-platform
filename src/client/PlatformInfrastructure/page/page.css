@@ -1,0 +1,865 @@
+/*
+ * 「平台設定」子頁面（Page）的樣式：頁首、API key 與模型列表、新增模型視窗、花費統計。從 page-demo/page.css 搬來。
+ * 只使用 theme.css 的變數；class 一律加 platform-infrastructure- 前綴。
+ * 視覺語言：白底圓角卡片、藍粉漸層、點點底紋、大型英文淡字、看板角色融進頁首（白底圖用 multiply 去白）。
+ */
+
+/* ===== 頁首（漸層底＋點點＋大型英文淡字＋看板角色） ===== */
+
+.platform-infrastructure-hero {
+  position: relative;
+  min-height: 230px;
+  border-radius: var(--radius-lg);
+  background: var(--gradient-hero);
+  box-shadow: var(--shadow-md);
+  border: 1px solid var(--color-surface);
+}
+
+/* 裝飾層：裁在圓角裡；角色另外放在外面，才能破框 */
+.platform-infrastructure-hero-decor {
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.platform-infrastructure-hero-decor::before {
+  content: '';
+  position: absolute;
+  top: -40px;
+  right: 120px;
+  width: 300px;
+  height: 300px;
+  border-radius: 50%;
+  background: var(--color-surface);
+  opacity: 0.55;
+}
+
+.platform-infrastructure-hero-decor::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  width: 260px;
+  height: 120px;
+  background: var(--pattern-dots);
+  background-size: var(--pattern-dots-size);
+  mask-image: linear-gradient(45deg, black, transparent 75%);
+}
+
+.platform-infrastructure-hero-decor .platform-infrastructure-display-text {
+  position: absolute;
+  left: var(--space-5);
+  bottom: -14px;
+  -webkit-text-stroke-color: var(--color-surface);
+  opacity: 0.9;
+}
+
+.platform-infrastructure-hero-title {
+  position: relative;
+  padding: var(--space-6) var(--space-6) var(--space-7);
+  max-width: 60%;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--space-2);
+}
+
+.platform-infrastructure-hero-title .platform-infrastructure-eyebrow {
+  padding: var(--space-1) var(--space-3);
+  border-radius: var(--radius-pill);
+  background-color: var(--color-surface);
+  box-shadow: var(--shadow-sm);
+}
+
+.platform-infrastructure-hero-title h1 {
+  margin: 0;
+  font-size: var(--font-size-xxl);
+  font-weight: var(--font-weight-black);
+  line-height: var(--line-height-tight);
+}
+
+.platform-infrastructure-hero-title p {
+  margin: 0;
+  color: var(--color-text-muted);
+}
+
+/* 看板角色：白底圖用 multiply 融進漸層，頭部超出頁首上緣 */
+.platform-infrastructure-hero-character {
+  position: absolute;
+  right: var(--space-6);
+  bottom: 0;
+  height: 290px; /* 比頁首高約 60px，頭部破框 */
+  aspect-ratio: 3 / 4;
+  object-fit: cover;
+  object-position: top;
+  mix-blend-mode: multiply;
+  pointer-events: none;
+  /* 四邊淡出：就算圖裡的角色碰到邊，也不會出現方框的切邊 */
+  -webkit-mask-image:
+    linear-gradient(90deg, transparent 0, black 12%, black 88%, transparent 100%),
+    linear-gradient(180deg, transparent 0, black 8%, black 80%, transparent 100%);
+  -webkit-mask-composite: source-in;
+  mask-image:
+    linear-gradient(90deg, transparent 0, black 12%, black 88%, transparent 100%),
+    linear-gradient(180deg, transparent 0, black 8%, black 80%, transparent 100%);
+  mask-composite: intersect;
+}
+
+.platform-infrastructure-hero .platform-infrastructure-sparkle:nth-of-type(1) {
+  top: 28px;
+  right: 300px;
+}
+.platform-infrastructure-hero .platform-infrastructure-sparkle:nth-of-type(2) {
+  top: 120px;
+  right: 330px;
+  width: 10px;
+  height: 10px;
+}
+.platform-infrastructure-hero .platform-infrastructure-sparkle:nth-of-type(3) {
+  bottom: 26px;
+  right: 24px;
+  width: 12px;
+  height: 12px;
+}
+
+/* ===== API key 列表 ===== */
+
+.platform-infrastructure-key-table-head,
+.platform-infrastructure-key-row {
+  display: grid;
+  grid-template-columns: 170px minmax(0, 1fr) minmax(0, 1.4fr) 84px;
+  align-items: center;
+  gap: var(--space-3);
+}
+
+.platform-infrastructure-key-table-head {
+  padding: 0 var(--space-3) var(--space-2);
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-bold);
+  color: var(--color-text-muted);
+  border-bottom: 1px solid var(--color-border);
+}
+
+.platform-infrastructure-key-item {
+  padding: var(--space-3);
+  border-radius: var(--radius-md);
+}
+
+.platform-infrastructure-key-item + .platform-infrastructure-key-item {
+  border-top: 1px dashed var(--color-border);
+}
+
+/* 新增、還沒儲存的列：淡淡的主色底，一眼看出哪些是新的 */
+.platform-infrastructure-key-item.is-new {
+  background: var(--color-primary-soft);
+  border-top-color: transparent;
+}
+
+.platform-infrastructure-key-item.is-new + .platform-infrastructure-key-item {
+  border-top-color: transparent;
+}
+
+.platform-infrastructure-key-provider {
+  font-weight: var(--font-weight-bold);
+  padding-left: var(--space-2);
+}
+
+.platform-infrastructure-key-item .platform-infrastructure-input {
+  background: var(--color-surface-muted);
+}
+.platform-infrastructure-key-item.is-new .platform-infrastructure-input,
+.platform-infrastructure-key-item.is-new .platform-infrastructure-select-trigger {
+  background: var(--color-surface);
+}
+
+.platform-infrastructure-key-delete {
+  justify-self: end;
+}
+
+.platform-infrastructure-row-error {
+  margin-top: var(--space-2);
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-bold);
+  color: var(--color-danger);
+}
+
+/* ===== 模型列表 ===== */
+
+.platform-infrastructure-model-row {
+  display: grid;
+  grid-template-columns: minmax(0, 1.25fr) 96px minmax(0, 1.25fr) minmax(0, 1fr) auto;
+  align-items: center;
+  gap: var(--space-4);
+  padding: var(--space-3);
+  border-radius: var(--radius-md);
+  transition: background var(--transition-fast);
+}
+
+.platform-infrastructure-model-row:hover {
+  background: var(--color-surface-muted);
+}
+.platform-infrastructure-model-row + .platform-infrastructure-model-row {
+  border-top: 1px dashed var(--color-border);
+}
+
+.platform-infrastructure-model-name {
+  font-weight: var(--font-weight-bold);
+}
+
+.platform-infrastructure-model-id,
+.platform-infrastructure-model-price small {
+  display: block;
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-normal);
+  color: var(--color-text-muted);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.platform-infrastructure-model-id {
+  font-family: var(--font-family-mono);
+}
+
+.platform-infrastructure-model-address {
+  font-family: var(--font-family-mono);
+  font-size: var(--font-size-sm);
+  color: var(--color-text-muted);
+  padding: var(--space-2) var(--space-3);
+  background: var(--color-surface-muted);
+  border-radius: var(--radius-md);
+}
+
+.platform-infrastructure-model-price {
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-bold);
+}
+.platform-infrastructure-model-price.is-unset {
+  color: var(--color-text-placeholder);
+  font-weight: var(--font-weight-normal);
+}
+
+.platform-infrastructure-model-actions {
+  display: flex;
+  gap: var(--space-2);
+}
+
+.platform-infrastructure-model-connection .platform-infrastructure-select-trigger {
+  height: 38px;
+}
+
+.platform-infrastructure-model-empty {
+  padding: var(--space-2) var(--space-3) var(--space-3);
+  font-size: var(--font-size-sm);
+  color: var(--color-text-muted);
+}
+
+/* ===== 新增模型視窗（AddModelDialog） ===== */
+
+.platform-infrastructure-add-model {
+  width: 680px;
+  max-height: calc(100vh - var(--space-7));
+  display: flex;
+  flex-direction: column;
+}
+
+/* 頂部：漸層底＋點點＋看板角色（白底圖用 multiply 融進去） */
+.platform-infrastructure-add-model-header {
+  position: relative;
+  flex-shrink: 0;
+  min-height: 132px;
+  padding: var(--space-5) var(--space-6);
+  background: var(--gradient-hero);
+  overflow: hidden;
+}
+
+.platform-infrastructure-add-model-header::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  width: 220px;
+  height: 90px;
+  background: var(--pattern-dots);
+  background-size: var(--pattern-dots-size);
+  mask-image: linear-gradient(45deg, black, transparent 75%);
+  pointer-events: none;
+}
+
+.platform-infrastructure-add-model-heading {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--space-2);
+}
+
+.platform-infrastructure-add-model-heading .platform-infrastructure-eyebrow {
+  padding: var(--space-1) var(--space-3);
+  border-radius: var(--radius-pill);
+  background-color: var(--color-surface);
+  box-shadow: var(--shadow-sm);
+}
+
+.platform-infrastructure-add-model-heading .platform-infrastructure-modal-title {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  font-size: var(--font-size-xl);
+}
+
+.platform-infrastructure-add-model-character {
+  position: absolute;
+  right: var(--space-7);
+  top: var(--space-4); /* 素材的頭頂貼近圖的上緣，往下留一點空間才不會像被切掉 */
+  width: 180px;
+  aspect-ratio: 1 / 1;
+  object-fit: cover;
+  object-position: top;
+  mix-blend-mode: multiply;
+  pointer-events: none;
+  -webkit-mask-image: linear-gradient(90deg, transparent 0, black 15%, black 85%, transparent 100%);
+  mask-image: linear-gradient(90deg, transparent 0, black 15%, black 85%, transparent 100%);
+}
+
+.platform-infrastructure-add-model-close {
+  position: absolute;
+  top: var(--space-3);
+  right: var(--space-3);
+  background: var(--color-surface);
+  box-shadow: var(--shadow-sm);
+}
+
+/* 四步表單：左邊編號、中間用細線串起來 */
+.platform-infrastructure-add-model-body {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  padding: var(--space-5) var(--space-6) var(--space-4);
+  display: flex;
+  flex-direction: column;
+}
+
+.platform-infrastructure-add-model-step {
+  position: relative;
+  display: grid;
+  grid-template-columns: 34px 1fr;
+  gap: var(--space-4);
+  padding-bottom: var(--space-5);
+  transition: opacity var(--transition-fast);
+}
+
+.platform-infrastructure-add-model-step:not(:last-child)::before {
+  content: '';
+  position: absolute;
+  left: 16px;
+  top: 40px;
+  bottom: 6px;
+  width: 2px;
+  border-radius: var(--radius-pill);
+  background: var(--color-border);
+}
+
+.platform-infrastructure-add-model-step.is-done:not(:last-child)::before {
+  background: var(--gradient-brand);
+}
+
+.platform-infrastructure-add-model-step-number {
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--font-family-display);
+  font-weight: var(--font-weight-black);
+  background: var(--gradient-brand);
+  color: var(--color-text-on-primary);
+  box-shadow: var(--shadow-glow);
+}
+
+.platform-infrastructure-add-model-step-title {
+  margin: 6px 0 var(--space-3);
+  font-weight: var(--font-weight-black);
+}
+
+/* 還不能操作的步驟：變淡、不能點 */
+.platform-infrastructure-add-model-step.is-disabled {
+  opacity: 0.5;
+}
+.platform-infrastructure-add-model-step.is-disabled [data-step-control] {
+  pointer-events: none;
+}
+
+.platform-infrastructure-add-model-step.is-disabled .platform-infrastructure-add-model-step-number {
+  background: var(--color-surface-muted);
+  color: var(--color-text-muted);
+  box-shadow: none;
+}
+
+.platform-infrastructure-add-model-inline {
+  display: flex;
+  gap: var(--space-2);
+}
+
+.platform-infrastructure-add-model-detecting {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  height: 42px;
+  padding: 0 var(--space-4);
+  border-radius: var(--radius-md);
+  background: var(--color-primary-soft);
+  color: var(--color-primary);
+  font-weight: var(--font-weight-bold);
+}
+
+/* 模型資訊卡 */
+.platform-infrastructure-add-model-info {
+  margin-top: var(--space-3);
+  padding: var(--space-3) var(--space-4);
+  border-radius: var(--radius-md);
+  background: var(--color-surface-muted);
+  border: 1px solid var(--color-border);
+}
+
+.platform-infrastructure-add-model-info-description {
+  margin: 0 0 var(--space-2);
+  font-size: var(--font-size-sm);
+}
+
+.platform-infrastructure-add-model-info-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+  margin: 0;
+}
+
+.platform-infrastructure-add-model-info-list div {
+  display: flex;
+  gap: var(--space-2);
+  padding: var(--space-1) var(--space-3);
+  border-radius: var(--radius-pill);
+  background: var(--color-surface);
+  font-size: var(--font-size-xs);
+}
+
+.platform-infrastructure-add-model-info-list dt {
+  color: var(--color-text-muted);
+}
+.platform-infrastructure-add-model-info-list dd {
+  margin: 0;
+  font-weight: var(--font-weight-bold);
+}
+
+/* 能力的三種狀態：支援、不支援、未知（未知要明顯，用警告色） */
+.platform-infrastructure-add-model-info-list .is-yes dd {
+  color: var(--color-success);
+}
+.platform-infrastructure-add-model-info-list .is-no dd {
+  color: var(--color-text-placeholder);
+}
+.platform-infrastructure-add-model-info-list .is-unknown {
+  background: var(--color-warning-soft);
+  box-shadow: inset 0 0 0 1px var(--color-warning);
+}
+.platform-infrastructure-add-model-info-list .is-unknown dd {
+  color: var(--color-warning);
+}
+
+.platform-infrastructure-add-model-info-note {
+  margin-top: var(--space-2);
+  font-size: var(--font-size-xs);
+  color: var(--color-warning);
+}
+
+/* 名稱與價格 */
+.platform-infrastructure-add-model-label {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  margin-bottom: var(--space-1);
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-bold);
+  color: var(--color-text-muted);
+}
+
+.platform-infrastructure-add-model-prices {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--space-4);
+  margin-top: var(--space-4);
+}
+
+.platform-infrastructure-add-model-money {
+  position: relative;
+}
+
+.platform-infrastructure-add-model-money-sign {
+  position: absolute;
+  left: var(--space-4);
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--color-text-muted);
+  font-weight: var(--font-weight-bold);
+  pointer-events: none;
+}
+
+.platform-infrastructure-add-model-money .platform-infrastructure-input {
+  padding-left: var(--space-6);
+}
+
+/* 底部：測試結果小字在按鈕左邊 */
+.platform-infrastructure-add-model-footer {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: var(--space-3);
+  padding: var(--space-4) var(--space-6);
+  border-top: 1px solid var(--color-border);
+}
+
+/* ===== 花費統計（UsageStats） ===== */
+
+/* 篩選列：key 選單靠左、時間單位分頁靠右 */
+.platform-infrastructure-usage-filter {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  padding: var(--space-3) var(--space-4);
+  background: var(--color-surface-glass);
+  border: 1px solid var(--color-surface);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-sm);
+}
+
+.platform-infrastructure-usage-filter-label {
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-bold);
+  color: var(--color-text-muted);
+}
+
+.platform-infrastructure-usage-filter .platform-infrastructure-select {
+  width: 300px;
+}
+.platform-infrastructure-usage-filter-spacer {
+  flex: 1;
+}
+
+/* 沒有價格的提示 */
+.platform-infrastructure-usage-notice {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  padding: var(--space-3) var(--space-4);
+  border-radius: var(--radius-md);
+  background: var(--color-warning-soft);
+  font-size: var(--font-size-sm);
+}
+
+.platform-infrastructure-usage-notice-icon {
+  flex-shrink: 0;
+  display: inline-grid;
+  place-items: center;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: var(--color-warning);
+  color: var(--color-text-on-primary);
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-black);
+}
+
+/* 花費是估算的提示（一般提示，一直顯示） */
+.platform-infrastructure-usage-estimate {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  padding: var(--space-2) var(--space-4);
+  border-radius: var(--radius-md);
+  background: var(--color-primary-soft);
+  color: var(--color-text-muted);
+  font-size: var(--font-size-sm);
+}
+
+.platform-infrastructure-usage-estimate-icon {
+  flex-shrink: 0;
+  display: inline-grid;
+  place-items: center;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: var(--color-primary);
+  color: var(--color-text-on-primary);
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-black);
+}
+
+/* 整段都沒有價格時，取代花費圖的那一塊 */
+.platform-infrastructure-usage-no-price {
+  justify-content: center;
+  min-height: 160px;
+  padding: var(--space-6);
+}
+
+/* 圖表區：換 key 或時間單位時蓋上讀取中 */
+.platform-infrastructure-usage-charts {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-5);
+}
+
+.platform-infrastructure-usage-overlay {
+  position: absolute;
+  inset: 0;
+  z-index: 4;
+  display: none;
+  border-radius: var(--radius-lg);
+  background: var(--color-surface-glass);
+}
+
+.platform-infrastructure-usage-charts.is-loading .platform-infrastructure-usage-overlay {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.platform-infrastructure-usage-unit {
+  font-size: var(--font-size-xs);
+  color: var(--color-text-muted);
+}
+
+/* 圖例 */
+.platform-infrastructure-usage-legend {
+  display: flex;
+  gap: var(--space-4);
+  font-size: var(--font-size-xs);
+  color: var(--color-text-muted);
+}
+
+.platform-infrastructure-usage-legend-item {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-1);
+}
+
+.platform-infrastructure-usage-swatch {
+  display: inline-block;
+  width: 10px;
+  height: 10px;
+  border-radius: 3px;
+}
+
+.platform-infrastructure-usage-swatch.is-cost,
+.platform-infrastructure-usage-swatch.is-input {
+  background: var(--color-primary);
+}
+.platform-infrastructure-usage-swatch.is-output {
+  background: var(--color-accent);
+}
+
+.platform-infrastructure-usage-swatch.is-flag {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--color-warning);
+}
+
+/* 長條圖：左邊 Y 軸數字、右邊繪圖區，下面 X 軸 */
+.platform-infrastructure-usage-chart {
+  position: relative;
+  display: grid;
+  grid-template-columns: 64px 1fr;
+  grid-template-rows: 200px auto;
+  margin-top: var(--space-4);
+}
+
+.platform-infrastructure-usage-chart-y {
+  position: relative;
+}
+
+.platform-infrastructure-usage-chart-y-label {
+  position: absolute;
+  right: var(--space-3);
+  transform: translateY(50%);
+  font-size: var(--font-size-xs);
+  color: var(--color-text-muted);
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+.platform-infrastructure-usage-chart-area {
+  position: relative;
+  display: flex;
+  border-bottom: 1px solid var(--color-border-strong);
+}
+
+.platform-infrastructure-usage-chart-grid {
+  position: absolute;
+  left: 0;
+  right: 0;
+  border-top: 1px dashed var(--color-border);
+  pointer-events: none;
+}
+
+/* 一格：整欄都是滑鼠感應範圍，比長條本身大 */
+.platform-infrastructure-usage-chart-slot {
+  position: relative;
+  z-index: 1;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  align-items: center;
+  border-radius: var(--radius-sm) var(--radius-sm) 0 0;
+}
+
+.platform-infrastructure-usage-chart-slot:hover {
+  background: var(--color-primary-soft);
+}
+
+.platform-infrastructure-usage-chart-bar {
+  width: 60%;
+  max-width: 28px;
+  display: flex;
+  flex-direction: column-reverse;
+  gap: 2px;
+  border-radius: 4px 4px 0 0;
+  overflow: hidden;
+}
+
+.platform-infrastructure-usage-chart-segment {
+  width: 100%;
+  flex-basis: 0;
+}
+.platform-infrastructure-usage-chart-segment.is-cost,
+.platform-infrastructure-usage-chart-segment.is-input {
+  background: var(--color-primary);
+}
+.platform-infrastructure-usage-chart-segment.is-output {
+  background: var(--color-accent);
+}
+
+/* 有未計價用量的格子：長條上方的小圓點 */
+.platform-infrastructure-usage-chart-flag {
+  flex-shrink: 0;
+  width: 7px;
+  height: 7px;
+  margin-bottom: var(--space-1);
+  border-radius: 50%;
+  background: var(--color-warning);
+  box-shadow: 0 0 0 2px var(--color-surface);
+}
+
+.platform-infrastructure-usage-chart-x {
+  grid-column: 2;
+  display: flex;
+}
+
+.platform-infrastructure-usage-chart-x-label {
+  flex: 1;
+  min-width: 0;
+  padding-top: var(--space-1);
+  text-align: center;
+  font-size: var(--font-size-xs);
+  color: var(--color-text-muted);
+  white-space: nowrap;
+  overflow: visible;
+}
+
+/* 滑鼠移到長條上的說明 */
+.platform-infrastructure-usage-tooltip {
+  position: absolute;
+  z-index: 3;
+  display: none;
+  min-width: 190px;
+  padding: var(--space-3) var(--space-4);
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-lg);
+  font-size: var(--font-size-sm);
+  pointer-events: none;
+  transform: translate(-50%, calc(-100% - var(--space-2)));
+}
+
+.platform-infrastructure-usage-tooltip.is-visible {
+  display: block;
+}
+
+.platform-infrastructure-usage-tooltip-title {
+  margin-bottom: var(--space-1);
+  font-weight: var(--font-weight-black);
+}
+
+.platform-infrastructure-usage-tooltip-row {
+  display: flex;
+  justify-content: space-between;
+  gap: var(--space-4);
+  font-variant-numeric: tabular-nums;
+}
+
+.platform-infrastructure-usage-tooltip-row > span:first-child {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-1);
+  color: var(--color-text-muted);
+}
+
+.platform-infrastructure-usage-tooltip-note {
+  display: flex;
+  align-items: center;
+  gap: var(--space-1);
+  margin-top: var(--space-2);
+  padding-top: var(--space-2);
+  border-top: 1px dashed var(--color-border);
+  font-size: var(--font-size-xs);
+  color: var(--color-text-muted);
+}
+
+/* 用量摘要 */
+.platform-infrastructure-usage-summary {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(170px, 1fr));
+  gap: var(--space-3);
+  margin: var(--space-3) 0 var(--space-2);
+}
+
+.platform-infrastructure-usage-stat {
+  padding: var(--space-4);
+  border-radius: var(--radius-md);
+  background: var(--color-surface-muted);
+}
+
+.platform-infrastructure-usage-stat.is-highlight {
+  background: var(--gradient-hero);
+}
+
+.platform-infrastructure-usage-stat-label {
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-bold);
+  color: var(--color-text-muted);
+}
+
+.platform-infrastructure-usage-stat-value {
+  margin-top: var(--space-1);
+  font-family: var(--font-family-display);
+  font-size: var(--font-size-xl);
+  font-weight: var(--font-weight-black);
+  line-height: var(--line-height-tight);
+  font-variant-numeric: tabular-nums;
+}
+
+.platform-infrastructure-usage-stat-note {
+  margin-top: var(--space-1);
+  font-size: var(--font-size-xs);
+  color: var(--color-text-muted);
+}
+
+.platform-infrastructure-usage-summary + .platform-infrastructure-usage-notice {
+  margin-bottom: var(--space-2);
+}

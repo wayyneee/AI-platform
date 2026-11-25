@@ -1,22 +1,22 @@
 # 專案進度
 
 ## 1. 進度概括
-PlatformInfrastructure 實作中，分成 9 段（見第 3 段）。spec、page.md、default 主題、四個 demo、自動檢查都已完成；真實 key 的手動驗收只做 OpenRouter、Grok 和本地 Forge。第 1 段後端地基已完成。下一步：第 2 段 第一個能操作的畫面（ThemeAndLanguage、AppShell、BasicSettings）。
+PlatformInfrastructure 實作中，分成 9 段（見第 3 段）。spec、page.md、default 主題、四個 demo、自動檢查都已完成；真實 key 的手動驗收只做 OpenRouter、Grok 和本地 Forge。第 1 段後端地基、第 2 段第一個能操作的畫面已完成（`npm run dev:server`＋`npm run dev:client` 可開啟平台設定）。下一步：第 3 段 共用元件補齊＋未儲存離開確認。
 
 ## 2. 模組
 | 模組 | 狀態 |
 |---|---|
 | **PlatformInfrastructure** | 實作中 |
-| └ SystemLog | 實作中 |
+| └ SystemLog | 完成 |
 | └ PlatformBootstrap | 完成 |
-| └ ThemeAndLanguage | spec 完成 |
+| └ ThemeAndLanguage | 完成 |
 | └ ProviderConnectors | spec 完成 |
 | └ ModelRegistry | spec 完成 |
 | └ UsageAndCost | spec 完成 |
 | └ ModelInvocation | spec 完成 |
-| └ SharedComponents | spec 完成 |
-| └ AppShell | spec 完成 |
-| └ Page | spec 完成（demo：基礎設定、API 串接、新增模型視窗、花費統計全部完成） |
+| └ SharedComponents | 實作中 |
+| └ AppShell | 實作中 |
+| └ Page | 實作中（基礎設定完成；API 串接、花費統計暫時顯示「這個頁面還在製作中」，第 5、7 段換掉） |
 | **ChatRoom** | |
 | **NovelStudio** | |
 | **MediaCreation** | |
@@ -28,7 +28,7 @@ PlatformInfrastructure 實作中，分成 9 段（見第 3 段）。spec、page.
 | 段 | 做什麼 | 狀態 |
 |---|---|---|
 | 1 | 後端地基：SystemLog 後端（錯誤物件、寫 log、換檔、即時推送、錯誤攔截）、PlatformBootstrap（建立 data/、資料庫工具與升級） | 完成 |
-| 2 | 第一個能操作的畫面：ThemeAndLanguage、AppShell（navbar、側邊欄、log 列、路由、錯誤畫面）、BasicSettings 和它用到的共用元件 | 未開始 |
+| 2 | 第一個能操作的畫面：ThemeAndLanguage、AppShell（navbar、側邊欄、log 列、路由、錯誤畫面）、BasicSettings 和它用到的共用元件 | 完成 |
 | 3 | 共用元件補齊（視窗、確認、可搜尋選單、提示、錯誤訊息、任務進度）＋未儲存離開確認 | 未開始 |
 | 4 | ProviderConnectors：六家供應商一起串接（OpenAI、Gemini、Claude、Grok、OpenRouter、Forge） | 未開始 |
 | 5 | API key：ModelRegistry 的 key 部分、API key 分頁 | 未開始 |

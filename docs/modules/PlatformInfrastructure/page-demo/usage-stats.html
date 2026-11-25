@@ -19,7 +19,7 @@
       <a class="platform-infrastructure-navbar-item" href="#" data-nav>小說工作室</a>
       <a class="platform-infrastructure-navbar-item" href="#" data-nav>多媒體創作</a>
       <span class="platform-infrastructure-navbar-spacer"></span>
-      <a class="platform-infrastructure-navbar-item is-active" href="basic-settings.html" data-nav>設定</a>
+      <a class="platform-infrastructure-navbar-item is-active" href="basic-settings.html" data-nav>平台設定</a>
     </header>
 
     <div class="platform-infrastructure-body">
@@ -27,7 +27,7 @@
       <nav class="platform-infrastructure-sidebar">
         <div class="platform-infrastructure-sidebar-header">
           <div class="platform-infrastructure-eyebrow">Settings</div>
-          <div class="platform-infrastructure-sidebar-title">設定</div>
+          <div class="platform-infrastructure-sidebar-title">平台設定</div>
         </div>
         <a class="platform-infrastructure-sidebar-item" href="basic-settings.html" data-nav>基礎設定</a>
         <a class="platform-infrastructure-sidebar-item" href="api-settings.html" data-nav>API 串接</a>
@@ -72,6 +72,12 @@
                 <button type="button" class="platform-infrastructure-tab" data-unit="week">每週</button>
                 <button type="button" class="platform-infrastructure-tab" data-unit="month">每月</button>
               </div>
+            </div>
+
+            <!-- 花費只是估算（一直顯示） -->
+            <div class="platform-infrastructure-usage-estimate">
+              <span class="platform-infrastructure-usage-estimate-icon">i</span>
+              <span>花費是依模型價格估算的參考值，實際金額以各供應商的帳單為準</span>
             </div>
 
             <!-- 圖表區（換 key 或時間單位時蓋上讀取中） -->
@@ -231,8 +237,9 @@
           llm: { input: 42000, output: 9000, rates: { input: 0.4, output: 1.6 } }
         },
         {
-          id: 'k3', name: '工作用', provider: 'Claude',
-          llm: { input: 26000, output: 5200, rates: { input: 3, output: 15 } }
+          id: 'k3', name: '工作用', provider: 'Claude', note: '有網頁搜尋',
+          llm: { input: 26000, output: 5200, rates: { input: 3, output: 15 } },
+          search: { amount: 6, chance: 0.5, rate: 0.01 }
         },
         {
           id: 'k1', name: '個人', provider: 'OpenRouter', note: '語音沒填價格 → 部分沒有價格',
@@ -382,7 +389,7 @@
         var slots = [];
         for (var index = 0; index < config.count; index++) {
           var start = slotStart(unit, config.count - 1 - index);
-          var slot = { start: start, unit: unit, cost: 0, input: 0, output: 0, images: 0, video: 0, voice: 0, hasPriced: false, hasUnpriced: false };
+          var slot = { start: start, unit: unit, cost: 0, input: 0, output: 0, search: 0, images: 0, video: 0, voice: 0, hasPriced: false, hasUnpriced: false };
           var activity = activityOf(key, unit, index / config.count, start, random) * config.scale;
           if (activity > 0) fillSlot(slot, key, activity, random);
           slots.push(slot);
@@ -407,12 +414,13 @@
           slot.output = Math.round(key.llm.output * activity * (0.6 + random() * 0.8));
           addCost(slot, key.llm.rates ? (slot.input * key.llm.rates.input + slot.output * key.llm.rates.output) / 1e6 : null);
         }
+        fillCountable(slot, 'search', key.search, activity, random, 1);
         fillCountable(slot, 'images', key.images, activity, random, 1);
         fillCountable(slot, 'video', key.video, activity, random, 1);
         fillCountable(slot, 'voice', key.voice, activity, random, 1e6);
       }
 
-      // 圖片（張）、影片（秒）、語音（字）：有一定機率出現；perUnit 是價格的計價單位
+      // 搜尋（次）、圖片（張）、影片（秒）、語音（字）：有一定機率出現；perUnit 是價格的計價單位
       function fillCountable(slot, field, usage, activity, random, perUnit) {
         if (!usage || random() > usage.chance) return;
         var amount = Math.max(1, Math.round(usage.amount * activity * (0.5 + random())));
@@ -432,11 +440,11 @@
 
       function sumSlots(slots) {
         return slots.reduce(function (total, slot) {
-          ['cost', 'input', 'output', 'images', 'video', 'voice'].forEach(function (f) { total[f] += slot[f]; });
+          ['cost', 'input', 'output', 'search', 'images', 'video', 'voice'].forEach(function (f) { total[f] += slot[f]; });
           total.hasPriced = total.hasPriced || slot.hasPriced;
           total.hasUnpriced = total.hasUnpriced || slot.hasUnpriced;
           return total;
-        }, { cost: 0, input: 0, output: 0, images: 0, video: 0, voice: 0, hasPriced: false, hasUnpriced: false });
+        }, { cost: 0, input: 0, output: 0, search: 0, images: 0, video: 0, voice: 0, hasPriced: false, hasUnpriced: false });
       }
 
       // none：全部算不出花費；partial：部分沒有價格；full：全部有價格
@@ -547,7 +555,7 @@
         });
       }
 
-      // 一定顯示時間、花費、token；圖片、影片、語音有值才顯示
+      // 一定顯示時間、花費、token；搜尋、圖片、影片、語音有值才顯示
       function showTooltip(container, slotElement, slot) {
         var tooltip = container.querySelector('.' + PREFIX + 'usage-tooltip');
         var priceState = priceStateOf(sumSlots(container.slotData));
@@ -556,6 +564,7 @@
           ['<span class="' + PREFIX + 'usage-swatch is-input"></span>輸入 token', formatNumber(slot.input)],
           ['<span class="' + PREFIX + 'usage-swatch is-output"></span>輸出 token', formatNumber(slot.output)]
         ];
+        if (slot.search) rows.push(['網頁搜尋', formatNumber(slot.search) + ' 次']);
         if (slot.images) rows.push(['圖片', formatNumber(slot.images) + ' 張']);
         if (slot.video) rows.push(['影片', formatNumber(slot.video) + ' 秒']);
         if (slot.voice) rows.push(['語音', formatNumber(slot.voice) + ' 字']);
@@ -588,6 +597,7 @@
           { label: '輸入 token', value: formatNumber(totals.input) },
           { label: '輸出 token', value: formatNumber(totals.output) }
         ];
+        if (totals.search) stats.push({ label: '網頁搜尋', value: formatNumber(totals.search) + ' 次' });
         if (totals.images) stats.push({ label: '圖片', value: formatNumber(totals.images) + ' 張' });
         if (totals.video) stats.push({ label: '影片', value: formatNumber(totals.video) + ' 秒' });
         if (totals.voice) stats.push({ label: '語音', value: formatNumber(totals.voice) + ' 字' });

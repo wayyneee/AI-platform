@@ -1,7 +1,7 @@
 # 專案進度
 
 ## 1. 進度概括
-PlatformInfrastructure 的 spec.md 和 page.md 已完成，還沒開始實作。default 主題和「基礎設定」「API 串接」「新增模型視窗」「花費統計」四個 demo 已全部完成並經 PM 確認。自動檢查（型別、lint、格式、模組邊界、測試）和改檔後自動檢查的 hook 已設定並驗證。B001（頁首白框）已修正。下一步：implement PlatformInfrastructure。
+PlatformInfrastructure 的 spec.md 和 page.md 已完成，還沒開始實作。default 主題和「基礎設定」「API 串接」「新增模型視窗」「花費統計」四個 demo 已全部完成並經 PM 確認。自動檢查（型別、lint、格式、模組邊界、測試）和改檔後自動檢查的 hook 已設定並驗證。B001（頁首白框）已修正。2026-11-25 補上模型能力（七項）、工具、圖片與 PDF、網頁搜尋、思考的傳輸，ModelService 切成 ProviderConnectors、ModelRegistry、UsageAndCost、ModelInvocation；核心分工（所有 AI 呼叫都經過平台）寫進 design.md。下一步：implement PlatformInfrastructure。
 
 ## 2. 模組
 | 模組 | 狀態 |
@@ -10,7 +10,10 @@ PlatformInfrastructure 的 spec.md 和 page.md 已完成，還沒開始實作。
 | └ SystemLog | spec 完成 |
 | └ PlatformBootstrap | spec 完成 |
 | └ ThemeAndLanguage | spec 完成 |
-| └ ModelService | spec 完成 |
+| └ ProviderConnectors | spec 完成 |
+| └ ModelRegistry | spec 完成 |
+| └ UsageAndCost | spec 完成 |
+| └ ModelInvocation | spec 完成 |
 | └ SharedComponents | spec 完成 |
 | └ AppShell | spec 完成 |
 | └ Page | spec 完成（demo：基礎設定、API 串接、新增模型視窗、花費統計全部完成） |

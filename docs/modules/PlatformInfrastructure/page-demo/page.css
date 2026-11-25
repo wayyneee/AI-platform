@@ -1448,6 +1448,21 @@
 .platform-infrastructure-add-model-info-list dt { color: var(--color-text-muted); }
 .platform-infrastructure-add-model-info-list dd { margin: 0; font-weight: var(--font-weight-bold); }
 
+/* 能力的三種狀態：支援、不支援、未知（未知要明顯，用警告色） */
+.platform-infrastructure-add-model-info-list .is-yes dd { color: var(--color-success); }
+.platform-infrastructure-add-model-info-list .is-no dd { color: var(--color-text-placeholder); }
+.platform-infrastructure-add-model-info-list .is-unknown {
+  background: var(--color-warning-soft);
+  box-shadow: inset 0 0 0 1px var(--color-warning);
+}
+.platform-infrastructure-add-model-info-list .is-unknown dd { color: var(--color-warning); }
+
+.platform-infrastructure-add-model-info-note {
+  margin-top: var(--space-2);
+  font-size: var(--font-size-xs);
+  color: var(--color-warning);
+}
+
 /* 名稱與價格 */
 .platform-infrastructure-add-model-label {
   display: flex;
@@ -1533,6 +1548,31 @@
   height: 20px;
   border-radius: 50%;
   background: var(--color-warning);
+  color: var(--color-text-on-primary);
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-black);
+}
+
+/* 花費是估算的提示（一般提示，一直顯示） */
+.platform-infrastructure-usage-estimate {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  padding: var(--space-2) var(--space-4);
+  border-radius: var(--radius-md);
+  background: var(--color-primary-soft);
+  color: var(--color-text-muted);
+  font-size: var(--font-size-sm);
+}
+
+.platform-infrastructure-usage-estimate-icon {
+  flex-shrink: 0;
+  display: inline-grid;
+  place-items: center;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: var(--color-primary);
   color: var(--color-text-on-primary);
   font-size: var(--font-size-xs);
   font-weight: var(--font-weight-black);

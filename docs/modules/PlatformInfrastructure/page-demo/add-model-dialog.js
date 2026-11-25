@@ -29,33 +29,41 @@
   // 抓得到價格的：OpenRouter、Grok 的 LLM（spec）
   var AUTO_PRICE_PROVIDERS = ['openrouter', 'grok'];
 
+  // LLM 的能力，依資訊卡的顯示順序（context window 上限、輸出上限另外處理）
+  var CAPABILITY_LABELS = [
+    ['image', '傳圖片'], ['file', '傳檔案'], ['search', '網頁搜尋'], ['thinking', '思考'], ['tools', '調用工具']
+  ];
+  var CAPABILITY_STATES = { yes: '支援', no: '不支援', unknown: '未知' };
+
   // 偵測結果：供應商 → 類型 → 模型清單
+  // LLM 的能力：yes 支援、no 不支援、unknown 未知（供應商沒提供）；context、輸出上限沒提供時為空字串
+  // 各家能提供的資料不同：OpenAI 幾乎沒有、Gemini 有上限和思考、Claude 有完整的能力標記、Grok 有上下文和輸入類型、OpenRouter 由支援的參數推得
   var DETECTED = {
     openai: {
       llm: [
-        llm('gpt-4.1', 'GPT-4.1', 'OpenAI 的旗艦模型，擅長寫程式和長文件理解', ['文字', '圖片'], '1M', '32K', false),
-        llm('gpt-4.1-mini', 'GPT-4.1 mini', '速度快、價格低，適合日常對話', ['文字', '圖片'], '1M', '32K', false),
-        llm('o4-mini', 'o4-mini', '會先思考再回答，適合數學與推理', ['文字', '圖片'], '200K', '100K', true)
+        llm('gpt-4.1', 'GPT-4.1', 'OpenAI 的旗艦模型，擅長寫程式和長文件理解', caps('unknown', 'unknown', 'unknown', 'unknown', 'unknown', '', '')),
+        llm('gpt-4.1-mini', 'GPT-4.1 mini', '速度快、價格低，適合日常對話', caps('unknown', 'unknown', 'unknown', 'unknown', 'unknown', '', '')),
+        llm('o4-mini', 'o4-mini', '會先思考再回答，適合數學與推理', caps('unknown', 'unknown', 'unknown', 'unknown', 'unknown', '', ''))
       ]
     },
     gemini: {
       llm: [
-        llm('gemini-2.5-pro', 'Gemini 2.5 Pro', 'Google 最強的模型，支援超長上下文', ['文字', '圖片', '影片', '音訊'], '1M', '64K', true),
-        llm('gemini-2.5-flash', 'Gemini 2.5 Flash', '速度和品質平衡', ['文字', '圖片', '影片', '音訊'], '1M', '64K', true)
+        llm('gemini-2.5-pro', 'Gemini 2.5 Pro', 'Google 最強的模型，支援超長上下文', caps('unknown', 'unknown', 'unknown', 'yes', 'unknown', '1M', '64K')),
+        llm('gemini-2.5-flash', 'Gemini 2.5 Flash', '速度和品質平衡', caps('unknown', 'unknown', 'unknown', 'yes', 'unknown', '1M', '64K'))
       ]
     },
     claude: {
       llm: [
-        llm('claude-opus-4-1', 'Claude Opus 4.1', 'Anthropic 最強的模型，適合複雜的長篇寫作', ['文字', '圖片'], '200K', '32K', true),
-        llm('claude-sonnet-4-5', 'Claude Sonnet 4.5', '品質和速度平衡，寫作與對話都很穩', ['文字', '圖片'], '200K', '64K', true),
-        llm('claude-haiku-4-5', 'Claude Haiku 4.5', '最快、最便宜的 Claude', ['文字', '圖片'], '200K', '64K', true)
+        llm('claude-opus-4-1', 'Claude Opus 4.1', 'Anthropic 最強的模型，適合複雜的長篇寫作', caps('yes', 'yes', 'yes', 'yes', 'yes', '200K', '32K')),
+        llm('claude-sonnet-4-5', 'Claude Sonnet 4.5', '品質和速度平衡，寫作與對話都很穩', caps('yes', 'yes', 'yes', 'yes', 'yes', '200K', '64K')),
+        llm('claude-haiku-4-5', 'Claude Haiku 4.5', '最快、最便宜的 Claude', caps('yes', 'yes', 'yes', 'yes', 'yes', '200K', '64K'))
       ]
     },
     grok: {
       llm: [
-        llm('grok-4', 'Grok 4', 'xAI 的旗艦推理模型', ['文字', '圖片'], '256K', '', true, { input: 3, output: 15 }),
-        llm('grok-4-fast', 'Grok 4 Fast', '速度快、上下文長', ['文字', '圖片'], '2M', '', true, { input: 0.2, output: 0.5 }),
-        llm('grok-3-mini', 'Grok 3 Mini', '輕量的思考模型', ['文字'], '131K', '', true, { input: 0.3, output: 0.5 })
+        llm('grok-4', 'Grok 4', 'xAI 的旗艦推理模型', caps('yes', 'unknown', 'unknown', 'unknown', 'unknown', '256K', ''), { input: 3, output: 15 }),
+        llm('grok-4-fast', 'Grok 4 Fast', '速度快、上下文長', caps('yes', 'unknown', 'unknown', 'unknown', 'unknown', '2M', ''), { input: 0.2, output: 0.5 }),
+        llm('grok-3-mini', 'Grok 3 Mini', '輕量的思考模型', caps('no', 'unknown', 'unknown', 'unknown', 'unknown', '131K', ''), { input: 0.3, output: 0.5 })
       ],
       image: [media('grok-2-image', 'Grok 2 Image', '依文字生成圖片', ['文字'], ['圖片'])],
       video: [media('grok-imagine-video', 'Grok Imagine Video', '依文字或圖片生成短影片', ['文字', '圖片'], ['影片'])],
@@ -63,11 +71,11 @@
     },
     openrouter: {
       llm: [
-        llm('anthropic/claude-sonnet-4.5', 'Anthropic: Claude Sonnet 4.5', '經由 OpenRouter 使用 Claude Sonnet 4.5', ['文字', '圖片'], '1M', '64K', true, { input: 3, output: 15 }),
-        llm('deepseek/deepseek-chat-v3.1', 'DeepSeek: DeepSeek V3.1', '開源的大型模型，價格很低', ['文字'], '164K', '', true, { input: 0.25, output: 1 }),
-        llm('google/gemini-2.5-pro', 'Google: Gemini 2.5 Pro', '經由 OpenRouter 使用 Gemini 2.5 Pro', ['文字', '圖片', '音訊'], '1M', '66K', true, { input: 1.25, output: 10 }),
-        llm('meta-llama/llama-4-maverick', 'Meta: Llama 4 Maverick', 'Meta 的開源多模態模型', ['文字', '圖片'], '1M', '16K', false, { input: 0.15, output: 0.6 }),
-        llm('qwen/qwen3-235b-a22b', 'Qwen: Qwen3 235B A22B', '阿里巴巴的開源模型，中文能力好', ['文字'], '131K', '8K', true, { input: 0.13, output: 0.6 })
+        llm('anthropic/claude-sonnet-4.5', 'Anthropic: Claude Sonnet 4.5', '經由 OpenRouter 使用 Claude Sonnet 4.5', caps('yes', 'yes', 'yes', 'yes', 'yes', '1M', '64K'), { input: 3, output: 15 }),
+        llm('deepseek/deepseek-chat-v3.1', 'DeepSeek: DeepSeek V3.1', '開源的大型模型，價格很低', caps('no', 'no', 'yes', 'yes', 'yes', '164K', ''), { input: 0.25, output: 1 }),
+        llm('google/gemini-2.5-pro', 'Google: Gemini 2.5 Pro', '經由 OpenRouter 使用 Gemini 2.5 Pro', caps('yes', 'yes', 'yes', 'yes', 'yes', '1M', '66K'), { input: 1.25, output: 10 }),
+        llm('meta-llama/llama-4-maverick', 'Meta: Llama 4 Maverick', 'Meta 的開源多模態模型', caps('yes', 'no', 'yes', 'no', 'yes', '1M', '16K'), { input: 0.15, output: 0.6 }),
+        llm('qwen/qwen3-235b-a22b', 'Qwen: Qwen3 235B A22B', '阿里巴巴的開源模型，中文能力好', caps('no', 'no', 'yes', 'yes', 'yes', '131K', '8K'), { input: 0.13, output: 0.6 })
       ],
       image: [
         media('google/gemini-2.5-flash-image', 'Google: Nano Banana', '可以生成、修改圖片', ['文字', '圖片'], ['圖片', '文字']),
@@ -328,14 +336,18 @@
     var price = {};
     var hasAny = false;
     fields.forEach(function (field) {
-      if (state.prices[field] === undefined || state.prices[field] === '') return;
+      if (!isFilled(field)) return;
       price[field] = Number(state.prices[field]);
       hasAny = true;
     });
     // 只填了一部分時，沒填的當 0
-    if (!hasAny) return null;
-    fields.forEach(function (field) { if (price[field] === undefined) price[field] = 0; });
-    return price;
+    if (hasAny) fields.forEach(function (field) { if (price[field] === undefined) price[field] = 0; });
+    // 每次搜尋價格沒填就不存：只統計搜尋次數（spec）
+    if (hasSearchPriceField() && isFilled('search')) {
+      price.search = Number(state.prices.search);
+      hasAny = true;
+    }
+    return hasAny ? price : null;
   }
 
   // ===== 畫面 =====
@@ -427,6 +439,7 @@
       html += '<div class="' + PREFIX + 'add-model-prices">';
       if (options.type === 'llm') {
         html += priceFieldHtml('input', '輸入價格（每 100 萬 token）') + priceFieldHtml('output', '輸出價格（每 100 萬 token）');
+        if (hasSearchPriceField()) html += priceFieldHtml('search', '每次搜尋價格');
       } else {
         html += priceFieldHtml('unit', '價格（' + PRICE_UNITS[options.type] + '）');
       }
@@ -448,29 +461,51 @@
       '</div>';
   }
 
-  // 模型資訊卡：有資料才顯示
+  // 模型資訊卡：LLM 列出七項能力（未知用警告樣式）；其他類型列出可輸入、可輸出
   function modelInfoHtml(model) {
-    var rows = [];
-    if (model.input) rows.push(['可輸入', model.input.join('、')]);
-    if (model.output) rows.push(['可輸出', model.output.join('、')]);
-    if (model.inputLimit) rows.push(['輸入上限', model.inputLimit + ' token']);
-    if (model.outputLimit) rows.push(['輸出上限', model.outputLimit + ' token']);
-    if (model.thinking !== undefined) rows.push(['思考', model.thinking ? '支援' : '不支援']);
+    var rows = model.caps ? capabilityRows(model.caps) : mediaRows(model);
+    var hasUnknown = rows.some(function (r) { return r[2] === 'unknown'; });
     return '<div class="' + PREFIX + 'add-model-info">' +
       (model.description ? '<p class="' + PREFIX + 'add-model-info-description">' + escapeHtml(model.description) + '</p>' : '') +
       '<dl class="' + PREFIX + 'add-model-info-list">' +
-      rows.map(function (r) { return '<div><dt>' + r[0] + '</dt><dd>' + r[1] + '</dd></div>'; }).join('') +
-      '</dl></div>';
+      rows.map(function (r) {
+        return '<div' + (r[2] ? ' class="is-' + r[2] + '"' : '') + '><dt>' + r[0] + '</dt><dd>' + r[1] + '</dd></div>';
+      }).join('') +
+      '</dl>' +
+      (hasUnknown ? '<div class="' + PREFIX + 'add-model-info-note">標示未知的項目，供應商沒有提供資料</div>' : '') +
+      '</div>';
   }
 
-  // 能力摘要，例如「輸入上限 128K・輸出上限 16K・支援思考」
+  // 每列：名稱、顯示文字、狀態（yes、no、unknown）
+  function capabilityRows(capabilities) {
+    // 兩個上限放前面：其他模組安排對話長度、調整輸出長度最常用到
+    var rows = [limitRow('context window 上限', capabilities.context), limitRow('輸出上限', capabilities.output)];
+    return rows.concat(CAPABILITY_LABELS.map(function (item) {
+      return [item[1], CAPABILITY_STATES[capabilities[item[0]]], capabilities[item[0]]];
+    }));
+  }
+
+  function limitRow(label, limit) {
+    return limit ? [label, limit + ' token', 'yes'] : [label, '未知', 'unknown'];
+  }
+
+  function mediaRows(model) {
+    var rows = [];
+    if (model.input) rows.push(['可輸入', model.input.join('、'), '']);
+    if (model.output) rows.push(['可輸出', model.output.join('、'), '']);
+    return rows;
+  }
+
+  // 能力摘要：LLM 只列支援的項目，例如「context 200K・圖片・思考・工具」
+  var SUMMARY_LABELS = { image: '圖片', file: '檔案', search: '搜尋', thinking: '思考', tools: '工具' };
+
   function capabilitySummary(model) {
-    var parts = [];
-    if (model.inputLimit) parts.push('輸入上限 ' + model.inputLimit);
-    if (model.outputLimit) parts.push('輸出上限 ' + model.outputLimit);
-    if (model.thinking) parts.push('支援思考');
-    if (!model.inputLimit && model.input) parts.push('輸入：' + model.input.join('、'));
-    return parts.join('・');
+    if (!model.caps) return model.input ? '輸入：' + model.input.join('、') : '';
+    var parts = model.caps.context ? ['context ' + model.caps.context] : [];
+    Object.keys(SUMMARY_LABELS).forEach(function (key) {
+      if (model.caps[key] === 'yes') parts.push(SUMMARY_LABELS[key]);
+    });
+    return parts.length ? parts.join('・') : '供應商沒有提供能力資料';
   }
 
   // 可搜尋的下拉選單（searchText 為空時不放搜尋框）
@@ -529,6 +564,16 @@
     return detectedModels().filter(function (m) { return m.id === id; })[0];
   }
 
+  // 網頁搜尋不是「不支援」時才有每次搜尋價格；OpenRouter 直接用它回報的金額，不用填（spec）
+  function hasSearchPriceField() {
+    var model = findModel(state.modelId);
+    return options.type === 'llm' && state.provider !== 'openrouter' && !!model && model.caps.search !== 'no';
+  }
+
+  function isFilled(field) {
+    return state.prices[field] !== undefined && state.prices[field] !== '';
+  }
+
   function isAutoPriceProvider() {
     return options.type === 'llm' && AUTO_PRICE_PROVIDERS.indexOf(state.provider) !== -1;
   }
@@ -554,8 +599,12 @@
     button.textContent = text;
   }
 
-  function llm(id, displayName, description, input, inputLimit, outputLimit, thinking, price) {
-    return { id: id, displayName: displayName, description: description, input: input, output: ['文字'], inputLimit: inputLimit, outputLimit: outputLimit, thinking: thinking, price: price };
+  function llm(id, displayName, description, capabilities, price) {
+    return { id: id, displayName: displayName, description: description, caps: capabilities, price: price };
+  }
+
+  function caps(image, file, search, thinking, tools, context, output) {
+    return { image: image, file: file, search: search, thinking: thinking, tools: tools, context: context, output: output };
   }
 
   function media(id, displayName, description, input, output) {

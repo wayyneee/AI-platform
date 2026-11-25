@@ -62,6 +62,7 @@ graph LR
 
 - **ChatRoom、NovelStudio → PlatformInfrastructure**：呼叫語言模型、寫 log，使用資料庫工具、主題與語言、外殼與共用元件。
 - **MediaCreation → PlatformInfrastructure**：呼叫語言、圖片、影片、聲音模型（含長時間任務）、寫 log，使用資料庫工具、主題與語言、外殼與共用元件。
+- **分工原則**：所有呼叫 AI 模型或 AI 服務（雲端或本地）的事都經過 PlatformInfrastructure，它負責串接、傳送，並提供每個模型的能力；其他模組各自存參數模板、依能力決定要用哪些功能，拿回結果後自己處理。不是 AI 的處理（裁圖、排版、存檔等）由各模組自己做。
 
 ---
 

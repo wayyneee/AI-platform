@@ -20,7 +20,7 @@
       <a class="platform-infrastructure-navbar-item" href="#" data-nav>小說工作室</a>
       <a class="platform-infrastructure-navbar-item" href="#" data-nav>多媒體創作</a>
       <span class="platform-infrastructure-navbar-spacer"></span>
-      <a class="platform-infrastructure-navbar-item is-active" href="basic-settings.html" data-nav>設定</a>
+      <a class="platform-infrastructure-navbar-item is-active" href="basic-settings.html" data-nav>平台設定</a>
     </header>
 
     <div class="platform-infrastructure-body">
@@ -28,7 +28,7 @@
       <nav class="platform-infrastructure-sidebar">
         <div class="platform-infrastructure-sidebar-header">
           <div class="platform-infrastructure-eyebrow">Settings</div>
-          <div class="platform-infrastructure-sidebar-title">設定</div>
+          <div class="platform-infrastructure-sidebar-title">平台設定</div>
         </div>
         <a class="platform-infrastructure-sidebar-item" href="basic-settings.html" data-nav>基礎設定</a>
         <a class="platform-infrastructure-sidebar-item is-active" href="api-settings.html" data-nav>API 串接</a>
@@ -266,7 +266,7 @@
       // keyId 為空且 isKeyDeleted：選用的 key 被刪除了
       var models = [
         { id: 'm1', type: 'llm', name: 'GPT-4.1 mini', modelName: 'gpt-4.1-mini', provider: 'openai', keyId: 'k2', price: { input: 0.4, output: 1.6 }, isTestFailing: true },
-        { id: 'm2', type: 'llm', name: 'Claude Sonnet 4.5', modelName: 'claude-sonnet-4-5', provider: 'claude', keyId: 'k3', price: { input: 3, output: 15 } },
+        { id: 'm2', type: 'llm', name: 'Claude Sonnet 4.5', modelName: 'claude-sonnet-4-5', provider: 'claude', keyId: 'k3', price: { input: 3, output: 15, search: 0.01 } },
         { id: 'm3', type: 'llm', name: 'DeepSeek V3', modelName: 'deepseek/deepseek-chat-v3', provider: 'openrouter', keyId: 'k1', price: { input: 0.3, output: 0.88 } },
         { id: 'm4', type: 'llm', name: 'Grok 4', modelName: 'grok-4', provider: 'grok', keyId: 'k4', price: { input: 3, output: 15 } },
         { id: 'm5', type: 'llm', name: 'Gemini 2.5 Flash', modelName: 'gemini-2.5-flash', provider: 'gemini', keyId: '', isKeyDeleted: true, price: null },
@@ -684,7 +684,8 @@
         var price = model.price;
         if (!price) return '<div class="' + PREFIX + 'model-price is-unset">未設定價格</div>';
         if (model.type === 'llm') {
-          return '<div class="' + PREFIX + 'model-price">輸入 ' + money(price.input) + '／輸出 ' + money(price.output) +
+          var search = price.search !== undefined ? '・搜尋 ' + money(price.search) + '／次' : '';
+          return '<div class="' + PREFIX + 'model-price">輸入 ' + money(price.input) + '／輸出 ' + money(price.output) + search +
             '<small>每 100 萬 token</small></div>';
         }
         return '<div class="' + PREFIX + 'model-price">' + money(price.unit) + '／' + PRICE_UNITS[model.type] + '</div>';

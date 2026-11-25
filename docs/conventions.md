@@ -186,10 +186,12 @@ function upgradeToLatest(raw: unknown): ModelsFile { /* ... */ }
 > 由 write-design 和 PM 討論後填寫。只寫這個專案特有、所有模組都要遵守的規則。
 > 這些規則用到的機制（錯誤物件、log、資料庫工具、文字表、主題、外殼、共用元件）都由 PlatformInfrastructure 提供。
 
-### 前後端溝通
+### 前後端溝通與模組登記
 - HTTP + JSON，路徑為 `/api/<Module>/<介面名稱>`；串流與即時推播用 SSE。
-- 每個核心模組的後端提供一個 Fastify plugin 登記自己的路由，後端進入點以 `/api/<Module>` 為前綴登記。
 - 錯誤回應的內容一律是 `{ error: <錯誤物件> }`。
+- **後端登記**：每個核心模組的後端提供一個 Fastify plugin 登記自己的路由，後端進入點（`src/server/main`）以 `/api/<Module>` 為前綴登記。
+- **前端登記**：每個有畫面的核心模組，前端提供 `getModuleRegistration`（navbar 名稱、路由路徑、放左邊或右邊、子頁面清單），由前端進入點（`src/client/main`）呼叫 PlatformInfrastructure 的 `registerModule` 登記進外殼。模組自己不呼叫 `registerModule`。
+- 新增核心模組時，只需要在這兩個進入點各加一行登記。
 
 ### 錯誤格式
 - 錯誤物件的欄位：模組、介面、錯誤代碼、訊息、細節（選填）。

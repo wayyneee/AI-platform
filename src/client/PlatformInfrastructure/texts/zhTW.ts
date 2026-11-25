@@ -103,6 +103,18 @@ export const platformInfrastructureTexts = {
   // ===== 錯誤說明：主題與語言 =====
   'errors.SETTINGS_THEME_NOT_FOUND': '找不到選擇的主題',
   'errors.SETTINGS_LANGUAGE_NOT_FOUND': '平台沒有選擇的語言',
+
+  // ===== 錯誤說明：供應商 =====
+  'errors.PROVIDER_KEY_INVALID': 'API key 無效，請確認 key 是否正確',
+  'errors.PROVIDER_QUOTA_EXCEEDED': '這組 key 的額度不足，請到供應商網站確認餘額或帳單',
+  'errors.PROVIDER_RATE_LIMITED': '請求太頻繁，請稍後再試',
+  'errors.PROVIDER_REQUEST_REFUSED': '供應商拒絕了這個請求，可以在 log 查看原因',
+  'errors.PROVIDER_BAD_REQUEST': '供應商不接受這個請求，可能是模型不支援這項功能',
+  'errors.PROVIDER_MODEL_NOT_FOUND': '供應商找不到這個模型，請確認模型是否還存在',
+  'errors.PROVIDER_SERVER_ERROR': '供應商的服務發生錯誤，請稍後再試',
+  'errors.PROVIDER_UNREACHABLE': '連不上供應商，請確認網路連線',
+  'errors.PROVIDER_RESPONSE_INVALID': '供應商回傳的內容無法解讀，可以在 log 查看細節',
+  'errors.PROVIDER_CANCELLED': '已取消',
   'errors.THEME_LOAD_FAILED': '主題載入失敗，已改用 default 主題',
 } as const;
 

@@ -1,7 +1,7 @@
 # 專案進度
 
 ## 1. 進度概括
-PlatformInfrastructure 實作中，分成 9 段（見第 3 段）。spec、page.md、default 主題、四個 demo、自動檢查都已完成；真實 key 的手動驗收只做 OpenRouter、Grok 和本地 Forge。第 1 段後端地基、第 2 段第一個能操作的畫面、第 3 段共用元件補齊＋未儲存離開確認已完成（`npm run dev:server`＋`npm run dev:client` 可開啟平台設定）。下一步：第 4 段 ProviderConnectors。
+PlatformInfrastructure 實作中，分成 10 段（第 4 段拆成 4a、4b，見第 3 段）。spec、page.md、default 主題、四個 demo、自動檢查都已完成；真實 key 的手動驗收只做 OpenRouter、Grok 和本地 Forge。第 1 段後端地基、第 2 段第一個能操作的畫面、第 3 段共用元件補齊＋未儲存離開確認已完成（`npm run dev:server`＋`npm run dev:client` 可開啟平台設定）；第 4a 段五家 LLM 串接完成。下一步：第 4b 段圖片、影片、語音、Forge 串接。
 
 ## 2. 模組
 | 模組 | 狀態 |
@@ -10,7 +10,7 @@ PlatformInfrastructure 實作中，分成 9 段（見第 3 段）。spec、page.
 | └ SystemLog | 完成 |
 | └ PlatformBootstrap | 完成 |
 | └ ThemeAndLanguage | 完成 |
-| └ ProviderConnectors | spec 完成 |
+| └ ProviderConnectors | 實作中（LLM 完成；圖片、影片、語音、Forge 在 4b） |
 | └ ModelRegistry | spec 完成 |
 | └ UsageAndCost | spec 完成 |
 | └ ModelInvocation | spec 完成 |
@@ -30,7 +30,8 @@ PlatformInfrastructure 實作中，分成 9 段（見第 3 段）。spec、page.
 | 1 | 後端地基：SystemLog 後端（錯誤物件、寫 log、換檔、即時推送、錯誤攔截）、PlatformBootstrap（建立 data/、資料庫工具與升級） | 完成 |
 | 2 | 第一個能操作的畫面：ThemeAndLanguage、AppShell（navbar、側邊欄、log 列、路由、錯誤畫面）、BasicSettings 和它用到的共用元件 | 完成 |
 | 3 | 共用元件補齊（視窗、確認、可搜尋選單、提示、錯誤訊息、任務進度）＋未儲存離開確認 | 完成 |
-| 4 | ProviderConnectors：六家供應商一起串接（OpenAI、Gemini、Claude、Grok、OpenRouter、Forge） | 未開始 |
+| 4a | ProviderConnectors 的 LLM：OpenAI、Gemini、Claude、Grok、OpenRouter 的格式轉換、回應解析、串流、錯誤代碼、模型偵測（能力、價格、可調參數） | 完成 |
+| 4b | ProviderConnectors 的圖片、影片、語音：Grok、OpenRouter、Forge 的送出、查進度、取結果、可選項目即時查詢 | 未開始 |
 | 5 | API key：ModelRegistry 的 key 部分、API key 分頁 | 未開始 |
 | 6 | 模型：ModelRegistry 的模型部分（偵測、測試、能力、參數、價格）、模型分頁、新增模型視窗 | 未開始 |
 | 7 | 用量與花費：UsageAndCost、花費統計頁 | 未開始 |

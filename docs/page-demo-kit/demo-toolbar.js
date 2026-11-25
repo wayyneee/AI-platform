@@ -97,7 +97,9 @@
       if (getComputedStyle(el).position === 'static') el.style.position = 'relative';
       // 背景素材的尺寸由 page.css 決定，不套用比例，避免改變版面
       placeholderStyle(el, null);
-      el.appendChild(placeholderLabel(name, ratio));
+      // 插在最前面：照畫面順序會在內容下面，頁面就不必用 z-index 壓住它
+      // （頁面為此設 z-index 會形成獨立圖層，裡面的 mix-blend-mode 碰不到背景圖，去白會失效）
+      el.insertBefore(placeholderLabel(name, ratio), el.firstChild);
     };
     probe.src = url;
   }

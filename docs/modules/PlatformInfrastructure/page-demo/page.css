@@ -30,8 +30,9 @@
   gap: var(--space-5);
   min-height: 0;
   padding: var(--space-5) var(--space-5) 0;
+  /* 不設 z-index：設了會變成獨立的圖層群組，頁首角色的 multiply 碰不到外殼背景圖，
+     超出頁首的那截會露出白底（B001）。照畫面順序本來就會疊在背景與白紗上面。 */
   position: relative;
-  z-index: 1; /* 疊在背景圖（和它的佔位框文字）上面 */
 }
 
 /* ===== 共用裝飾 ===== */
@@ -951,7 +952,9 @@
 
 .platform-infrastructure-logbar {
   position: relative;
-  z-index: 3;
+  /* 展開時會蓋在內容區上面，所以要高過頁面內的所有元件。
+     內容區沒有獨立圖層（見 .platform-infrastructure-body 的說明），頁面內元件的 z-index 一律不超過 10。 */
+  z-index: 20;
   background: var(--color-surface-glass);
   backdrop-filter: blur(14px);
   box-shadow: var(--shadow-sm);

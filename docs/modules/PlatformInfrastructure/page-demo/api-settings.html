@@ -679,6 +679,8 @@
 
       // 價格：LLM 為輸入／輸出（每 100 萬 token），其他依單位；沒有價格顯示「未設定價格」
       function priceHtml(model) {
+        // Forge 在本機執行，不花錢（PM 決定）
+        if (model.provider === 'forge') return '<div class="' + PREFIX + 'model-price is-unset">本機執行，不計費</div>';
         var price = model.price;
         if (!price) return '<div class="' + PREFIX + 'model-price is-unset">未設定價格</div>';
         if (model.type === 'llm') {

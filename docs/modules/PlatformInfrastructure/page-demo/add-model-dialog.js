@@ -323,6 +323,7 @@
   }
 
   function priceForSave() {
+    if (state.provider === 'forge') return null;
     var fields = options.type === 'llm' ? ['input', 'output'] : ['unit'];
     var price = {};
     var hasAny = false;
@@ -420,8 +421,10 @@
 
     details: function () {
       var html = '<label class="' + PREFIX + 'add-model-label">顯示名稱</label>' +
-        '<input class="' + PREFIX + 'input' + (state.name.trim() ? '' : ' is-invalid') + '" data-dialog-input="name" value="' + escapeAttr(state.name) + '">' +
-        '<div class="' + PREFIX + 'add-model-prices">';
+        '<input class="' + PREFIX + 'input' + (state.name.trim() ? '' : ' is-invalid') + '" data-dialog-input="name" value="' + escapeAttr(state.name) + '">';
+      // Forge 在本機執行，不花錢，不顯示價格欄（PM 決定）
+      if (state.provider === 'forge') return html + '<div class="' + PREFIX + 'hint">本機執行，不計費</div>';
+      html += '<div class="' + PREFIX + 'add-model-prices">';
       if (options.type === 'llm') {
         html += priceFieldHtml('input', '輸入價格（每 100 萬 token）') + priceFieldHtml('output', '輸出價格（每 100 萬 token）');
       } else {

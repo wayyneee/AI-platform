@@ -139,13 +139,26 @@
       document.querySelectorAll('[data-select].is-open').forEach(function (other) {
         if (other !== root) other.classList.remove('is-open');
       });
+      root.classList.remove('is-open-up');
       root.classList.add('is-open');
+      openUpIfNoRoom();
       if (search) {
         search.value = '';
         filter('');
         search.focus();
       }
       highlight(options().findIndex(function (o) { return o.classList.contains('is-selected'); }));
+    }
+
+    // 列表超出會捲動的容器下緣、而上方空間比較大時，改成往上展開，避免被切掉
+    function openUpIfNoRoom() {
+      var container = scrollContainerOf(root);
+      var bounds = container ? container.getBoundingClientRect() : { top: 0, bottom: window.innerHeight };
+      var triggerRect = trigger.getBoundingClientRect();
+      var listHeight = list.getBoundingClientRect().height;
+      var spaceBelow = bounds.bottom - triggerRect.bottom;
+      var spaceAbove = triggerRect.top - bounds.top;
+      if (listHeight > spaceBelow && spaceAbove > spaceBelow) root.classList.add('is-open-up');
     }
 
     function close() {
@@ -210,6 +223,17 @@
       if (!root.contains(event.target)) root.classList.remove('is-open');
     });
     render();
+  }
+
+  // 往上找最近一個會捲動的容器；沒有就回傳 null（以整個視窗為準）
+  function scrollContainerOf(element) {
+    var node = element.parentElement;
+    while (node && node !== document.body) {
+      var overflowY = getComputedStyle(node).overflowY;
+      if (overflowY === 'auto' || overflowY === 'scroll') return node;
+      node = node.parentElement;
+    }
+    return null;
   }
 
   // ===== 確認視窗 =====

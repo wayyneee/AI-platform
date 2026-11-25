@@ -7,6 +7,7 @@
   <script src="../../../page-demo-kit/demo-toolbar.js" data-module="PlatformInfrastructure"></script>
   <link rel="stylesheet" href="page.css">
   <script src="demo.js"></script>
+  <script src="add-model-dialog.js"></script>
 </head>
 <body>
   <!-- ===== 外殼 ===== -->
@@ -172,6 +173,62 @@
         <span class="platform-infrastructure-logbar-arrow">▲ 展開</span>
       </button>
     </footer>
+
+    <!-- ===== 新增模型視窗（AddModelDialog）：外框寫在這裡，步驟內容由 add-model-dialog.js 畫 ===== -->
+    <!-- 點背景不關閉，所以背景不掛點擊事件 -->
+    <div class="platform-infrastructure-backdrop" id="add-model-dialog" hidden>
+      <div class="platform-infrastructure-modal platform-infrastructure-add-model" role="dialog" aria-modal="true" aria-labelledby="add-model-title">
+        <div class="platform-infrastructure-add-model-header">
+          <img class="platform-infrastructure-add-model-character" data-asset="addModelHeader" data-ratio="1:1" alt="">
+          <div class="platform-infrastructure-add-model-heading">
+            <span class="platform-infrastructure-eyebrow">New Model</span>
+            <h2 class="platform-infrastructure-modal-title" id="add-model-title">
+              新增模型
+              <span class="platform-infrastructure-badge is-accent" data-dialog-type>LLM</span>
+            </h2>
+            <span class="platform-infrastructure-hint">選好模型並測試成功後就能儲存</span>
+          </div>
+          <button type="button" class="platform-infrastructure-icon-button platform-infrastructure-add-model-close" data-dialog-close aria-label="關閉">×</button>
+        </div>
+
+        <div class="platform-infrastructure-add-model-body">
+          <section class="platform-infrastructure-add-model-step" data-step="provider">
+            <span class="platform-infrastructure-add-model-step-number">1</span>
+            <div>
+              <div class="platform-infrastructure-add-model-step-title">供應商</div>
+              <div data-step-control></div>
+            </div>
+          </section>
+          <section class="platform-infrastructure-add-model-step" data-step="connection">
+            <span class="platform-infrastructure-add-model-step-number">2</span>
+            <div>
+              <div class="platform-infrastructure-add-model-step-title">連線</div>
+              <div data-step-control></div>
+            </div>
+          </section>
+          <section class="platform-infrastructure-add-model-step" data-step="model">
+            <span class="platform-infrastructure-add-model-step-number">3</span>
+            <div>
+              <div class="platform-infrastructure-add-model-step-title">模型</div>
+              <div data-step-control></div>
+            </div>
+          </section>
+          <section class="platform-infrastructure-add-model-step" data-step="details">
+            <span class="platform-infrastructure-add-model-step-number">4</span>
+            <div>
+              <div class="platform-infrastructure-add-model-step-title">名稱與價格</div>
+              <div data-step-control></div>
+            </div>
+          </section>
+        </div>
+
+        <div class="platform-infrastructure-add-model-footer">
+          <span class="platform-infrastructure-feedback" data-test-feedback></span>
+          <button type="button" class="platform-infrastructure-button platform-infrastructure-button-secondary" data-dialog-test disabled>測試</button>
+          <button type="button" class="platform-infrastructure-button platform-infrastructure-button-primary" data-dialog-save disabled>儲存</button>
+        </div>
+      </div>
+    </div>
   </div>
 
   <script>
@@ -226,6 +283,7 @@
       var modelKeyDrafts = {}; // 模型分頁：每個模型目前選的 key
       var invalidModelIds = {};
       var newRowCount = 0;
+      var newModelCount = 0;
 
       var saveButton = document.getElementById('save-button');
       var feedback = document.getElementById('save-feedback');
@@ -241,8 +299,33 @@
         renderKeys();
         renderModels();
         bindPageEvents();
-        window.PlatformDemo.isDirty = isDirty;
+        // 新增模型視窗有修改時，離開頁面也要先詢問
+        window.PlatformDemo.isDirty = function () { return isDirty() || window.AddModelDialog.isDirty(); };
+        openDialogFromUrl();
       });
+
+      // 網址帶 ?dialog=llm|image|video|audio 時，直接切到模型分頁並打開新增模型視窗（看畫面、截圖用）
+      function openDialogFromUrl() {
+        var type = new URLSearchParams(location.search).get('dialog');
+        if (!MODEL_TYPES.some(function (t) { return t.type === type; })) return;
+        switchTab('models');
+        openAddModel(type);
+      }
+
+      function openAddModel(type) {
+        window.AddModelDialog.open({
+          type: type,
+          keys: savedKeys,
+          // 儲存後重新載入模型列表
+          onSaved: function (saved) {
+            newModelCount += 1;
+            saved.id = 'new-model-' + newModelCount;
+            models.push(saved);
+            resetModelDrafts();
+            renderModels();
+          }
+        });
+      }
 
       function bindPageEvents() {
         document.querySelectorAll('[data-tab]').forEach(function (tab) {
@@ -550,7 +633,7 @@
           '<h2 class="' + PREFIX + 'card-title">' + section.label + '<span class="' + PREFIX + 'eyebrow">' + section.eyebrow + '</span></h2>' +
           '<span class="' + PREFIX + 'badge">' + list.length + ' 個</span>' +
           '<span class="' + PREFIX + 'card-header-spacer"></span>' +
-          '<button type="button" class="' + PREFIX + 'button ' + PREFIX + 'button-secondary ' + PREFIX + 'button-small" data-add-model="' + section.label + '">＋ 新增模型</button>' +
+          '<button type="button" class="' + PREFIX + 'button ' + PREFIX + 'button-secondary ' + PREFIX + 'button-small" data-add-model="' + section.type + '">＋ 新增模型</button>' +
           '</div>' + body + '</section>';
       }
 
@@ -619,7 +702,7 @@
       function onModelSectionClick(event) {
         var addButton = event.target.closest('[data-add-model]');
         if (addButton) {
-          window.PlatformDemo.showToast('info', '「新增模型」視窗會在下一個 demo 做（' + addButton.getAttribute('data-add-model') + '）');
+          openAddModel(addButton.getAttribute('data-add-model'));
           return;
         }
         var row = event.target.closest('[data-model-id]');

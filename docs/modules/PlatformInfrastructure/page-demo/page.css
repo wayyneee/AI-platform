@@ -518,6 +518,12 @@
 
 .platform-infrastructure-select.is-open .platform-infrastructure-select-list { display: block; }
 
+/* 下方空間不夠時往上展開（例如在視窗底部） */
+.platform-infrastructure-select.is-open-up .platform-infrastructure-select-list {
+  top: auto;
+  bottom: calc(100% + var(--space-2));
+}
+
 .platform-infrastructure-select-search {
   margin-bottom: var(--space-2);
   height: 36px;
@@ -1251,3 +1257,233 @@
 
 /* 有 hidden 屬性的元素一定隱藏（元件自己設的 display 不能蓋過它） */
 .platform-infrastructure-shell [hidden] { display: none !important; }
+
+/* ===== 新增模型視窗（AddModelDialog） ===== */
+
+.platform-infrastructure-add-model {
+  width: 680px;
+  max-height: calc(100vh - var(--space-7));
+  display: flex;
+  flex-direction: column;
+}
+
+/* 頂部：漸層底＋點點＋看板角色（白底圖用 multiply 融進去） */
+.platform-infrastructure-add-model-header {
+  position: relative;
+  flex-shrink: 0;
+  min-height: 132px;
+  padding: var(--space-5) var(--space-6);
+  background: var(--gradient-hero);
+  overflow: hidden;
+}
+
+.platform-infrastructure-add-model-header::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  width: 220px;
+  height: 90px;
+  background: var(--pattern-dots);
+  background-size: var(--pattern-dots-size);
+  mask-image: linear-gradient(45deg, black, transparent 75%);
+  pointer-events: none;
+}
+
+.platform-infrastructure-add-model-heading {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--space-2);
+}
+
+.platform-infrastructure-add-model-heading .platform-infrastructure-eyebrow {
+  padding: var(--space-1) var(--space-3);
+  border-radius: var(--radius-pill);
+  background-color: var(--color-surface);
+  box-shadow: var(--shadow-sm);
+}
+
+.platform-infrastructure-add-model-heading .platform-infrastructure-modal-title {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  font-size: var(--font-size-xl);
+}
+
+.platform-infrastructure-add-model-character {
+  position: absolute;
+  right: var(--space-7);
+  top: var(--space-4); /* 素材的頭頂貼近圖的上緣，往下留一點空間才不會像被切掉 */
+  width: 180px;
+  aspect-ratio: 1 / 1;
+  object-fit: cover;
+  object-position: top;
+  mix-blend-mode: multiply;
+  pointer-events: none;
+  -webkit-mask-image: linear-gradient(90deg, transparent 0, black 15%, black 85%, transparent 100%);
+  mask-image: linear-gradient(90deg, transparent 0, black 15%, black 85%, transparent 100%);
+}
+
+.platform-infrastructure-add-model-close {
+  position: absolute;
+  top: var(--space-3);
+  right: var(--space-3);
+  background: var(--color-surface);
+  box-shadow: var(--shadow-sm);
+}
+
+/* 四步表單：左邊編號、中間用細線串起來 */
+.platform-infrastructure-add-model-body {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  padding: var(--space-5) var(--space-6) var(--space-4);
+  display: flex;
+  flex-direction: column;
+}
+
+.platform-infrastructure-add-model-step {
+  position: relative;
+  display: grid;
+  grid-template-columns: 34px 1fr;
+  gap: var(--space-4);
+  padding-bottom: var(--space-5);
+  transition: opacity var(--transition-fast);
+}
+
+.platform-infrastructure-add-model-step:not(:last-child)::before {
+  content: "";
+  position: absolute;
+  left: 16px;
+  top: 40px;
+  bottom: 6px;
+  width: 2px;
+  border-radius: var(--radius-pill);
+  background: var(--color-border);
+}
+
+.platform-infrastructure-add-model-step.is-done:not(:last-child)::before { background: var(--gradient-brand); }
+
+.platform-infrastructure-add-model-step-number {
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--font-family-display);
+  font-weight: var(--font-weight-black);
+  background: var(--gradient-brand);
+  color: var(--color-text-on-primary);
+  box-shadow: var(--shadow-glow);
+}
+
+.platform-infrastructure-add-model-step-title {
+  margin: 6px 0 var(--space-3);
+  font-weight: var(--font-weight-black);
+}
+
+/* 還不能操作的步驟：變淡、不能點 */
+.platform-infrastructure-add-model-step.is-disabled { opacity: 0.5; }
+.platform-infrastructure-add-model-step.is-disabled [data-step-control] { pointer-events: none; }
+
+.platform-infrastructure-add-model-step.is-disabled .platform-infrastructure-add-model-step-number {
+  background: var(--color-surface-muted);
+  color: var(--color-text-muted);
+  box-shadow: none;
+}
+
+.platform-infrastructure-add-model-inline {
+  display: flex;
+  gap: var(--space-2);
+}
+
+.platform-infrastructure-add-model-detecting {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  height: 42px;
+  padding: 0 var(--space-4);
+  border-radius: var(--radius-md);
+  background: var(--color-primary-soft);
+  color: var(--color-primary);
+  font-weight: var(--font-weight-bold);
+}
+
+/* 模型資訊卡 */
+.platform-infrastructure-add-model-info {
+  margin-top: var(--space-3);
+  padding: var(--space-3) var(--space-4);
+  border-radius: var(--radius-md);
+  background: var(--color-surface-muted);
+  border: 1px solid var(--color-border);
+}
+
+.platform-infrastructure-add-model-info-description {
+  margin: 0 0 var(--space-2);
+  font-size: var(--font-size-sm);
+}
+
+.platform-infrastructure-add-model-info-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+  margin: 0;
+}
+
+.platform-infrastructure-add-model-info-list div {
+  display: flex;
+  gap: var(--space-2);
+  padding: var(--space-1) var(--space-3);
+  border-radius: var(--radius-pill);
+  background: var(--color-surface);
+  font-size: var(--font-size-xs);
+}
+
+.platform-infrastructure-add-model-info-list dt { color: var(--color-text-muted); }
+.platform-infrastructure-add-model-info-list dd { margin: 0; font-weight: var(--font-weight-bold); }
+
+/* 名稱與價格 */
+.platform-infrastructure-add-model-label {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  margin-bottom: var(--space-1);
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-bold);
+  color: var(--color-text-muted);
+}
+
+.platform-infrastructure-add-model-prices {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--space-4);
+  margin-top: var(--space-4);
+}
+
+.platform-infrastructure-add-model-money { position: relative; }
+
+.platform-infrastructure-add-model-money-sign {
+  position: absolute;
+  left: var(--space-4);
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--color-text-muted);
+  font-weight: var(--font-weight-bold);
+  pointer-events: none;
+}
+
+.platform-infrastructure-add-model-money .platform-infrastructure-input { padding-left: var(--space-6); }
+
+/* 底部：測試結果小字在按鈕左邊 */
+.platform-infrastructure-add-model-footer {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: var(--space-3);
+  padding: var(--space-4) var(--space-6);
+  border-top: 1px solid var(--color-border);
+}

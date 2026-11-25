@@ -59,8 +59,11 @@
     // 畫面自己設定「有沒有未儲存的修改」的判斷方式
     isDirty: function () { return false; },
     showToast: showToast,
+    showError: showError,
     showConfirm: showConfirm,
-    setState: setState
+    setState: setState,
+    // 畫面自己用 JS 畫出來的下拉選單，畫完後要呼叫這個才能操作
+    setupSelect: setupSelect
   };
 
   // ===== 換頁（navbar、側邊欄） =====
@@ -260,18 +263,41 @@
   var TOAST_DURATIONS = { success: 3000, info: 3000, warning: 5000 };
 
   function showToast(type, text) {
-    var area = document.querySelector('.' + PREFIX + 'toast-area');
-    if (!area) {
-      area = document.createElement('div');
-      area.className = PREFIX + 'toast-area';
-      document.body.appendChild(area);
-    }
+    var area = getToastArea();
     var toast = document.createElement('div');
     toast.className = PREFIX + 'toast is-' + type;
     toast.textContent = text;
     area.appendChild(toast);
     while (area.children.length > TOAST_LIMIT) area.firstChild.remove();
     setTimeout(function () { toast.remove(); }, TOAST_DURATIONS[type] || 3000);
+  }
+
+  // 錯誤訊息：第一行白話說明、第二行「模組／介面（代碼：…）」；不會自動消失，要按 X
+  function showError(error) {
+    var area = getToastArea();
+    var box = document.createElement('div');
+    box.className = PREFIX + 'error-message';
+    box.innerHTML =
+      '<span class="' + PREFIX + 'error-message-icon">!</span>' +
+      '<div class="' + PREFIX + 'error-message-body">' +
+      '  <div class="' + PREFIX + 'error-message-title"></div>' +
+      '  <div class="' + PREFIX + 'error-message-source"></div>' +
+      '</div>' +
+      '<button type="button" class="' + PREFIX + 'icon-button" aria-label="關閉">×</button>';
+    box.querySelector('.' + PREFIX + 'error-message-title').textContent = error.plain;
+    box.querySelector('.' + PREFIX + 'error-message-source').textContent = error.source;
+    box.querySelector('button').addEventListener('click', function () { box.remove(); });
+    area.appendChild(box);
+    while (area.children.length > TOAST_LIMIT) area.firstChild.remove();
+  }
+
+  function getToastArea() {
+    var area = document.querySelector('.' + PREFIX + 'toast-area');
+    if (area) return area;
+    area = document.createElement('div');
+    area.className = PREFIX + 'toast-area';
+    document.body.appendChild(area);
+    return area;
   }
 
   // ===== log 列 =====

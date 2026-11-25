@@ -1,0 +1,754 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>API 串接 — PlatformInfrastructure demo</title>
+  <script src="../../../page-demo-kit/demo-toolbar.js" data-module="PlatformInfrastructure"></script>
+  <link rel="stylesheet" href="page.css">
+  <script src="demo.js"></script>
+</head>
+<body>
+  <!-- ===== 外殼 ===== -->
+  <div class="platform-infrastructure-shell" data-asset-bg="appBackground" data-ratio="16:9">
+
+    <!-- Navbar：logo、功能模組靠左、設定靠右（功能模組是假資料，之後由各模組登記） -->
+    <header class="platform-infrastructure-navbar">
+      <img class="platform-infrastructure-navbar-logo" data-asset="platformLogo" data-ratio="1:1" alt="平台標誌">
+      <a class="platform-infrastructure-navbar-item" href="#" data-nav>聊天室</a>
+      <a class="platform-infrastructure-navbar-item" href="#" data-nav>小說工作室</a>
+      <a class="platform-infrastructure-navbar-item" href="#" data-nav>多媒體創作</a>
+      <span class="platform-infrastructure-navbar-spacer"></span>
+      <a class="platform-infrastructure-navbar-item is-active" href="basic-settings.html" data-nav>設定</a>
+    </header>
+
+    <div class="platform-infrastructure-body">
+      <!-- 側邊欄：設定的子頁面 -->
+      <nav class="platform-infrastructure-sidebar">
+        <div class="platform-infrastructure-sidebar-header">
+          <div class="platform-infrastructure-eyebrow">Settings</div>
+          <div class="platform-infrastructure-sidebar-title">設定</div>
+        </div>
+        <a class="platform-infrastructure-sidebar-item" href="basic-settings.html" data-nav>基礎設定</a>
+        <a class="platform-infrastructure-sidebar-item is-active" href="api-settings.html" data-nav>API 串接</a>
+        <a class="platform-infrastructure-sidebar-item" href="#" data-nav>花費統計</a>
+      </nav>
+
+      <!-- 內容區 -->
+      <main class="platform-infrastructure-content">
+        <div class="platform-infrastructure-page">
+
+          <!-- 頁首：漸層底、裝飾、標題，看板角色在右邊破框 -->
+          <section class="platform-infrastructure-hero">
+            <div class="platform-infrastructure-hero-decor">
+              <span class="platform-infrastructure-display-text">Connect</span>
+            </div>
+            <span class="platform-infrastructure-sparkle"></span>
+            <span class="platform-infrastructure-sparkle"></span>
+            <span class="platform-infrastructure-sparkle"></span>
+            <div class="platform-infrastructure-hero-title">
+              <span class="platform-infrastructure-eyebrow">API Connection</span>
+              <h1>API 串接</h1>
+              <p>管理 API key 和模型，讓平台連上你的 AI 夥伴</p>
+            </div>
+            <img class="platform-infrastructure-hero-character" data-asset="apiSettingsBanner" data-ratio="3:4" alt="">
+          </section>
+
+          <!-- 狀態：正常 -->
+          <div data-state="normal" class="platform-infrastructure-stack">
+            <div class="platform-infrastructure-page-tabs">
+              <div class="platform-infrastructure-tabs">
+                <button type="button" class="platform-infrastructure-tab is-active" data-tab="keys">API key</button>
+                <button type="button" class="platform-infrastructure-tab" data-tab="models">模型</button>
+              </div>
+            </div>
+
+            <!-- 分頁：API key -->
+            <section class="platform-infrastructure-card" data-tab-panel="keys">
+              <div class="platform-infrastructure-card-header">
+                <h2 class="platform-infrastructure-card-title">
+                  API key
+                  <span class="platform-infrastructure-eyebrow">Keys</span>
+                </h2>
+                <span class="platform-infrastructure-card-header-spacer"></span>
+                <button type="button" class="platform-infrastructure-button platform-infrastructure-button-secondary platform-infrastructure-button-small" data-add-key>＋ 新增 API key</button>
+              </div>
+              <div id="key-table">
+                <div class="platform-infrastructure-key-table-head">
+                  <span>供應商</span><span>名稱</span><span>key</span><span></span>
+                </div>
+                <div id="key-list"></div>
+              </div>
+              <!-- 沒有任何 key 時的空狀態（插圖要由切換列載入，所以寫在 HTML 裡，不用 JS 畫） -->
+              <div id="key-empty" hidden>
+                <div class="platform-infrastructure-empty">
+                  <img class="platform-infrastructure-empty-image" data-asset="emptyStateIllustration" data-ratio="1:1" alt="">
+                  <p class="platform-infrastructure-empty-text">還沒有 API key</p>
+                  <div class="platform-infrastructure-hint">新增 key 之後，就能在「模型」分頁加入要使用的模型</div>
+                  <button type="button" class="platform-infrastructure-button platform-infrastructure-button-primary" data-add-key>＋ 新增 API key</button>
+                </div>
+              </div>
+            </section>
+
+            <!-- 分頁：模型（LLM、圖片、影片、語音四個區塊，由 JS 畫出） -->
+            <div class="platform-infrastructure-stack" data-tab-panel="models" id="model-sections" hidden></div>
+
+            <!-- 儲存列（兩個分頁共用一個，儲存目前分頁的修改） -->
+            <div class="platform-infrastructure-save-bar">
+              <span class="platform-infrastructure-feedback" id="save-feedback"></span>
+              <button type="button" class="platform-infrastructure-button platform-infrastructure-button-primary" id="save-button" disabled>儲存</button>
+            </div>
+          </div>
+
+          <!-- 狀態：沒有任何 API key（進入時就是空的） -->
+          <div data-state="empty" class="platform-infrastructure-stack">
+            <div class="platform-infrastructure-page-tabs">
+              <div class="platform-infrastructure-tabs">
+                <button type="button" class="platform-infrastructure-tab is-active">API key</button>
+                <button type="button" class="platform-infrastructure-tab" data-empty-go-models>模型</button>
+              </div>
+            </div>
+            <section class="platform-infrastructure-card">
+              <div class="platform-infrastructure-card-header">
+                <h2 class="platform-infrastructure-card-title">
+                  API key
+                  <span class="platform-infrastructure-eyebrow">Keys</span>
+                </h2>
+              </div>
+              <div class="platform-infrastructure-empty">
+                <img class="platform-infrastructure-empty-image" data-asset="emptyStateIllustration" data-ratio="1:1" alt="">
+                <p class="platform-infrastructure-empty-text">還沒有 API key</p>
+                <div class="platform-infrastructure-hint">新增 key 之後，就能在「模型」分頁加入要使用的模型</div>
+                <button type="button" class="platform-infrastructure-button platform-infrastructure-button-primary" data-empty-add-key>＋ 新增 API key</button>
+              </div>
+            </section>
+          </div>
+
+          <!-- 狀態：載入中（頁首照常） -->
+          <div data-state="loading" class="platform-infrastructure-card">
+            <div class="platform-infrastructure-loading">
+              <span class="platform-infrastructure-spinner platform-infrastructure-spinner-large"></span>
+              <span>讀取中…</span>
+            </div>
+          </div>
+
+          <!-- 狀態：載入失敗 -->
+          <div data-state="error" class="platform-infrastructure-card">
+            <div class="platform-infrastructure-empty">
+              <img class="platform-infrastructure-empty-image" data-asset="emptyStateIllustration" data-ratio="1:1" alt="">
+              <p class="platform-infrastructure-empty-text">載入失敗</p>
+              <div class="platform-infrastructure-error-message">
+                <span class="platform-infrastructure-error-message-icon">!</span>
+                <div class="platform-infrastructure-error-message-body">
+                  <div class="platform-infrastructure-error-message-title">讀取 API key 時發生問題，請稍後再試</div>
+                  <div class="platform-infrastructure-error-message-source">PlatformInfrastructure／listApiKeys（代碼：API_KEY_READ_FAILED）</div>
+                </div>
+                <button type="button" class="platform-infrastructure-icon-button" aria-label="關閉">×</button>
+              </div>
+              <button type="button" class="platform-infrastructure-button platform-infrastructure-button-primary" id="retry-button">重試</button>
+            </div>
+          </div>
+
+        </div>
+      </main>
+    </div>
+
+    <!-- log 列：收合時只顯示最新一筆，點一下往上展開 -->
+    <footer class="platform-infrastructure-logbar" data-logbar>
+      <div class="platform-infrastructure-logbar-panel">
+        <div class="platform-infrastructure-logbar-toolbar">
+          <div class="platform-infrastructure-tabs">
+            <button type="button" class="platform-infrastructure-tab is-active" data-log-filter="all">全部</button>
+            <button type="button" class="platform-infrastructure-tab" data-log-filter="success">正確</button>
+            <button type="button" class="platform-infrastructure-tab" data-log-filter="warning">警告</button>
+            <button type="button" class="platform-infrastructure-tab" data-log-filter="error">錯誤</button>
+          </div>
+          <span class="platform-infrastructure-hint">最多保留最近 1000 筆</span>
+        </div>
+        <ul class="platform-infrastructure-logbar-list"></ul>
+      </div>
+      <button type="button" class="platform-infrastructure-logbar-summary">
+        <span data-log-latest></span>
+        <span class="platform-infrastructure-logbar-arrow">▲ 展開</span>
+      </button>
+    </footer>
+  </div>
+
+  <script>
+    // API 串接的假互動：API key 分頁（新增、改名、換 key、刪除、部分儲存失敗）、模型分頁（換 key、測試、刪除）、分頁切換攔截
+    (function () {
+      var PREFIX = 'platform-infrastructure-';
+      var SAVE_DELAY = 800;
+      var TEST_DELAY = 900;
+      var MASK_MIN_LENGTH = 12;
+      var PLACEHOLDER = '-- 請選擇 --';
+
+      // ===== 假資料 =====
+
+      var PROVIDER_NAMES = { openai: 'OpenAI', gemini: 'Gemini', claude: 'Claude', grok: 'Grok', openrouter: 'OpenRouter', forge: 'Forge' };
+      // 只列需要 key 的供應商（Forge 填位址，不需要 key）
+      var KEY_PROVIDERS = ['openai', 'gemini', 'claude', 'grok', 'openrouter'];
+
+      var MODEL_TYPES = [
+        { type: 'llm', label: 'LLM', eyebrow: 'Language' },
+        { type: 'image', label: '圖片', eyebrow: 'Image' },
+        { type: 'video', label: '影片', eyebrow: 'Video' },
+        { type: 'audio', label: '語音', eyebrow: 'Voice' }
+      ];
+      var PRICE_UNITS = { image: '張', video: '秒', audio: '100 萬字' };
+
+      // 已儲存的 key：前端只拿得到遮罩值
+      var savedKeys = [
+        { id: 'k1', provider: 'openrouter', name: '個人', mask: 'sk-****a3f9' },
+        { id: 'k2', provider: 'openai', name: '工作用', mask: 'sk-****9Qx2' },
+        { id: 'k3', provider: 'claude', name: '工作用', mask: 'sk-****7bKd' },
+        { id: 'k4', provider: 'grok', name: '個人', mask: 'xai****4kLm' },
+        { id: 'k5', provider: 'openrouter', name: '測試用', mask: 'sk-****0c1e' }
+      ];
+
+      // keyId 為空且 isKeyDeleted：選用的 key 被刪除了
+      var models = [
+        { id: 'm1', type: 'llm', name: 'GPT-4.1 mini', modelName: 'gpt-4.1-mini', provider: 'openai', keyId: 'k2', price: { input: 0.4, output: 1.6 }, isTestFailing: true },
+        { id: 'm2', type: 'llm', name: 'Claude Sonnet 4.5', modelName: 'claude-sonnet-4-5', provider: 'claude', keyId: 'k3', price: { input: 3, output: 15 } },
+        { id: 'm3', type: 'llm', name: 'DeepSeek V3', modelName: 'deepseek/deepseek-chat-v3', provider: 'openrouter', keyId: 'k1', price: { input: 0.3, output: 0.88 } },
+        { id: 'm4', type: 'llm', name: 'Grok 4', modelName: 'grok-4', provider: 'grok', keyId: 'k4', price: { input: 3, output: 15 } },
+        { id: 'm5', type: 'llm', name: 'Gemini 2.5 Flash', modelName: 'gemini-2.5-flash', provider: 'gemini', keyId: '', isKeyDeleted: true, price: null },
+        { id: 'm6', type: 'image', name: '插畫風（本機）', modelName: 'waiIllustriousSDXL_v150', provider: 'forge', address: 'http://127.0.0.1:7860', price: null },
+        { id: 'm7', type: 'image', name: 'Grok 圖片', modelName: 'grok-2-image', provider: 'grok', keyId: 'k4', price: { unit: 0.07 } },
+        { id: 'm8', type: 'image', name: 'Nano Banana', modelName: 'google/gemini-2.5-flash-image', provider: 'openrouter', keyId: '', isKeyDeleted: true, price: { unit: 0.039 } },
+        { id: 'm9', type: 'video', name: 'Grok 影片', modelName: 'grok-imagine-video', provider: 'grok', keyId: 'k4', price: { unit: 0.05 } }
+      ];
+
+      // ===== 畫面上的編輯狀態 =====
+
+      var activeTab = 'keys';
+      var keyRows = [];        // API key 分頁的每一列（含還沒儲存的新列）
+      var modelKeyDrafts = {}; // 模型分頁：每個模型目前選的 key
+      var invalidModelIds = {};
+      var newRowCount = 0;
+
+      var saveButton = document.getElementById('save-button');
+      var feedback = document.getElementById('save-feedback');
+      var keyList = document.getElementById('key-list');
+      var modelSections = document.getElementById('model-sections');
+
+      // ===== 主要流程 =====
+
+      // 等 demo.js 先完成它的初始化，再畫 JS 產生的列
+      document.addEventListener('DOMContentLoaded', function () {
+        resetKeyRows();
+        resetModelDrafts();
+        renderKeys();
+        renderModels();
+        bindPageEvents();
+        window.PlatformDemo.isDirty = isDirty;
+      });
+
+      function bindPageEvents() {
+        document.querySelectorAll('[data-tab]').forEach(function (tab) {
+          tab.addEventListener('click', function () { requestTab(tab.getAttribute('data-tab')); });
+        });
+        document.querySelectorAll('[data-add-key]').forEach(function (button) {
+          button.addEventListener('click', addKeyRow);
+        });
+        keyList.addEventListener('input', onKeyInput);
+        keyList.addEventListener('change', onKeyInput);
+        keyList.addEventListener('click', onKeyListClick);
+        modelSections.addEventListener('change', onModelKeyChange);
+        modelSections.addEventListener('click', onModelSectionClick);
+        saveButton.addEventListener('click', function () {
+          if (activeTab === 'keys') saveKeys(); else saveModels();
+        });
+        document.getElementById('retry-button').addEventListener('click', function () {
+          window.PlatformDemo.setState('loading');
+          setTimeout(function () { window.PlatformDemo.setState('normal'); }, SAVE_DELAY);
+        });
+        // 「沒有任何 key」狀態：清空假資料後回到正常畫面
+        document.querySelector('[data-empty-add-key]').addEventListener('click', function () {
+          useEmptyData();
+          addKeyRow();
+        });
+        document.querySelector('[data-empty-go-models]').addEventListener('click', function () {
+          useEmptyData();
+          switchTab('models');
+        });
+      }
+
+      function isDirty() {
+        return activeTab === 'keys' ? isKeysDirty() : isModelsDirty();
+      }
+
+      function refreshSaveButton() {
+        saveButton.disabled = !isDirty();
+      }
+
+      // ===== 分頁切換 =====
+
+      // 有未儲存的修改時先詢問；確定後捨棄修改再切換
+      function requestTab(tab) {
+        if (tab === activeTab) return;
+        if (!isDirty()) {
+          switchTab(tab);
+          return;
+        }
+        window.PlatformDemo.showConfirm({
+          title: '尚未儲存',
+          message: '修改還沒儲存，確定不儲存並離開嗎？',
+          confirmText: '不儲存並離開',
+          isDanger: true
+        }).then(function (isConfirmed) {
+          if (!isConfirmed) return;
+          discardChanges();
+          switchTab(tab);
+        });
+      }
+
+      function switchTab(tab) {
+        activeTab = tab;
+        document.querySelectorAll('[data-tab]').forEach(function (t) {
+          t.classList.toggle('is-active', t.getAttribute('data-tab') === tab);
+        });
+        document.querySelectorAll('[data-tab-panel]').forEach(function (panel) {
+          panel.hidden = panel.getAttribute('data-tab-panel') !== tab;
+        });
+        setFeedback('', '');
+        refreshSaveButton();
+      }
+
+      function discardChanges() {
+        if (activeTab === 'keys') {
+          resetKeyRows();
+          renderKeys();
+        } else {
+          resetModelDrafts();
+          renderModels();
+        }
+      }
+
+      // ===== API key 分頁：畫面 =====
+
+      function resetKeyRows() {
+        keyRows = savedKeys.map(function (key) {
+          return { id: key.id, provider: key.provider, name: key.name, savedName: key.name, keyValue: '', isNew: false, invalid: {}, error: '' };
+        });
+      }
+
+      function renderKeys() {
+        var isEmpty = keyRows.length === 0;
+        document.getElementById('key-empty').hidden = !isEmpty;
+        document.getElementById('key-table').hidden = isEmpty;
+        document.querySelector('.' + PREFIX + 'card-header [data-add-key]').hidden = isEmpty;
+        keyList.innerHTML = keyRows.map(keyRowHtml).join('');
+        keyList.querySelectorAll('[data-select]').forEach(window.PlatformDemo.setupSelect);
+        refreshSaveButton();
+      }
+
+      function keyRowHtml(row) {
+        var saved = findSavedKey(row.id);
+        var providerCell = row.isNew
+          ? providerSelectHtml(row)
+          : '<span class="' + PREFIX + 'key-provider">' + PROVIDER_NAMES[row.provider] + '</span>';
+        return '<div class="' + PREFIX + 'key-item' + (row.isNew ? ' is-new' : '') + '" data-row-id="' + row.id + '">' +
+          '<div class="' + PREFIX + 'key-row">' +
+          providerCell +
+          '<input class="' + PREFIX + 'input' + (row.invalid.name ? ' is-invalid' : '') + '" data-field="name" placeholder="例如：個人、工作用" value="' + escapeAttr(row.name) + '">' +
+          '<input class="' + PREFIX + 'input' + (row.invalid.keyValue ? ' is-invalid' : '') + '" data-field="keyValue" type="password" autocomplete="new-password" ' +
+          'placeholder="' + (saved ? saved.mask + '（輸入新值代表換 key）' : '貼上 API key') + '" value="' + escapeAttr(row.keyValue) + '">' +
+          '<button type="button" class="' + PREFIX + 'button ' + PREFIX + 'button-small ' + PREFIX + 'button-subtle-danger ' + PREFIX + 'key-delete" data-delete-key>刪除</button>' +
+          '</div>' +
+          (row.error ? '<div class="' + PREFIX + 'row-error">' + escapeHtml(row.error) + '</div>' : '') +
+          '</div>';
+      }
+
+      // 新增列的供應商：可搜尋，有「-- 請選擇 --」
+      function providerSelectHtml(row) {
+        var options = KEY_PROVIDERS.map(function (p) {
+          return '<li class="' + PREFIX + 'select-option" data-value="' + p + '">' + PROVIDER_NAMES[p] + '</li>';
+        }).join('');
+        return '<div class="' + PREFIX + 'select' + (row.invalid.provider ? ' is-invalid' : '') + '" data-select data-field="provider" data-placeholder="' + PLACEHOLDER + '" data-value="' + row.provider + '">' +
+          '<button type="button" class="' + PREFIX + 'select-trigger"></button>' +
+          '<ul class="' + PREFIX + 'select-list">' +
+          '<li class="' + PREFIX + 'select-search-item"><input class="' + PREFIX + 'input ' + PREFIX + 'select-search" placeholder="搜尋供應商"></li>' +
+          '<li class="' + PREFIX + 'select-option" data-value="">' + PLACEHOLDER + '</li>' +
+          options +
+          '</ul></div>';
+      }
+
+      // ===== API key 分頁：操作 =====
+
+      function addKeyRow() {
+        newRowCount += 1;
+        // 新的列加在最上方
+        keyRows.unshift({ id: 'new-' + newRowCount, provider: '', name: '', savedName: '', keyValue: '', isNew: true, invalid: {}, error: '' });
+        setFeedback('', '');
+        renderKeys();
+        keyList.querySelector('.' + PREFIX + 'select-trigger').focus();
+      }
+
+      // 打字時只更新資料和紅框，不重畫整個列表（避免游標跳掉）
+      function onKeyInput(event) {
+        var field = event.target.closest('[data-field]');
+        var item = event.target.closest('[data-row-id]');
+        if (!field || !item) return;
+        // 選單裡的搜尋框打字不算修改
+        if (event.target.classList.contains(PREFIX + 'select-search')) return;
+        var row = findRow(item.getAttribute('data-row-id'));
+        var name = field.getAttribute('data-field');
+        row[name] = name === 'provider' ? field.getAttribute('data-value') : field.value;
+        if (row.invalid[name]) {
+          row.invalid[name] = false;
+          field.classList.remove('is-invalid');
+        }
+        setFeedback('', '');
+        refreshSaveButton();
+      }
+
+      function onKeyListClick(event) {
+        if (!event.target.closest('[data-delete-key]')) return;
+        var row = findRow(event.target.closest('[data-row-id]').getAttribute('data-row-id'));
+        if (row.isNew) {
+          removeRow(row.id);
+          renderKeys();
+          return;
+        }
+        confirmDeleteKey(row);
+      }
+
+      // 刪除已儲存的 key：確認視窗列出選用它的模型數量；模型不刪，只清空 key 欄位
+      function confirmDeleteKey(row) {
+        var saved = findSavedKey(row.id);
+        var usedCount = models.filter(function (m) { return m.keyId === row.id; }).length;
+        var label = '「' + saved.name + '」（' + PROVIDER_NAMES[saved.provider] + '）';
+        var message = usedCount > 0
+          ? '有 ' + usedCount + ' 個模型正在使用' + label + '，刪除後這些模型要重新選 key 才能使用。確定要刪除嗎？'
+          : '確定要刪除 ' + label + ' 嗎？';
+        window.PlatformDemo.showConfirm({ title: '刪除 API key', message: message, confirmText: '刪除', isDanger: true })
+          .then(function (isConfirmed) {
+            if (!isConfirmed) return;
+            deleteSavedKey(row.id);
+            window.PlatformDemo.showToast('success', '已刪除 API key「' + saved.name + '」');
+          });
+      }
+
+      function deleteSavedKey(keyId) {
+        savedKeys = savedKeys.filter(function (k) { return k.id !== keyId; });
+        removeRow(keyId);
+        models.forEach(function (m) {
+          if (m.keyId !== keyId) return;
+          m.keyId = '';
+          m.isKeyDeleted = true;
+        });
+        Object.keys(modelKeyDrafts).forEach(function (modelId) {
+          if (modelKeyDrafts[modelId] === keyId) modelKeyDrafts[modelId] = '';
+        });
+        renderKeys();
+        renderModels();
+      }
+
+      // ===== API key 分頁：儲存 =====
+
+      function isKeysDirty() {
+        return keyRows.some(function (row) {
+          return row.isNew || row.name !== row.savedName || row.keyValue !== '';
+        });
+      }
+
+      // 先檢查必填（不符合的列紅框、不送出），再依序新增、修改；失敗的列保留紅框和輸入內容
+      function saveKeys() {
+        var changedRows = keyRows.filter(function (row) { return row.isNew || row.name !== row.savedName || row.keyValue !== ''; });
+        var validRows = changedRows.filter(checkRequired);
+        var hasInvalid = validRows.length < changedRows.length;
+        renderKeys();
+        if (validRows.length === 0) {
+          setFeedback('is-danger', '請先填好紅框的欄位');
+          return;
+        }
+        runSaving(function () {
+          var failedCount = 0;
+          validRows.forEach(function (row) {
+            if (isNameTaken(row)) {
+              row.invalid.name = true;
+              row.error = '同一家供應商已經有這個名稱的 key';
+              failedCount += 1;
+              return;
+            }
+            commitKeyRow(row);
+          });
+          renderKeys();
+          if (failedCount > 0 || hasInvalid) {
+            setFeedback('is-danger', '部分儲存失敗');
+          } else {
+            setFeedback('is-success', '已儲存');
+          }
+        });
+      }
+
+      function checkRequired(row) {
+        row.invalid = {};
+        row.error = '';
+        if (row.isNew && !row.provider) row.invalid.provider = true;
+        if (!row.name.trim()) row.invalid.name = true;
+        if (row.isNew && !row.keyValue) row.invalid.keyValue = true;
+        var isValid = Object.keys(row.invalid).length === 0;
+        if (!isValid) row.error = '請填好紅框的欄位';
+        return isValid;
+      }
+
+      function isNameTaken(row) {
+        return savedKeys.some(function (k) {
+          return k.id !== row.id && k.provider === row.provider && k.name === row.name.trim();
+        });
+      }
+
+      // 存成功：新列變成已儲存的 key，畫面只留遮罩值
+      function commitKeyRow(row) {
+        var name = row.name.trim();
+        if (row.isNew) {
+          var newId = 'k-' + row.id;
+          savedKeys.push({ id: newId, provider: row.provider, name: name, mask: maskKey(row.keyValue) });
+          row.id = newId;
+          row.isNew = false;
+        } else {
+          var saved = findSavedKey(row.id);
+          saved.name = name;
+          if (row.keyValue) saved.mask = maskKey(row.keyValue);
+        }
+        row.name = name;
+        row.savedName = name;
+        row.keyValue = '';
+        row.error = '';
+        row.invalid = {};
+      }
+
+      // 長度 12 以上顯示前 3 碼 + **** + 後 4 碼，未滿 12 只顯示 ****（spec 規則）
+      function maskKey(value) {
+        if (value.length < MASK_MIN_LENGTH) return '****';
+        return value.slice(0, 3) + '****' + value.slice(-4);
+      }
+
+      // ===== 模型分頁：畫面 =====
+
+      function resetModelDrafts() {
+        modelKeyDrafts = {};
+        invalidModelIds = {};
+        models.forEach(function (m) { if (m.provider !== 'forge') modelKeyDrafts[m.id] = m.keyId; });
+      }
+
+      function renderModels() {
+        modelSections.innerHTML = MODEL_TYPES.map(modelSectionHtml).join('');
+        modelSections.querySelectorAll('[data-select]').forEach(window.PlatformDemo.setupSelect);
+        refreshSaveButton();
+      }
+
+      function modelSectionHtml(section) {
+        var list = models.filter(function (m) { return m.type === section.type; });
+        var body = list.length > 0
+          ? list.map(modelRowHtml).join('')
+          : '<div class="' + PREFIX + 'model-empty">還沒有' + section.label + '模型</div>';
+        return '<section class="' + PREFIX + 'card">' +
+          '<div class="' + PREFIX + 'card-header">' +
+          '<h2 class="' + PREFIX + 'card-title">' + section.label + '<span class="' + PREFIX + 'eyebrow">' + section.eyebrow + '</span></h2>' +
+          '<span class="' + PREFIX + 'badge">' + list.length + ' 個</span>' +
+          '<span class="' + PREFIX + 'card-header-spacer"></span>' +
+          '<button type="button" class="' + PREFIX + 'button ' + PREFIX + 'button-secondary ' + PREFIX + 'button-small" data-add-model="' + section.label + '">＋ 新增模型</button>' +
+          '</div>' + body + '</section>';
+      }
+
+      function modelRowHtml(model) {
+        var connection = modelConnectionHtml(model);
+        var isTestable = model.provider === 'forge' || !!modelKeyDrafts[model.id];
+        return '<div class="' + PREFIX + 'model-row" data-model-id="' + model.id + '">' +
+          '<div><div class="' + PREFIX + 'model-name">' + escapeHtml(model.name) + '</div>' +
+          '<span class="' + PREFIX + 'model-id" title="' + escapeAttr(model.modelName) + '">' + escapeHtml(model.modelName) + '</span></div>' +
+          '<div><span class="' + PREFIX + 'badge is-primary">' + PROVIDER_NAMES[model.provider] + '</span></div>' +
+          '<div class="' + PREFIX + 'model-connection">' + connection + '</div>' +
+          priceHtml(model) +
+          '<div class="' + PREFIX + 'model-actions">' +
+          '<button type="button" class="' + PREFIX + 'button ' + PREFIX + 'button-secondary ' + PREFIX + 'button-small" data-test-model' + (isTestable ? '' : ' disabled') + '>測試</button>' +
+          '<button type="button" class="' + PREFIX + 'button ' + PREFIX + 'button-small ' + PREFIX + 'button-subtle-danger" data-delete-model>刪除</button>' +
+          '</div></div>';
+      }
+
+      // 連線：Forge 顯示位址；雲端模型選同供應商的 key；該供應商沒有 key 時改成提示
+      function modelConnectionHtml(model) {
+        if (model.provider === 'forge') {
+          return '<div class="' + PREFIX + 'model-address">' + model.address + '</div>';
+        }
+        var keys = savedKeys.filter(function (k) { return k.provider === model.provider; });
+        if (keys.length === 0) {
+          return '<div class="' + PREFIX + 'row-error">請先到 API key 分頁新增 ' + PROVIDER_NAMES[model.provider] + ' 的 key</div>';
+        }
+        var draft = modelKeyDrafts[model.id];
+        var isEmpty = !draft;
+        var options = keys.map(function (k) {
+          return '<li class="' + PREFIX + 'select-option" data-value="' + k.id + '">' + escapeHtml(k.name) +
+            '<span class="' + PREFIX + 'select-option-hint">' + k.mask + '</span></li>';
+        }).join('');
+        var error = '';
+        if (isEmpty) error = model.isKeyDeleted && !model.keyId && draft === model.keyId ? 'key 已被刪除，請重新選擇 key' : '請選擇 key';
+        return '<div class="' + PREFIX + 'select' + (isEmpty ? ' is-invalid' : '') + '" data-select data-placeholder="' + PLACEHOLDER + '" data-value="' + (draft || '') + '">' +
+          '<button type="button" class="' + PREFIX + 'select-trigger"></button>' +
+          '<ul class="' + PREFIX + 'select-list">' +
+          '<li class="' + PREFIX + 'select-option" data-value="">' + PLACEHOLDER + '</li>' + options +
+          '</ul></div>' +
+          (error ? '<div class="' + PREFIX + 'row-error">' + error + '</div>' : '');
+      }
+
+      // 價格：LLM 為輸入／輸出（每 100 萬 token），其他依單位；沒有價格顯示「未設定價格」
+      function priceHtml(model) {
+        var price = model.price;
+        if (!price) return '<div class="' + PREFIX + 'model-price is-unset">未設定價格</div>';
+        if (model.type === 'llm') {
+          return '<div class="' + PREFIX + 'model-price">輸入 ' + money(price.input) + '／輸出 ' + money(price.output) +
+            '<small>每 100 萬 token</small></div>';
+        }
+        return '<div class="' + PREFIX + 'model-price">' + money(price.unit) + '／' + PRICE_UNITS[model.type] + '</div>';
+      }
+
+      // ===== 模型分頁：操作 =====
+
+      function onModelKeyChange(event) {
+        var row = event.target.closest('[data-model-id]');
+        if (!row || !event.target.matches('[data-select]')) return;
+        var modelId = row.getAttribute('data-model-id');
+        modelKeyDrafts[modelId] = event.target.getAttribute('data-value');
+        setFeedback('', '');
+        renderModels();
+      }
+
+      function onModelSectionClick(event) {
+        var addButton = event.target.closest('[data-add-model]');
+        if (addButton) {
+          window.PlatformDemo.showToast('info', '「新增模型」視窗會在下一個 demo 做（' + addButton.getAttribute('data-add-model') + '）');
+          return;
+        }
+        var row = event.target.closest('[data-model-id]');
+        if (!row) return;
+        var model = findModel(row.getAttribute('data-model-id'));
+        if (event.target.closest('[data-test-model]')) testModel(model, event.target.closest('[data-test-model]'));
+        if (event.target.closest('[data-delete-model]')) confirmDeleteModel(model);
+      }
+
+      // 用這列目前的設定（含還沒儲存的 key）測試
+      function testModel(model, button) {
+        setBusy(button, '測試中');
+        setTimeout(function () {
+          clearBusy(button, '測試');
+          if (model.isTestFailing) {
+            window.PlatformDemo.showError({
+              plain: 'API key 無效，請確認 key 是否正確',
+              source: 'PlatformInfrastructure／testModel（代碼：MODEL_KEY_INVALID）'
+            });
+            return;
+          }
+          window.PlatformDemo.showToast('success', '測試成功：' + model.name);
+        }, TEST_DELAY);
+      }
+
+      function confirmDeleteModel(model) {
+        window.PlatformDemo.showConfirm({
+          title: '刪除模型',
+          message: '確定要刪除「' + model.name + '」嗎？其他模組正在使用這個模型的設定會失效。',
+          confirmText: '刪除',
+          isDanger: true
+        }).then(function (isConfirmed) {
+          if (!isConfirmed) return;
+          models = models.filter(function (m) { return m.id !== model.id; });
+          delete modelKeyDrafts[model.id];
+          renderModels();
+          window.PlatformDemo.showToast('success', '已刪除模型「' + model.name + '」');
+        });
+      }
+
+      // ===== 模型分頁：儲存 =====
+
+      function isModelsDirty() {
+        return models.some(function (m) { return m.provider !== 'forge' && modelKeyDrafts[m.id] !== m.keyId; });
+      }
+
+      // 把改選 key 的模型存起來；key 為「-- 請選擇 --」的列紅框、不送出
+      function saveModels() {
+        var changed = models.filter(function (m) { return m.provider !== 'forge' && modelKeyDrafts[m.id] !== m.keyId; });
+        var valid = changed.filter(function (m) { return !!modelKeyDrafts[m.id]; });
+        if (valid.length === 0) {
+          setFeedback('is-danger', '請先替紅框的模型選擇 key');
+          return;
+        }
+        runSaving(function () {
+          valid.forEach(function (m) {
+            m.keyId = modelKeyDrafts[m.id];
+            m.isKeyDeleted = false;
+          });
+          renderModels();
+          setFeedback(valid.length < changed.length ? 'is-danger' : 'is-success', valid.length < changed.length ? '部分儲存失敗' : '已儲存');
+        });
+      }
+
+      // ===== 「沒有任何 key」狀態 =====
+
+      function useEmptyData() {
+        savedKeys = [];
+        models.forEach(function (m) {
+          if (m.provider === 'forge') return;
+          m.keyId = '';
+          m.isKeyDeleted = true;
+        });
+        resetKeyRows();
+        resetModelDrafts();
+        renderKeys();
+        renderModels();
+        window.PlatformDemo.setState('normal');
+      }
+
+      // ===== 輔助 =====
+
+      // 儲存中：按鈕轉圈、不能重複按
+      function runSaving(done) {
+        setFeedback('', '');
+        setBusy(saveButton, '儲存中');
+        setTimeout(function () {
+          clearBusy(saveButton, '儲存');
+          done();
+          refreshSaveButton();
+        }, SAVE_DELAY);
+      }
+
+      function setBusy(button, text) {
+        button.disabled = true;
+        button.classList.add('is-busy');
+        button.innerHTML = '<span class="' + PREFIX + 'spinner"></span>' + text;
+      }
+
+      function clearBusy(button, text) {
+        button.classList.remove('is-busy');
+        button.textContent = text;
+        button.disabled = false;
+      }
+
+      function setFeedback(type, text) {
+        feedback.className = PREFIX + 'feedback' + (type ? ' ' + type : '');
+        feedback.textContent = text;
+      }
+
+      function findRow(id) { return keyRows.filter(function (r) { return r.id === id; })[0]; }
+      function removeRow(id) { keyRows = keyRows.filter(function (r) { return r.id !== id; }); }
+      function findSavedKey(id) { return savedKeys.filter(function (k) { return k.id === id; })[0]; }
+      function findModel(id) { return models.filter(function (m) { return m.id === id; })[0]; }
+
+      function money(value) {
+        return '$' + (value < 0.1 ? String(value) : value.toFixed(2));
+      }
+
+      function escapeHtml(text) {
+        var div = document.createElement('div');
+        div.textContent = text;
+        return div.innerHTML;
+      }
+
+      function escapeAttr(text) {
+        return escapeHtml(text).replace(/"/g, '&quot;');
+      }
+    })();
+  </script>
+</body>
+</html>

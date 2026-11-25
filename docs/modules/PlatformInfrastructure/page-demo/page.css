@@ -1076,3 +1076,178 @@
   flex-direction: column;
   gap: var(--space-5);
 }
+
+/* ===== 小按鈕、低調的危險按鈕 ===== */
+
+.platform-infrastructure-button-small {
+  min-width: 0;
+  height: 34px;
+  padding: 0 var(--space-4);
+  font-size: var(--font-size-sm);
+}
+
+.platform-infrastructure-button-subtle-danger {
+  background: var(--color-surface);
+  color: var(--color-danger);
+  border-color: var(--color-danger-soft);
+}
+
+.platform-infrastructure-button-subtle-danger:hover:not(:disabled) { background: var(--color-danger-soft); }
+
+.platform-infrastructure-badge.is-primary { background: var(--color-primary-soft); color: var(--color-primary); }
+
+/* ===== 卡片標題列（標題靠左、按鈕靠右） ===== */
+
+.platform-infrastructure-card-header {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  margin-bottom: var(--space-3);
+}
+
+.platform-infrastructure-card-header .platform-infrastructure-card-title { margin: 0; }
+.platform-infrastructure-card-header-spacer { flex: 1; }
+
+/* ===== 頁面內的分頁列 ===== */
+
+.platform-infrastructure-page-tabs {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+}
+
+.platform-infrastructure-page-tabs .platform-infrastructure-tabs {
+  background: var(--color-surface-glass);
+  box-shadow: var(--shadow-sm);
+  border: 1px solid var(--color-surface);
+}
+
+.platform-infrastructure-page-tabs .platform-infrastructure-tab {
+  padding: var(--space-2) var(--space-5);
+  font-size: var(--font-size-base);
+}
+
+/* ===== 可搜尋選單的搜尋框那一列 ===== */
+
+.platform-infrastructure-select-search-item {
+  list-style: none;
+  padding: 0;
+}
+
+/* ===== API key 列表 ===== */
+
+.platform-infrastructure-key-table-head,
+.platform-infrastructure-key-row {
+  display: grid;
+  grid-template-columns: 170px minmax(0, 1fr) minmax(0, 1.4fr) 84px;
+  align-items: center;
+  gap: var(--space-3);
+}
+
+.platform-infrastructure-key-table-head {
+  padding: 0 var(--space-3) var(--space-2);
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-bold);
+  color: var(--color-text-muted);
+  border-bottom: 1px solid var(--color-border);
+}
+
+.platform-infrastructure-key-item {
+  padding: var(--space-3);
+  border-radius: var(--radius-md);
+}
+
+.platform-infrastructure-key-item + .platform-infrastructure-key-item { border-top: 1px dashed var(--color-border); }
+
+/* 新增、還沒儲存的列：淡淡的主色底，一眼看出哪些是新的 */
+.platform-infrastructure-key-item.is-new {
+  background: var(--color-primary-soft);
+  border-top-color: transparent;
+}
+
+.platform-infrastructure-key-item.is-new + .platform-infrastructure-key-item { border-top-color: transparent; }
+
+.platform-infrastructure-key-provider {
+  font-weight: var(--font-weight-bold);
+  padding-left: var(--space-2);
+}
+
+.platform-infrastructure-key-item .platform-infrastructure-input { background: var(--color-surface-muted); }
+.platform-infrastructure-key-item.is-new .platform-infrastructure-input,
+.platform-infrastructure-key-item.is-new .platform-infrastructure-select-trigger { background: var(--color-surface); }
+
+.platform-infrastructure-key-delete { justify-self: end; }
+
+.platform-infrastructure-row-error {
+  margin-top: var(--space-2);
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-bold);
+  color: var(--color-danger);
+}
+
+/* ===== 模型列表 ===== */
+
+.platform-infrastructure-model-row {
+  display: grid;
+  grid-template-columns: minmax(0, 1.25fr) 96px minmax(0, 1.25fr) minmax(0, 1fr) auto;
+  align-items: center;
+  gap: var(--space-4);
+  padding: var(--space-3);
+  border-radius: var(--radius-md);
+  transition: background var(--transition-fast);
+}
+
+.platform-infrastructure-model-row:hover { background: var(--color-surface-muted); }
+.platform-infrastructure-model-row + .platform-infrastructure-model-row { border-top: 1px dashed var(--color-border); }
+
+.platform-infrastructure-model-name { font-weight: var(--font-weight-bold); }
+
+.platform-infrastructure-model-id,
+.platform-infrastructure-model-price small {
+  display: block;
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-normal);
+  color: var(--color-text-muted);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.platform-infrastructure-model-id { font-family: var(--font-family-mono); }
+
+.platform-infrastructure-model-address {
+  font-family: var(--font-family-mono);
+  font-size: var(--font-size-sm);
+  color: var(--color-text-muted);
+  padding: var(--space-2) var(--space-3);
+  background: var(--color-surface-muted);
+  border-radius: var(--radius-md);
+}
+
+.platform-infrastructure-model-price { font-size: var(--font-size-sm); font-weight: var(--font-weight-bold); }
+.platform-infrastructure-model-price.is-unset { color: var(--color-text-placeholder); font-weight: var(--font-weight-normal); }
+
+.platform-infrastructure-model-actions {
+  display: flex;
+  gap: var(--space-2);
+}
+
+.platform-infrastructure-model-connection .platform-infrastructure-select-trigger { height: 38px; }
+
+.platform-infrastructure-model-empty {
+  padding: var(--space-2) var(--space-3) var(--space-3);
+  font-size: var(--font-size-sm);
+  color: var(--color-text-muted);
+}
+
+/* ===== 錯誤訊息浮在提示區（showError）時 ===== */
+
+.platform-infrastructure-toast-area .platform-infrastructure-error-message {
+  width: 380px;
+  background: var(--color-surface);
+  border: 1px solid var(--color-danger-soft);
+  box-shadow: var(--shadow-lg);
+}
+
+/* 有 hidden 屬性的元素一定隱藏（元件自己設的 display 不能蓋過它） */
+.platform-infrastructure-shell [hidden] { display: none !important; }

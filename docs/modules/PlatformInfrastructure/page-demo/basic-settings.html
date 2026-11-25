@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>基礎設定 — PlatformInfrastructure demo</title>
+  <script src="../../../page-demo-kit/demo-toolbar.js" data-module="PlatformInfrastructure"></script>
+  <link rel="stylesheet" href="page.css">
+  <script src="demo.js"></script>
+</head>
+<body>
+  <!-- ===== 外殼 ===== -->
+  <div class="platform-infrastructure-shell" data-asset-bg="appBackground" data-ratio="16:9">
+
+    <!-- Navbar：logo、功能模組靠左、設定靠右（功能模組是假資料，之後由各模組登記） -->
+    <header class="platform-infrastructure-navbar">
+      <img class="platform-infrastructure-navbar-logo" data-asset="platformLogo" data-ratio="1:1" alt="平台標誌">
+      <a class="platform-infrastructure-navbar-item" href="#" data-nav>聊天室</a>
+      <a class="platform-infrastructure-navbar-item" href="#" data-nav>小說工作室</a>
+      <a class="platform-infrastructure-navbar-item" href="#" data-nav>多媒體創作</a>
+      <span class="platform-infrastructure-navbar-spacer"></span>
+      <a class="platform-infrastructure-navbar-item is-active" href="basic-settings.html" data-nav>設定</a>
+    </header>
+
+    <div class="platform-infrastructure-body">
+      <!-- 側邊欄：設定的子頁面 -->
+      <nav class="platform-infrastructure-sidebar">
+        <div class="platform-infrastructure-sidebar-header">
+          <div class="platform-infrastructure-eyebrow">Settings</div>
+          <div class="platform-infrastructure-sidebar-title">設定</div>
+        </div>
+        <a class="platform-infrastructure-sidebar-item is-active" href="basic-settings.html" data-nav>基礎設定</a>
+        <a class="platform-infrastructure-sidebar-item" href="#" data-nav>API 串接</a>
+        <a class="platform-infrastructure-sidebar-item" href="#" data-nav>花費統計</a>
+      </nav>
+
+      <!-- 內容區 -->
+      <main class="platform-infrastructure-content">
+        <div class="platform-infrastructure-page">
+
+          <!-- 頁首：漸層底、裝飾、標題，看板角色在右邊破框 -->
+          <section class="platform-infrastructure-hero">
+            <div class="platform-infrastructure-hero-decor">
+              <span class="platform-infrastructure-display-text">Settings</span>
+            </div>
+            <span class="platform-infrastructure-sparkle"></span>
+            <span class="platform-infrastructure-sparkle"></span>
+            <span class="platform-infrastructure-sparkle"></span>
+            <div class="platform-infrastructure-hero-title">
+              <span class="platform-infrastructure-eyebrow">Basic Settings</span>
+              <h1>基礎設定</h1>
+              <p>選擇平台的主題和語言，打造你喜歡的工作空間</p>
+            </div>
+            <img class="platform-infrastructure-hero-character" data-asset="basicSettingsBanner" data-ratio="3:4" alt="">
+          </section>
+
+          <!-- 狀態：正常 -->
+          <div data-state="normal" class="platform-infrastructure-stack">
+            <section class="platform-infrastructure-card">
+              <h2 class="platform-infrastructure-card-title">
+                外觀與語言
+                <span class="platform-infrastructure-eyebrow">Appearance</span>
+              </h2>
+
+              <div class="platform-infrastructure-field">
+                <div class="platform-infrastructure-field-label">主題</div>
+                <div class="platform-infrastructure-field-control">
+                  <div class="platform-infrastructure-select" data-select data-setting="theme" data-value="default">
+                    <button type="button" class="platform-infrastructure-select-trigger"></button>
+                    <ul class="platform-infrastructure-select-list">
+                      <li class="platform-infrastructure-select-option" data-value="default">default</li>
+                      <li class="platform-infrastructure-select-option" data-value="starry-night">starry-night</li>
+                      <li class="platform-infrastructure-select-option" data-value="sakura">sakura</li>
+                    </ul>
+                  </div>
+                  <div class="platform-infrastructure-hint">顏色、字體和畫面插圖會一起換掉</div>
+                </div>
+              </div>
+
+              <div class="platform-infrastructure-field">
+                <div class="platform-infrastructure-field-label">語言</div>
+                <div class="platform-infrastructure-field-control">
+                  <div class="platform-infrastructure-select" data-select data-setting="language" data-value="zh-TW">
+                    <button type="button" class="platform-infrastructure-select-trigger"></button>
+                    <ul class="platform-infrastructure-select-list">
+                      <li class="platform-infrastructure-select-option" data-value="zh-TW">繁體中文</li>
+                      <li class="platform-infrastructure-select-option" data-value="en">English</li>
+                      <li class="platform-infrastructure-select-option" data-value="ja">日本語</li>
+                    </ul>
+                  </div>
+                  <div class="platform-infrastructure-hint">畫面上的文字會換成選擇的語言</div>
+                </div>
+              </div>
+            </section>
+
+            <!-- 儲存列 -->
+            <div class="platform-infrastructure-save-bar">
+              <span class="platform-infrastructure-feedback" id="save-feedback"></span>
+              <button type="button" class="platform-infrastructure-button platform-infrastructure-button-primary" id="save-button" disabled>儲存</button>
+            </div>
+          </div>
+
+          <!-- 狀態：載入中（頁首照常） -->
+          <div data-state="loading" class="platform-infrastructure-card">
+            <div class="platform-infrastructure-loading">
+              <span class="platform-infrastructure-spinner platform-infrastructure-spinner-large"></span>
+              <span>讀取中…</span>
+            </div>
+          </div>
+
+          <!-- 狀態：載入失敗 -->
+          <div data-state="error" class="platform-infrastructure-card">
+            <div class="platform-infrastructure-empty">
+              <img class="platform-infrastructure-empty-image" data-asset="emptyStateIllustration" data-ratio="1:1" alt="">
+              <p class="platform-infrastructure-empty-text">載入失敗</p>
+              <div class="platform-infrastructure-error-message">
+                <span class="platform-infrastructure-error-message-icon">!</span>
+                <div class="platform-infrastructure-error-message-body">
+                  <div class="platform-infrastructure-error-message-title">讀取平台設定時發生問題，請稍後再試</div>
+                  <div class="platform-infrastructure-error-message-source">PlatformInfrastructure／getSettings（代碼：SETTINGS_READ_FAILED）</div>
+                </div>
+                <button type="button" class="platform-infrastructure-icon-button" aria-label="關閉">×</button>
+              </div>
+              <button type="button" class="platform-infrastructure-button platform-infrastructure-button-primary" id="retry-button">重試</button>
+            </div>
+          </div>
+
+        </div>
+      </main>
+    </div>
+
+    <!-- log 列：收合時只顯示最新一筆，點一下往上展開 -->
+    <footer class="platform-infrastructure-logbar" data-logbar>
+      <div class="platform-infrastructure-logbar-panel">
+        <div class="platform-infrastructure-logbar-toolbar">
+          <div class="platform-infrastructure-tabs">
+            <button type="button" class="platform-infrastructure-tab is-active" data-log-filter="all">全部</button>
+            <button type="button" class="platform-infrastructure-tab" data-log-filter="success">正確</button>
+            <button type="button" class="platform-infrastructure-tab" data-log-filter="warning">警告</button>
+            <button type="button" class="platform-infrastructure-tab" data-log-filter="error">錯誤</button>
+          </div>
+          <span class="platform-infrastructure-hint">最多保留最近 1000 筆</span>
+        </div>
+        <ul class="platform-infrastructure-logbar-list"></ul>
+      </div>
+      <button type="button" class="platform-infrastructure-logbar-summary">
+        <span data-log-latest></span>
+        <span class="platform-infrastructure-logbar-arrow">▲ 展開</span>
+      </button>
+    </footer>
+  </div>
+
+  <script>
+    // 基礎設定的假互動：改選項 → 有未儲存的修改；儲存 → 轉圈 → 綠色小字 → 1.5 秒後重新整理
+    (function () {
+      var SAVE_DELAY = 800;
+      var RELOAD_DELAY = 1500;
+      var saveButton = document.getElementById('save-button');
+      var feedback = document.getElementById('save-feedback');
+      var selects = document.querySelectorAll('[data-setting]');
+      var initial = currentValues();
+
+      function currentValues() {
+        var values = {};
+        selects.forEach(function (s) { values[s.getAttribute('data-setting')] = s.getAttribute('data-value'); });
+        return values;
+      }
+
+      // 改回原樣就不算未儲存的修改
+      function isDirty() {
+        var now = currentValues();
+        return Object.keys(initial).some(function (key) { return initial[key] !== now[key]; });
+      }
+
+      window.PlatformDemo.isDirty = isDirty;
+
+      document.addEventListener('change', function () {
+        saveButton.disabled = !isDirty();
+        feedback.textContent = '';
+      });
+
+      saveButton.addEventListener('click', function () {
+        saveButton.disabled = true;
+        saveButton.classList.add('is-busy');
+        saveButton.innerHTML = '<span class="platform-infrastructure-spinner"></span>儲存中';
+        setTimeout(function () {
+          saveButton.classList.remove('is-busy');
+          saveButton.textContent = '儲存';
+          feedback.className = 'platform-infrastructure-feedback is-success';
+          feedback.textContent = '已儲存，即將重新整理套用';
+          initial = currentValues();
+          setTimeout(function () { location.reload(); }, RELOAD_DELAY);
+        }, SAVE_DELAY);
+      });
+
+      document.getElementById('retry-button').addEventListener('click', function () {
+        window.PlatformDemo.setState('loading');
+        setTimeout(function () { window.PlatformDemo.setState('normal'); }, SAVE_DELAY);
+      });
+    })();
+  </script>
+</body>
+</html>

@@ -1,7 +1,7 @@
 # 專案進度
 
 ## 1. 進度概括
-PlatformInfrastructure 的 spec.md 和 page.md 已完成，還沒開始實作。下一步：用 write-page 做設定頁的 demo 和 default 主題（風格、素材）；之後用 project-init 的 B 段設定自動檢查，再開始 implement。
+PlatformInfrastructure 的 spec.md 和 page.md 已完成，還沒開始實作。default 主題（theme.css、art.json、7 張素材）和「基礎設定」demo 已完成並經 PM 確認風格。下一步：用 write-page 做 API 串接、花費統計、新增模型視窗三個 demo（沿用 page.css、demo.js 與現有素材）；之後用 project-init 的 B 段設定自動檢查，再開始 implement。
 
 ## 2. 模組
 | 模組 | 狀態 |
@@ -13,7 +13,7 @@ PlatformInfrastructure 的 spec.md 和 page.md 已完成，還沒開始實作。
 | └ ModelService | spec 完成 |
 | └ SharedComponents | spec 完成 |
 | └ AppShell | spec 完成 |
-| └ Page | spec 完成（demo 還沒做） |
+| └ Page | spec 完成（demo：基礎設定完成；API 串接、花費統計、新增模型視窗待做） |
 | **ChatRoom** | |
 | **NovelStudio** | |
 | **MediaCreation** | |

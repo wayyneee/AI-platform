@@ -1,0 +1,1078 @@
+/*
+ * PlatformInfrastructure 的畫面樣式：外殼（AppShell）、共用元件（SharedComponents）、設定子頁面（Page）。
+ * 只使用 theme.css 的變數；class 一律加 platform-infrastructure- 前綴。
+ * 視覺語言：白底圓角卡片、藍粉漸層、點點底紋、大型英文淡字、看板角色融進頁首（白底圖用 multiply 去白）。
+ */
+
+/* ===== 外殼：整體版面 ===== */
+
+.platform-infrastructure-shell {
+  height: 100vh;
+  display: grid;
+  grid-template-rows: var(--navbar-height) 1fr var(--logbar-height);
+  background-color: var(--color-bg);
+  background-size: cover;
+  background-position: center;
+  position: relative;
+}
+
+/* 背景圖上的白紗，讓插圖淡淡的 */
+.platform-infrastructure-shell::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: var(--background-veil);
+  pointer-events: none;
+}
+
+.platform-infrastructure-body {
+  display: flex;
+  gap: var(--space-5);
+  min-height: 0;
+  padding: var(--space-5) var(--space-5) 0;
+  position: relative;
+  z-index: 1; /* 疊在背景圖（和它的佔位框文字）上面 */
+}
+
+/* ===== 共用裝飾 ===== */
+
+/* 英文小標：漸層文字 */
+.platform-infrastructure-eyebrow {
+  font-family: var(--font-family-display);
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-black);
+  letter-spacing: var(--letter-spacing-wide);
+  text-transform: uppercase;
+  background: var(--gradient-text);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+/* 大型英文淡字（只描邊） */
+.platform-infrastructure-display-text {
+  font-family: var(--font-family-display);
+  font-size: var(--font-size-display);
+  font-weight: var(--font-weight-black);
+  line-height: 1;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+  white-space: nowrap;
+  color: transparent;
+  -webkit-text-stroke: 1.5px var(--outline-text-color);
+  pointer-events: none;
+  user-select: none;
+}
+
+/* 四角星裝飾 */
+.platform-infrastructure-sparkle {
+  position: absolute;
+  width: 18px;
+  height: 18px;
+  background: var(--gradient-brand);
+  clip-path: polygon(50% 0, 61% 39%, 100% 50%, 61% 61%, 50% 100%, 39% 61%, 0 50%, 39% 39%);
+  pointer-events: none;
+}
+
+/* ===== 外殼：Navbar ===== */
+
+.platform-infrastructure-navbar {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: 0 var(--space-5);
+  background: var(--color-surface-glass);
+  backdrop-filter: blur(14px);
+  box-shadow: var(--shadow-sm);
+  position: relative;
+  z-index: 2;
+}
+
+/* navbar 底部的漸層細線 */
+.platform-infrastructure-navbar::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 2px;
+  background: var(--gradient-brand);
+  opacity: 0.55;
+}
+
+.platform-infrastructure-navbar-logo {
+  width: 40px;
+  height: 40px;
+  border-radius: var(--radius-md);
+  margin-right: var(--space-5);
+  flex-shrink: 0;
+  object-fit: cover;
+  box-shadow: var(--shadow-sm);
+}
+
+.platform-infrastructure-navbar-spacer { flex: 1; }
+
+.platform-infrastructure-navbar-item {
+  padding: var(--space-2) var(--space-5);
+  border-radius: var(--radius-pill);
+  color: var(--color-text-muted);
+  text-decoration: none;
+  font-weight: var(--font-weight-bold);
+  transition: background var(--transition-fast), color var(--transition-fast), box-shadow var(--transition-fast);
+}
+
+.platform-infrastructure-navbar-item:hover {
+  background: var(--color-primary-soft);
+  color: var(--color-primary);
+}
+
+.platform-infrastructure-navbar-item.is-active {
+  background: var(--gradient-brand);
+  color: var(--color-text-on-primary);
+  box-shadow: var(--shadow-glow);
+}
+
+/* ===== 外殼：側邊欄（浮動卡片） ===== */
+
+.platform-infrastructure-sidebar {
+  width: var(--sidebar-width);
+  flex-shrink: 0;
+  align-self: flex-start;
+  padding: var(--space-5) var(--space-3) var(--space-4);
+  background: var(--color-surface-glass);
+  backdrop-filter: blur(14px);
+  border: 1px solid var(--color-surface);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-md);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+  position: relative;
+  overflow: hidden;
+}
+
+/* 側邊欄上方的點點底紋 */
+.platform-infrastructure-sidebar::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 110px;
+  height: 80px;
+  background: var(--pattern-dots);
+  background-size: var(--pattern-dots-size);
+  mask-image: linear-gradient(225deg, black, transparent 70%);
+  pointer-events: none;
+}
+
+.platform-infrastructure-sidebar-header {
+  position: relative;
+  padding: 0 var(--space-3) var(--space-4);
+}
+
+.platform-infrastructure-sidebar-title {
+  font-size: var(--font-size-xl);
+  font-weight: var(--font-weight-black);
+  line-height: var(--line-height-tight);
+}
+
+.platform-infrastructure-sidebar-item {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  padding: var(--space-3) var(--space-4);
+  border-radius: var(--radius-md);
+  color: var(--color-text-muted);
+  text-decoration: none;
+  font-weight: var(--font-weight-bold);
+  transition: background var(--transition-fast), color var(--transition-fast);
+}
+
+/* 每個項目前的小圓點，選中時變成漸層 */
+.platform-infrastructure-sidebar-item::before {
+  content: "";
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--color-border-strong);
+  flex-shrink: 0;
+  transition: background var(--transition-fast), transform var(--transition-fast);
+}
+
+.platform-infrastructure-sidebar-item:hover {
+  background: var(--color-primary-soft);
+  color: var(--color-primary);
+}
+
+.platform-infrastructure-sidebar-item.is-active {
+  background: var(--color-surface);
+  color: var(--color-primary);
+  box-shadow: var(--shadow-sm);
+}
+
+.platform-infrastructure-sidebar-item.is-active::before {
+  background: var(--gradient-brand);
+  transform: scale(1.3);
+}
+
+/* ===== 外殼：內容區 ===== */
+
+.platform-infrastructure-content {
+  flex: 1;
+  min-width: 0;
+  overflow-y: auto;
+  /* 上方留空間給頁首角色破框（內容區會捲動，超出的部分會被裁掉） */
+  padding: calc(var(--space-7) + var(--space-3)) var(--space-2) var(--space-5);
+}
+
+.platform-infrastructure-page {
+  max-width: var(--content-max-width);
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-5);
+}
+
+/* ===== 頁首（漸層底＋點點＋大型英文淡字＋看板角色） ===== */
+
+.platform-infrastructure-hero {
+  position: relative;
+  min-height: 230px;
+  border-radius: var(--radius-lg);
+  background: var(--gradient-hero);
+  box-shadow: var(--shadow-md);
+  border: 1px solid var(--color-surface);
+}
+
+/* 裝飾層：裁在圓角裡；角色另外放在外面，才能破框 */
+.platform-infrastructure-hero-decor {
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.platform-infrastructure-hero-decor::before {
+  content: "";
+  position: absolute;
+  top: -40px;
+  right: 120px;
+  width: 300px;
+  height: 300px;
+  border-radius: 50%;
+  background: var(--color-surface);
+  opacity: 0.55;
+}
+
+.platform-infrastructure-hero-decor::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  width: 260px;
+  height: 120px;
+  background: var(--pattern-dots);
+  background-size: var(--pattern-dots-size);
+  mask-image: linear-gradient(45deg, black, transparent 75%);
+}
+
+.platform-infrastructure-hero-decor .platform-infrastructure-display-text {
+  position: absolute;
+  left: var(--space-5);
+  bottom: -14px;
+  -webkit-text-stroke-color: var(--color-surface);
+  opacity: 0.9;
+}
+
+.platform-infrastructure-hero-title {
+  position: relative;
+  padding: var(--space-6) var(--space-6) var(--space-7);
+  max-width: 60%;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--space-2);
+}
+
+.platform-infrastructure-hero-title .platform-infrastructure-eyebrow {
+  padding: var(--space-1) var(--space-3);
+  border-radius: var(--radius-pill);
+  background-color: var(--color-surface);
+  box-shadow: var(--shadow-sm);
+}
+
+.platform-infrastructure-hero-title h1 {
+  margin: 0;
+  font-size: var(--font-size-xxl);
+  font-weight: var(--font-weight-black);
+  line-height: var(--line-height-tight);
+}
+
+.platform-infrastructure-hero-title p {
+  margin: 0;
+  color: var(--color-text-muted);
+}
+
+/* 看板角色：白底圖用 multiply 融進漸層，頭部超出頁首上緣 */
+.platform-infrastructure-hero-character {
+  position: absolute;
+  right: var(--space-6);
+  bottom: 0;
+  height: 290px; /* 比頁首高約 60px，頭部破框 */
+  aspect-ratio: 3 / 4;
+  object-fit: cover;
+  object-position: top;
+  mix-blend-mode: multiply;
+  pointer-events: none;
+  /* 四邊淡出：就算圖裡的角色碰到邊，也不會出現方框的切邊 */
+  -webkit-mask-image: linear-gradient(90deg, transparent 0, black 12%, black 88%, transparent 100%), linear-gradient(180deg, transparent 0, black 8%, black 80%, transparent 100%);
+  -webkit-mask-composite: source-in;
+  mask-image: linear-gradient(90deg, transparent 0, black 12%, black 88%, transparent 100%), linear-gradient(180deg, transparent 0, black 8%, black 80%, transparent 100%);
+  mask-composite: intersect;
+}
+
+.platform-infrastructure-hero .platform-infrastructure-sparkle:nth-of-type(1) { top: 28px; right: 300px; }
+.platform-infrastructure-hero .platform-infrastructure-sparkle:nth-of-type(2) { top: 120px; right: 330px; width: 10px; height: 10px; }
+.platform-infrastructure-hero .platform-infrastructure-sparkle:nth-of-type(3) { bottom: 26px; right: 24px; width: 12px; height: 12px; }
+
+/* ===== 卡片與表單 ===== */
+
+.platform-infrastructure-card {
+  position: relative;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-md);
+  padding: var(--space-5) var(--space-6) var(--space-4);
+}
+
+.platform-infrastructure-card-title {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  margin: 0 0 var(--space-2);
+  font-size: var(--font-size-lg);
+  font-weight: var(--font-weight-black);
+}
+
+/* 標題左邊的漸層短條 */
+.platform-infrastructure-card-title::before {
+  content: "";
+  width: 5px;
+  height: 20px;
+  border-radius: var(--radius-pill);
+  background: var(--gradient-brand);
+}
+
+.platform-infrastructure-card-title-line { flex: 1; }
+
+.platform-infrastructure-field {
+  display: grid;
+  grid-template-columns: 200px 1fr;
+  align-items: center;
+  gap: var(--space-4);
+  padding: var(--space-4) 0;
+}
+
+.platform-infrastructure-field + .platform-infrastructure-field {
+  border-top: 1px dashed var(--color-border);
+}
+
+.platform-infrastructure-field-label { font-weight: var(--font-weight-bold); }
+
+.platform-infrastructure-field-label small {
+  display: block;
+  font-weight: var(--font-weight-normal);
+  font-size: var(--font-size-xs);
+  color: var(--color-text-muted);
+}
+
+.platform-infrastructure-field-control { max-width: 380px; }
+
+.platform-infrastructure-hint {
+  margin-top: var(--space-1);
+  font-size: var(--font-size-xs);
+  color: var(--color-text-muted);
+}
+
+/* ===== 輸入框 ===== */
+
+.platform-infrastructure-input {
+  width: 100%;
+  height: 42px;
+  padding: 0 var(--space-4);
+  background: var(--color-surface-muted);
+  border: 1.5px solid transparent;
+  border-radius: var(--radius-md);
+  outline: none;
+  transition: border-color var(--transition-fast), box-shadow var(--transition-fast), background var(--transition-fast);
+}
+
+.platform-infrastructure-input::placeholder { color: var(--color-text-placeholder); }
+
+.platform-infrastructure-input:hover { border-color: var(--color-border-strong); }
+
+.platform-infrastructure-input:focus {
+  background: var(--color-surface);
+  border-color: var(--color-primary);
+  box-shadow: var(--focus-ring);
+}
+
+.platform-infrastructure-input.is-invalid,
+.platform-infrastructure-select.is-invalid .platform-infrastructure-select-trigger {
+  background: var(--color-surface);
+  border-color: var(--color-danger);
+  box-shadow: 0 0 0 4px var(--color-danger-soft);
+}
+
+.platform-infrastructure-field-error {
+  margin-top: var(--space-1);
+  font-size: var(--font-size-xs);
+  color: var(--color-danger);
+}
+
+/* ===== 下拉選單 ===== */
+
+.platform-infrastructure-select { position: relative; }
+
+.platform-infrastructure-select-trigger {
+  width: 100%;
+  height: 42px;
+  padding: 0 var(--space-7) 0 var(--space-4);
+  text-align: left;
+  background: var(--color-surface-muted);
+  border: 1.5px solid transparent;
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  position: relative;
+  font-weight: var(--font-weight-bold);
+  transition: border-color var(--transition-fast), box-shadow var(--transition-fast), background var(--transition-fast);
+}
+
+.platform-infrastructure-select-trigger:hover { border-color: var(--color-border-strong); }
+
+/* 右邊的漸層小圓鈕（::before）和裡面的白色箭頭（::after） */
+.platform-infrastructure-select-trigger::before {
+  content: "";
+  position: absolute;
+  right: var(--space-3);
+  top: 50%;
+  width: 22px;
+  height: 22px;
+  margin-top: -11px;
+  border-radius: 50%;
+  background: var(--gradient-brand);
+}
+
+.platform-infrastructure-select-trigger::after {
+  content: "";
+  position: absolute;
+  right: calc(var(--space-3) + 8px);
+  top: 50%;
+  width: 6px;
+  height: 6px;
+  margin-top: -5px;
+  border-right: 2px solid var(--color-text-on-primary);
+  border-bottom: 2px solid var(--color-text-on-primary);
+  transform: rotate(45deg);
+  transition: transform var(--transition-fast), margin var(--transition-fast);
+}
+
+.platform-infrastructure-select.is-open .platform-infrastructure-select-trigger::after {
+  transform: rotate(-135deg);
+  margin-top: -2px;
+}
+
+.platform-infrastructure-select.is-open .platform-infrastructure-select-trigger,
+.platform-infrastructure-select-trigger:focus-visible {
+  background: var(--color-surface);
+  border-color: var(--color-primary);
+  box-shadow: var(--focus-ring);
+  outline: none;
+}
+
+.platform-infrastructure-select-trigger.is-placeholder {
+  color: var(--color-text-placeholder);
+  font-weight: var(--font-weight-normal);
+}
+
+.platform-infrastructure-select-list {
+  display: none;
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: calc(100% + var(--space-2));
+  margin: 0;
+  padding: var(--space-2);
+  list-style: none;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-lg);
+  z-index: 10;
+  max-height: 260px;
+  overflow-y: auto;
+}
+
+.platform-infrastructure-select.is-open .platform-infrastructure-select-list { display: block; }
+
+.platform-infrastructure-select-search {
+  margin-bottom: var(--space-2);
+  height: 36px;
+}
+
+.platform-infrastructure-select-option {
+  position: relative;
+  padding: var(--space-2) var(--space-3);
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+}
+
+.platform-infrastructure-select-option:hover,
+.platform-infrastructure-select-option.is-highlighted { background: var(--color-surface-muted); }
+
+.platform-infrastructure-select-option.is-selected {
+  color: var(--color-primary);
+  font-weight: var(--font-weight-bold);
+  background: var(--color-primary-soft);
+}
+
+/* 選中項目右邊的勾 */
+.platform-infrastructure-select-option.is-selected::after {
+  content: "";
+  position: absolute;
+  right: var(--space-3);
+  top: 50%;
+  width: 5px;
+  height: 10px;
+  margin-top: -7px;
+  border-right: 2px solid var(--color-primary);
+  border-bottom: 2px solid var(--color-primary);
+  transform: rotate(45deg);
+}
+
+.platform-infrastructure-select-option-hint {
+  display: block;
+  font-size: var(--font-size-xs);
+  color: var(--color-text-muted);
+  font-weight: var(--font-weight-normal);
+}
+
+/* ===== 按鈕 ===== */
+
+.platform-infrastructure-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-2);
+  min-width: 104px;
+  height: 42px;
+  padding: 0 var(--space-5);
+  border-radius: var(--radius-pill);
+  border: 1.5px solid transparent;
+  font-weight: var(--font-weight-bold);
+  letter-spacing: 0.06em;
+  cursor: pointer;
+  transition: transform var(--transition-fast), box-shadow var(--transition-fast), background var(--transition-fast), opacity var(--transition-fast), filter var(--transition-fast);
+}
+
+.platform-infrastructure-button-primary {
+  background: var(--gradient-brand);
+  color: var(--color-text-on-primary);
+  box-shadow: var(--shadow-glow);
+}
+
+.platform-infrastructure-button-primary:hover:not(:disabled) {
+  transform: translateY(-1px);
+  filter: brightness(1.05);
+}
+
+.platform-infrastructure-button-secondary {
+  background: var(--color-surface);
+  color: var(--color-primary);
+  border-color: var(--color-primary-soft);
+}
+
+.platform-infrastructure-button-secondary:hover:not(:disabled) {
+  border-color: var(--color-primary);
+  background: var(--color-primary-soft);
+}
+
+.platform-infrastructure-button-danger {
+  background: var(--color-danger);
+  color: var(--color-text-on-primary);
+}
+
+.platform-infrastructure-button-danger:hover:not(:disabled) { background: var(--color-danger-hover); }
+
+.platform-infrastructure-button:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+  box-shadow: none;
+}
+
+.platform-infrastructure-button.is-busy {
+  cursor: progress;
+  opacity: 0.85;
+}
+
+.platform-infrastructure-button:focus-visible {
+  outline: none;
+  box-shadow: var(--focus-ring);
+}
+
+.platform-infrastructure-icon-button {
+  width: 30px;
+  height: 30px;
+  border: 0;
+  border-radius: 50%;
+  background: transparent;
+  color: var(--color-text-muted);
+  cursor: pointer;
+  font-size: var(--font-size-lg);
+  line-height: 1;
+}
+
+.platform-infrastructure-icon-button:hover { background: var(--color-surface-muted); color: var(--color-text); }
+
+/* ===== 讀取中轉圈 ===== */
+
+.platform-infrastructure-spinner {
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  border: 2px solid currentColor;
+  border-right-color: transparent;
+  animation: platform-infrastructure-spin 0.8s linear infinite;
+  flex-shrink: 0;
+}
+
+.platform-infrastructure-spinner-large {
+  width: 40px;
+  height: 40px;
+  border-width: 3px;
+  color: var(--color-primary);
+  border-right-color: var(--color-accent);
+}
+
+@keyframes platform-infrastructure-spin { to { transform: rotate(360deg); } }
+
+/* ===== 儲存列 ===== */
+
+.platform-infrastructure-save-bar {
+  position: sticky;
+  bottom: var(--space-3);
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: var(--space-4);
+  padding: var(--space-3) var(--space-3) var(--space-3) var(--space-5);
+  background: var(--color-surface-glass);
+  border: 1px solid var(--color-surface);
+  border-radius: var(--radius-pill);
+  box-shadow: var(--shadow-md);
+  backdrop-filter: blur(14px);
+}
+
+.platform-infrastructure-feedback { font-size: var(--font-size-sm); font-weight: var(--font-weight-bold); }
+.platform-infrastructure-feedback.is-success { color: var(--color-success); }
+.platform-infrastructure-feedback.is-danger { color: var(--color-danger); }
+.platform-infrastructure-feedback.is-muted { color: var(--color-text-muted); }
+
+/* ===== 讀取中、空狀態 ===== */
+
+.platform-infrastructure-loading {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-3);
+  padding: var(--space-7) 0;
+  color: var(--color-text-muted);
+  font-weight: var(--font-weight-bold);
+}
+
+.platform-infrastructure-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-3);
+  padding: var(--space-4) 0 var(--space-5);
+  text-align: center;
+}
+
+.platform-infrastructure-empty-image {
+  width: 190px;
+  height: 190px;
+  border-radius: 50%;
+  object-fit: cover;
+  background: var(--gradient-hero);
+  mix-blend-mode: multiply;
+}
+
+.platform-infrastructure-empty-text {
+  margin: 0;
+  font-size: var(--font-size-lg);
+  font-weight: var(--font-weight-black);
+}
+
+/* ===== 錯誤訊息（showError） ===== */
+
+.platform-infrastructure-error-message {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-3);
+  padding: var(--space-3) var(--space-4);
+  background: var(--color-danger-soft);
+  border-radius: var(--radius-md);
+  width: 100%;
+  max-width: 500px;
+  text-align: left;
+}
+
+.platform-infrastructure-error-message-icon {
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background: var(--color-danger);
+  color: var(--color-text-on-primary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: var(--font-weight-black);
+  font-size: var(--font-size-xs);
+  flex-shrink: 0;
+  margin-top: 1px;
+}
+
+.platform-infrastructure-error-message-body { flex: 1; }
+.platform-infrastructure-error-message-title { font-weight: var(--font-weight-bold); color: var(--color-danger); }
+
+.platform-infrastructure-error-message-source {
+  font-size: var(--font-size-xs);
+  color: var(--color-text-muted);
+}
+
+/* ===== 提示訊息（showToast） ===== */
+
+.platform-infrastructure-toast-area {
+  position: fixed;
+  top: calc(var(--navbar-height) + var(--space-3));
+  right: var(--space-4);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  z-index: 50;
+}
+
+.platform-infrastructure-toast {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  min-width: 260px;
+  padding: var(--space-3) var(--space-4);
+  background: var(--color-surface);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-lg);
+  font-weight: var(--font-weight-bold);
+}
+
+/* 左邊的狀態圓點 */
+.platform-infrastructure-toast::before {
+  content: "";
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: var(--color-primary);
+  box-shadow: 0 0 0 4px var(--color-primary-soft);
+  flex-shrink: 0;
+}
+
+.platform-infrastructure-toast.is-success::before { background: var(--color-success); box-shadow: 0 0 0 4px var(--color-success-soft); }
+.platform-infrastructure-toast.is-warning::before { background: var(--color-warning); box-shadow: 0 0 0 4px var(--color-warning-soft); }
+
+/* ===== 彈出視窗、確認視窗 ===== */
+
+.platform-infrastructure-backdrop {
+  position: fixed;
+  inset: 0;
+  background: var(--color-backdrop);
+  backdrop-filter: blur(4px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 40;
+}
+
+.platform-infrastructure-modal {
+  position: relative;
+  width: 440px;
+  max-width: calc(100vw - var(--space-6));
+  background: var(--color-surface);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-lg);
+  overflow: hidden;
+}
+
+/* 視窗頂部的漸層細條 */
+.platform-infrastructure-modal::before {
+  content: "";
+  display: block;
+  height: 5px;
+  background: var(--gradient-brand);
+}
+
+.platform-infrastructure-modal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--space-5) var(--space-5) 0;
+}
+
+.platform-infrastructure-modal-title {
+  margin: 0;
+  font-size: var(--font-size-lg);
+  font-weight: var(--font-weight-black);
+}
+
+.platform-infrastructure-modal-body {
+  padding: var(--space-3) var(--space-5) var(--space-5);
+  color: var(--color-text-muted);
+}
+
+.platform-infrastructure-modal-footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: var(--space-2);
+  padding: 0 var(--space-5) var(--space-5);
+}
+
+/* ===== 分頁標籤 ===== */
+
+.platform-infrastructure-tabs {
+  display: inline-flex;
+  align-self: flex-start;
+  gap: var(--space-1);
+  padding: var(--space-1);
+  background: var(--color-surface-muted);
+  border-radius: var(--radius-pill);
+}
+
+.platform-infrastructure-tab {
+  padding: var(--space-1) var(--space-4);
+  border: 0;
+  border-radius: var(--radius-pill);
+  background: transparent;
+  color: var(--color-text-muted);
+  cursor: pointer;
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-bold);
+}
+
+.platform-infrastructure-tab:hover { color: var(--color-primary); }
+
+.platform-infrastructure-tab.is-active {
+  background: var(--gradient-brand);
+  color: var(--color-text-on-primary);
+  box-shadow: var(--shadow-glow);
+}
+
+/* ===== 開關 ===== */
+
+.platform-infrastructure-toggle {
+  position: relative;
+  width: 44px;
+  height: 24px;
+  border: 0;
+  border-radius: var(--radius-pill);
+  background: var(--color-border-strong);
+  cursor: pointer;
+  transition: background var(--transition-fast);
+}
+
+.platform-infrastructure-toggle::after {
+  content: "";
+  position: absolute;
+  top: 3px;
+  left: 3px;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: var(--color-surface);
+  box-shadow: var(--shadow-sm);
+  transition: transform var(--transition-fast);
+}
+
+.platform-infrastructure-toggle.is-on { background: var(--gradient-brand); }
+.platform-infrastructure-toggle.is-on::after { transform: translateX(20px); }
+
+/* ===== 標籤（等級、供應商） ===== */
+
+.platform-infrastructure-badge {
+  display: inline-block;
+  padding: 0 var(--space-3);
+  border-radius: var(--radius-pill);
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-bold);
+  line-height: 22px;
+  background: var(--color-surface-muted);
+  color: var(--color-text-muted);
+  white-space: nowrap;
+}
+
+.platform-infrastructure-badge.is-success { background: var(--color-success-soft); color: var(--color-success); }
+.platform-infrastructure-badge.is-warning { background: var(--color-warning-soft); color: var(--color-warning); }
+.platform-infrastructure-badge.is-danger { background: var(--color-danger-soft); color: var(--color-danger); }
+.platform-infrastructure-badge.is-accent { background: var(--color-accent-soft); color: var(--color-accent); }
+
+/* ===== 任務進度 ===== */
+
+.platform-infrastructure-progress {
+  height: 8px;
+  border-radius: var(--radius-pill);
+  background: var(--color-surface-muted);
+  overflow: hidden;
+}
+
+.platform-infrastructure-progress-fill {
+  height: 100%;
+  border-radius: var(--radius-pill);
+  background: var(--gradient-brand);
+}
+
+/* ===== 外殼：log 列 ===== */
+
+.platform-infrastructure-logbar {
+  position: relative;
+  z-index: 3;
+  background: var(--color-surface-glass);
+  backdrop-filter: blur(14px);
+  box-shadow: var(--shadow-sm);
+}
+
+.platform-infrastructure-logbar-summary {
+  width: 100%;
+  height: var(--logbar-height);
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  padding: 0 var(--space-5);
+  border: 0;
+  background: transparent;
+  cursor: pointer;
+  font-size: var(--font-size-sm);
+  text-align: left;
+}
+
+.platform-infrastructure-logbar-summary:hover { background: var(--color-primary-soft); }
+
+.platform-infrastructure-logbar-arrow {
+  margin-left: auto;
+  color: var(--color-primary);
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-bold);
+}
+
+.platform-infrastructure-logbar-panel {
+  display: none;
+  position: absolute;
+  left: var(--space-3);
+  right: var(--space-3);
+  bottom: calc(100% + var(--space-2));
+  height: 50vh;
+  flex-direction: column;
+  background: var(--color-surface);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-lg);
+  overflow: hidden;
+}
+
+.platform-infrastructure-logbar.is-expanded .platform-infrastructure-logbar-panel { display: flex; }
+
+.platform-infrastructure-logbar-toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--space-3) var(--space-5);
+  border-bottom: 1px solid var(--color-border);
+}
+
+.platform-infrastructure-logbar-list {
+  flex: 1;
+  overflow-y: auto;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.platform-infrastructure-log-entry {
+  padding: var(--space-2) var(--space-5);
+  border-bottom: 1px solid var(--color-surface-muted);
+  font-size: var(--font-size-sm);
+}
+
+.platform-infrastructure-log-entry-main {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+}
+
+.platform-infrastructure-log-time {
+  font-family: var(--font-family-mono);
+  color: var(--color-text-muted);
+  font-size: var(--font-size-xs);
+  white-space: nowrap;
+}
+
+.platform-infrastructure-log-module {
+  color: var(--color-text-muted);
+  white-space: nowrap;
+}
+
+.platform-infrastructure-log-meta {
+  margin-left: auto;
+  display: flex;
+  gap: var(--space-3);
+  color: var(--color-text-muted);
+  font-size: var(--font-size-xs);
+  white-space: nowrap;
+}
+
+.platform-infrastructure-log-error {
+  margin-top: var(--space-1);
+  padding-left: calc(var(--space-3) + 108px);
+  color: var(--color-danger);
+}
+
+.platform-infrastructure-log-error-toggle {
+  border: 0;
+  background: transparent;
+  color: var(--color-primary);
+  cursor: pointer;
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-bold);
+  padding: 0 var(--space-1);
+}
+
+.platform-infrastructure-log-detail {
+  display: none;
+  margin: var(--space-2) 0 0 calc(var(--space-3) + 108px);
+  padding: var(--space-3);
+  background: var(--color-surface-muted);
+  border-radius: var(--radius-sm);
+  font-family: var(--font-family-mono);
+  font-size: var(--font-size-xs);
+  white-space: pre-wrap;
+  color: var(--color-text);
+}
+
+.platform-infrastructure-log-entry.is-detail-open .platform-infrastructure-log-detail { display: block; }
+
+/* ===== 垂直排列的區塊 ===== */
+
+.platform-infrastructure-stack {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-5);
+}

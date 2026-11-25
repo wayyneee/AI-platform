@@ -1,0 +1,116 @@
+/*
+ * default 主題（草稿，待 PM 確認）
+ * 這份是變數的基準表：其他主題的變數名稱都和這裡相同，只換值。
+ * 風格：日式動漫官網風格、清晰乾淨的淺色系——白底、天空藍為主色、櫻粉為輔色，
+ *       藍粉漸層、點點與幾何裝飾、大型英文淡字，看板角色融進版面。
+ */
+
+:root {
+  /* ===== 顏色：底色與表面 ===== */
+  --color-bg: #f4f8ff;                        /* 整個畫面的底色（背景圖下面） */
+  --color-surface: #ffffff;                   /* 卡片、視窗、選單 */
+  --color-surface-muted: #eff5ff;             /* 次要區塊、hover */
+  --color-surface-glass: rgba(255, 255, 255, 0.78); /* 半透明表面：navbar、側邊欄、log 列 */
+  --color-backdrop: rgba(30, 50, 90, 0.35);   /* 彈出視窗後面的遮罩 */
+  --color-border: #e0e9f6;
+  --color-border-strong: #c5d4ea;
+
+  /* ===== 顏色：文字 ===== */
+  --color-text: #1d2b4f;
+  --color-text-muted: #667a9c;
+  --color-text-placeholder: #a8b6cc;
+  --color-text-on-primary: #ffffff;           /* 放在主色、漸層、危險色上的文字 */
+
+  /* ===== 顏色：主色與輔色 ===== */
+  --color-primary: #2f8cff;                   /* 天空藍 */
+  --color-primary-hover: #1a78ec;
+  --color-primary-soft: #e5f0ff;
+  --color-accent: #ff74ad;                    /* 櫻粉 */
+  --color-accent-soft: #ffe7f1;
+  --color-lavender: #9b8cff;                  /* 漸層中段 */
+
+  /* ===== 顏色：狀態 ===== */
+  --color-success: #17b07c;
+  --color-success-soft: #e0f7ee;
+  --color-warning: #f29a17;
+  --color-warning-soft: #fff2dc;
+  --color-danger: #f0506e;
+  --color-danger-hover: #dd3a59;
+  --color-danger-soft: #ffe6eb;
+
+  /* ===== 漸層與圖樣 ===== */
+  --gradient-brand: linear-gradient(120deg, #2f8cff 0%, #9b8cff 55%, #ff74ad 100%);      /* 主要按鈕、選中、強調 */
+  --gradient-hero: linear-gradient(120deg, #dcecff 0%, #ece6ff 50%, #ffe3ef 100%);       /* 頁首、視窗頂部的底 */
+  --gradient-text: linear-gradient(90deg, #2f8cff, #ff74ad);                              /* 漸層文字 */
+  --pattern-dots: radial-gradient(rgba(47, 140, 255, 0.22) 1.2px, transparent 1.6px);    /* 點點底紋 */
+  --pattern-dots-size: 14px 14px;
+  --background-veil: linear-gradient(180deg, rgba(244, 248, 255, 0.35) 0%, rgba(244, 248, 255, 0.78) 45%, rgba(244, 248, 255, 0.92) 100%);
+  --outline-text-color: rgba(47, 140, 255, 0.14);                                         /* 大型英文淡字的描邊 */
+
+  /* ===== 字體 ===== */
+  --font-family-base: "Noto Sans TC", "Microsoft JhengHei", "PingFang TC", sans-serif;
+  --font-family-display: "Segoe UI", "Noto Sans TC", "Microsoft JhengHei", sans-serif;  /* 英文大字、標題 */
+  --font-family-mono: "Cascadia Mono", Consolas, "Courier New", monospace;
+  --font-size-xs: 12px;
+  --font-size-sm: 13px;
+  --font-size-base: 14px;
+  --font-size-lg: 16px;
+  --font-size-xl: 22px;
+  --font-size-xxl: 32px;
+  --font-size-display: 88px;                  /* 大型英文淡字 */
+  --font-weight-normal: 400;
+  --font-weight-bold: 700;
+  --font-weight-black: 900;
+  --line-height-base: 1.65;
+  --line-height-tight: 1.2;
+  --letter-spacing-wide: 0.16em;
+
+  /* ===== 圓角 ===== */
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 20px;
+  --radius-pill: 999px;
+
+  /* ===== 間距 ===== */
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 24px;
+  --space-6: 32px;
+  --space-7: 48px;
+
+  /* ===== 陰影（帶一點藍） ===== */
+  --shadow-sm: 0 2px 6px rgba(47, 100, 180, 0.07);
+  --shadow-md: 0 10px 30px rgba(47, 100, 180, 0.11);
+  --shadow-lg: 0 24px 60px rgba(30, 60, 120, 0.22);
+  --shadow-glow: 0 8px 22px rgba(47, 140, 255, 0.35);   /* 漸層按鈕、選中項目 */
+  --focus-ring: 0 0 0 4px var(--color-primary-soft);
+
+  /* ===== 外殼尺寸 ===== */
+  --navbar-height: 64px;
+  --sidebar-width: 220px;
+  --logbar-height: 38px;
+  --content-max-width: 1000px;
+
+  /* ===== 動畫 ===== */
+  --transition-fast: 160ms ease;
+}
+
+/* ===== 全站基本樣式 ===== */
+*, *::before, *::after { box-sizing: border-box; }
+
+html, body {
+  margin: 0;
+  height: 100%;
+}
+
+body {
+  font-family: var(--font-family-base);
+  font-size: var(--font-size-base);
+  line-height: var(--line-height-base);
+  color: var(--color-text);
+  background: var(--color-bg);
+}
+
+button, input, select, textarea { font: inherit; color: inherit; }

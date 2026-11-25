@@ -1,26 +1,75 @@
 {
   "forge": {
     "url": "http://127.0.0.1:7860",
-    "model": "",
+    "model": "sd\\waiIllustriousSDXL_v150\\waiIllustriousSDXL_v150.safetensors",
     "baseSize": 1024,
-    "sampler": "DPM++ 2M",
-    "scheduler": "Karras",
-    "steps": 30,
+    "sampler": "Euler a",
+    "scheduler": "",
+    "steps": 28,
     "cfgScale": 6
   },
   "style": {
-    "prompt": "",
-    "negativePrompt": ""
+    "prompt": "masterpiece, best quality, amazing quality, very aesthetic, absurdres, official art, clean cel shading, crisp lineart, vibrant pastel colors, sky blue white and pink color scheme, bright, high key",
+    "negativePrompt": "lowres, worst quality, bad quality, bad anatomy, bad hands, extra digits, fewer digits, missing fingers, jpeg artifacts, blurry, signature, watermark, username, text, letters, nsfw, cleavage, loli, dark, gloomy, realistic, 3d"
   },
   "assets": {
     "PlatformInfrastructure": {
-      "platformLogo": { "description": "外殼 Navbar 最左側：平台的標誌圖形，不含文字", "prompt": "", "ratio": "1:1" },
-      "appBackground": { "description": "外殼整個畫面的背景：淡淡的背景圖，不干擾畫面上的文字", "prompt": "", "ratio": "16:9" },
-      "emptyStateIllustration": { "description": "空狀態的預設插圖（全平台共用）：一個角色看著空空的箱子，表示這裡還沒有東西", "prompt": "", "ratio": "1:1" },
-      "basicSettingsBanner": { "description": "基礎設定頁首：角色在整理房間、調整擺設", "prompt": "", "ratio": "4:1" },
-      "apiSettingsBanner": { "description": "API 串接頁首：角色拿著一串鑰匙，連接到發光的傳送門", "prompt": "", "ratio": "4:1" },
-      "usageStatsBanner": { "description": "花費統計頁首：角色拿著帳本看著長條圖", "prompt": "", "ratio": "4:1" },
-      "addModelHeader": { "description": "新增模型視窗頂部：新的 AI 夥伴從光中登場", "prompt": "", "ratio": "3:1" }
+      "platformLogo": {
+        "description": "外殼 Navbar 最左側：平台的標誌圖形，不含文字（圓角方形 app 圖示）",
+        "prompt": "no humans, app icon, rounded square icon, gradient from sky blue to pink, white four-pointed star sparkle symbol in the center, small sparkles, glossy, flat vector design, centered, simple white background",
+        "ratio": "1:1",
+        "width": 1024,
+        "height": 1024,
+        "seed": 1298364771
+      },
+      "appBackground": {
+        "description": "外殼整個畫面的背景：淡淡的粉彩天空，不干擾畫面上的文字",
+        "prompt": "no humans, scenery, pastel sky, soft fluffy clouds, gentle light rays, bokeh, sparkles, white and sky blue and light pink, dreamy, minimalist, lots of empty space, low contrast",
+        "ratio": "16:9",
+        "width": 1344,
+        "height": 768,
+        "seed": 1633599408
+      },
+      "emptyStateIllustration": {
+        "description": "空狀態的預設插圖（全平台共用）：看板角色看著空空的箱子，白底",
+        "prompt": "1girl, solo, (light blue hair:1.3), pink gradient hair tips, medium hair, star hair ornament, blue eyes, headphones around neck, white and sky blue jacket with pink accents, crouching, peeking into an empty open cardboard box, curious, full body, simple background, white background",
+        "ratio": "1:1",
+        "width": 1024,
+        "height": 1024,
+        "seed": 2611058816
+      },
+      "basicSettingsBanner": {
+        "description": "基礎設定頁首右側：看板角色（白底，畫面上會融進頁首）拿著畫筆和調色盤在調整外觀",
+        "prompt": "1girl, solo, (light blue hair:1.3), pink gradient hair tips, medium hair, star hair ornament, blue eyes, headphones around neck, white and sky blue jacket with pink accents, holding a paintbrush and a color palette, cheerful smile, cowboy shot, whole head and hair inside the frame, centered, white space around the character, simple background, white background",
+        "ratio": "3:4",
+        "width": 896,
+        "height": 1152,
+        "seed": 1319420596
+      },
+      "apiSettingsBanner": {
+        "description": "API 串接頁首右側：看板角色（白底）拿著一串發光的鑰匙",
+        "prompt": "1girl, solo, (light blue hair:1.3), pink gradient hair tips, medium hair, star hair ornament, blue eyes, headphones around neck, white and sky blue jacket with pink accents, holding up a ring of glowing keys, wink, confident smile, cowboy shot, whole head and hair inside the frame, centered, white space around the character, simple background, white background",
+        "ratio": "3:4",
+        "width": 896,
+        "height": 1152,
+        "seed": 1978528759
+      },
+      "usageStatsBanner": {
+        "description": "花費統計頁首右側：看板角色（白底）戴眼鏡拿著帳本",
+        "prompt": "1girl, solo, (light blue hair:1.3), pink gradient hair tips, medium hair, star hair ornament, blue eyes, round glasses, headphones around neck, white and sky blue jacket with pink accents, holding an open notebook and a pen, thinking, cowboy shot, whole head and hair inside the frame, centered, white space around the character, simple background, white background",
+        "ratio": "3:4",
+        "width": 896,
+        "height": 1152,
+        "seed": 38413308
+      },
+      "addModelHeader": {
+        "description": "新增模型視窗頂部右側：看板角色（白底）開心地揮手迎接新夥伴",
+        "prompt": "1girl, solo, (light blue hair:1.3), pink gradient hair tips, medium hair, star hair ornament, blue eyes, headphones around neck, white and sky blue jacket with pink accents, waving hand, happy, open mouth smile, sparkles, cowboy shot, whole head and hair inside the frame, centered, white space around the character, simple background, white background",
+        "ratio": "1:1",
+        "width": 1024,
+        "height": 1024,
+        "seed": 290342073
+      }
     }
   }
 }

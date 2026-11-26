@@ -10,5 +10,7 @@ export {
 export type { ErrorLevel, PlatformErrorObject } from './platformError.ts';
 export { listLogs, openLogFiles, subscribeLogs, wasErrorLogged, writeLog } from './logStore.ts';
 export type { LogFilter } from './logStore.ts';
+export { logFailure, logOutcome } from './actionLog.ts';
+export type { ActionLogExtra } from './actionLog.ts';
 export { handleUnexpectedError } from './errorHandling.ts';
 export { registerLogRoutes } from './logRoutes.ts';

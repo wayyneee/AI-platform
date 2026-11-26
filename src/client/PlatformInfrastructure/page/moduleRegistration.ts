@@ -3,8 +3,9 @@
 import './page.css';
 
 import type { ModuleRegistration } from '../AppShell/index.ts';
+import { ApiSettings } from './ApiSettings.tsx';
 import { BasicSettings } from './BasicSettings.tsx';
-import { ApiSettingsComingSoon, UsageStatsComingSoon } from './ComingSoonPage.tsx';
+import { UsageStatsComingSoon } from './ComingSoonPage.tsx';
 
 /** 提供「平台設定」的登記資訊；由前端進入點交給 registerModule 登記進外殼。 */
 export function getModuleRegistration(): ModuleRegistration {
@@ -24,7 +25,7 @@ export function getModuleRegistration(): ModuleRegistration {
       {
         path: 'api',
         labelKey: 'PlatformInfrastructure.nav.apiSettings',
-        component: ApiSettingsComingSoon,
+        component: ApiSettings,
       },
       {
         path: 'usage',

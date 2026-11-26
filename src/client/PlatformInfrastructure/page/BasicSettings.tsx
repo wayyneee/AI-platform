@@ -9,15 +9,7 @@ import type {
   SettingOptions,
 } from '../../../shared/PlatformInfrastructure/types.ts';
 import { useLeaveGuard } from '../AppShell/index.ts';
-import {
-  Button,
-  EmptyState,
-  ErrorMessage,
-  joinClassNames,
-  LoadingState,
-  Select,
-  showError,
-} from '../SharedComponents/index.ts';
+import { Select, showError } from '../SharedComponents/index.ts';
 import { toPlatformError } from '../SystemLog/index.ts';
 import {
   getSettings,
@@ -26,6 +18,7 @@ import {
   updateSettings,
 } from '../ThemeAndLanguage/index.ts';
 import { PageHero, type PageHeroContent } from './PageHero.tsx';
+import { LoadFailed, LoadingCard, SaveBar, type SaveFeedback } from './settingsPageParts.tsx';
 
 const MODULE_NAME = 'PlatformInfrastructure';
 // page.md：儲存成功後 1.5 秒重新整理頁面
@@ -70,11 +63,7 @@ export function BasicSettings() {
   return (
     <div className="platform-infrastructure-page">
       <PageHero content={HERO} />
-      {loadState.status === 'loading' && (
-        <section className="platform-infrastructure-card">
-          <LoadingState />
-        </section>
-      )}
+      {loadState.status === 'loading' && <LoadingCard />}
       {loadState.status === 'failed' && <LoadFailed error={loadState.error} onRetry={load} />}
       {loadState.status === 'ready' && (
         <SettingsForm initial={loadState.saved} options={loadState.options} />
@@ -148,7 +137,7 @@ function SettingsForm({ initial, options }: SettingsFormProps) {
           onChange={(language) => changeDraft({ language })}
         />
       </section>
-      <SaveBar saveState={saveState} isDirty={isDirty} onSave={save} />
+      <BasicSaveBar saveState={saveState} isDirty={isDirty} onSave={save} />
     </div>
   );
 }
@@ -176,56 +165,30 @@ function SettingField({ label, hint, value, options, onChange }: SettingFieldPro
 
 // ===== 儲存列 =====
 
-interface SaveBarProps {
+interface BasicSaveBarProps {
   saveState: SaveState;
   isDirty: boolean;
   onSave: () => void;
 }
 
-/** 儲存列：沒有修改時不能按；儲存中轉圈；成功綠色小字，失敗紅色小字（conventions.md 第 9 段）。 */
-function SaveBar({ saveState, isDirty, onSave }: SaveBarProps) {
-  const feedback = describeSaveFeedback(saveState);
+/** 儲存列：成功顯示「已儲存，即將重新整理套用」，失敗顯示「儲存失敗」。 */
+function BasicSaveBar({ saveState, isDirty, onSave }: BasicSaveBarProps) {
   return (
-    <div className="platform-infrastructure-save-bar">
-      <span
-        className={joinClassNames('platform-infrastructure-feedback', feedback?.className)}
-        role="status"
-      >
-        {feedback?.text}
-      </span>
-      <Button
-        onClick={onSave}
-        isDisabled={!isDirty}
-        isBusy={saveState.status === 'saving'}
-        busyLabel={getText('PlatformInfrastructure.common.saving')}
-      >
-        {getText('PlatformInfrastructure.common.save')}
-      </Button>
-    </div>
+    <SaveBar
+      feedback={describeSaveFeedback(saveState)}
+      isDirty={isDirty}
+      isSaving={saveState.status === 'saving'}
+      onSave={onSave}
+    />
   );
 }
 
-function describeSaveFeedback(saveState: SaveState): { text: string; className: string } | null {
+function describeSaveFeedback(saveState: SaveState): SaveFeedback {
   if (saveState.status === 'saved') {
-    return { text: getText('PlatformInfrastructure.basicSettings.saved'), className: 'is-success' };
+    return { text: getText('PlatformInfrastructure.basicSettings.saved'), tone: 'success' };
   }
   if (saveState.status === 'failed') {
-    return { text: getText('PlatformInfrastructure.common.saveFailed'), className: 'is-danger' };
+    return { text: getText('PlatformInfrastructure.common.saveFailed'), tone: 'danger' };
   }
   return null;
-}
-
-// ===== 載入失敗 =====
-
-/** 進入時查詢失敗：空狀態「載入失敗」、錯誤訊息和「重試」按鈕。 */
-function LoadFailed({ error, onRetry }: { error: PlatformError; onRetry: () => void }) {
-  const [isErrorVisible, setIsErrorVisible] = useState(true);
-  return (
-    <section className="platform-infrastructure-card">
-      <EmptyState text={getText('PlatformInfrastructure.common.loadFailed')}>
-        {isErrorVisible && <ErrorMessage error={error} onClose={() => setIsErrorVisible(false)} />}
-        <Button onClick={onRetry}>{getText('PlatformInfrastructure.common.retry')}</Button>
-      </EmptyState>
-    </section>
-  );
 }

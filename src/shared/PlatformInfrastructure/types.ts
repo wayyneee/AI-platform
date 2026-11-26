@@ -80,6 +80,40 @@ export interface SettingOptions {
 /** 平台支援的供應商；Forge 是本機服務，不需要 key。 */
 export type ProviderId = 'openai' | 'gemini' | 'claude' | 'grok' | 'openrouter' | 'forge';
 
+/** 需要 API key 的供應商（Forge 填位址，不需要 key）；API key 分頁的供應商選單只列這些。 */
+export const PROVIDERS_REQUIRING_KEY: readonly ProviderId[] = [
+  'openai',
+  'gemini',
+  'claude',
+  'grok',
+  'openrouter',
+];
+
+// ===== API key =====
+
+/** 一組已儲存的 API key；前端只拿得到遮罩值，完整的 key 不離開後端。 */
+export interface ApiKeySummary {
+  id: string;
+  provider: ProviderId;
+  name: string;
+  /** 長度 12 以上為前 3 碼 + `****` + 後 4 碼，未滿 12 只有 `****` */
+  maskedKey: string;
+}
+
+/** 新增一組 API key 時送出的內容。 */
+export interface NewApiKey {
+  provider: ProviderId;
+  name: string;
+  keyValue: string;
+}
+
+/** 修改一組 API key：名稱和 key 值可以改，供應商不能改；keyValue 留空或不給代表 key 不變。 */
+export interface ApiKeyChanges {
+  id: string;
+  name: string;
+  keyValue?: string;
+}
+
 /** 模型類型：LLM、圖片、影片、語音。 */
 export type ModelType = 'llm' | 'image' | 'video' | 'audio';
 

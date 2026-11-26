@@ -52,7 +52,7 @@ export const platformInfrastructureTexts = {
   'PlatformInfrastructure.task.running': '處理中',
   'PlatformInfrastructure.task.completed': '完成',
   'PlatformInfrastructure.task.failed': '失敗',
-  // 暫時的：API 串接、花費統計在之後的分段實作，完成時移除
+  // 暫時的：模型分頁、花費統計在之後的分段實作，完成時移除
   'PlatformInfrastructure.common.comingSoon': '這個頁面還在製作中',
 
   // ===== 語言名稱（用各語言自己的寫法） =====
@@ -76,6 +76,37 @@ export const platformInfrastructureTexts = {
   'PlatformInfrastructure.apiSettings.eyebrow': 'API Connection',
   'PlatformInfrastructure.apiSettings.title': 'API 串接',
   'PlatformInfrastructure.apiSettings.description': '管理 API key 和模型，讓平台連上你的 AI 夥伴',
+  'PlatformInfrastructure.apiSettings.tabKeys': 'API key',
+  'PlatformInfrastructure.apiSettings.tabModels': '模型',
+  'PlatformInfrastructure.apiKeys.cardTitle': 'API key',
+  'PlatformInfrastructure.apiKeys.cardEyebrow': 'Keys',
+  'PlatformInfrastructure.apiKeys.add': '＋ 新增 API key',
+  'PlatformInfrastructure.apiKeys.columnProvider': '供應商',
+  'PlatformInfrastructure.apiKeys.columnName': '名稱',
+  'PlatformInfrastructure.apiKeys.columnKey': 'key',
+  'PlatformInfrastructure.apiKeys.delete': '刪除',
+  'PlatformInfrastructure.apiKeys.searchProvider': '搜尋供應商',
+  'PlatformInfrastructure.apiKeys.namePlaceholder': '例如：個人、工作用',
+  'PlatformInfrastructure.apiKeys.keyPlaceholderNew': '貼上 API key',
+  'PlatformInfrastructure.apiKeys.keyPlaceholderSaved': '{maskedKey}（輸入新值代表換 key）',
+  'PlatformInfrastructure.apiKeys.empty': '還沒有 API key',
+  'PlatformInfrastructure.apiKeys.emptyHint': '新增 key 之後，就能在「模型」分頁加入要使用的模型',
+  'PlatformInfrastructure.apiKeys.rowRequired': '請填好紅框的欄位',
+  'PlatformInfrastructure.apiKeys.fixRequired': '請先填好紅框的欄位',
+  'PlatformInfrastructure.apiKeys.saved': '已儲存',
+  'PlatformInfrastructure.apiKeys.partiallyFailed': '部分儲存失敗',
+  'PlatformInfrastructure.apiKeys.deleteTitle': '刪除 API key',
+  'PlatformInfrastructure.apiKeys.deleteMessage': '確定要刪除「{name}」（{provider}）嗎？',
+  'PlatformInfrastructure.apiKeys.deleteConfirm': '刪除',
+  'PlatformInfrastructure.apiKeys.deleted': '已刪除 API key「{name}」',
+
+  // ===== 供應商名稱（品牌名，各語言相同寫法） =====
+  'PlatformInfrastructure.provider.openai': 'OpenAI',
+  'PlatformInfrastructure.provider.gemini': 'Gemini',
+  'PlatformInfrastructure.provider.claude': 'Claude',
+  'PlatformInfrastructure.provider.grok': 'Grok',
+  'PlatformInfrastructure.provider.openrouter': 'OpenRouter',
+  'PlatformInfrastructure.provider.forge': 'Forge',
 
   // ===== 花費統計 =====
   'PlatformInfrastructure.usageStats.display': 'Usage',
@@ -103,6 +134,13 @@ export const platformInfrastructureTexts = {
   // ===== 錯誤說明：主題與語言 =====
   'errors.SETTINGS_THEME_NOT_FOUND': '找不到選擇的主題',
   'errors.SETTINGS_LANGUAGE_NOT_FOUND': '平台沒有選擇的語言',
+
+  // ===== 錯誤說明：API key =====
+  'errors.API_KEY_PROVIDER_INVALID': '這個供應商不需要 API key',
+  'errors.API_KEY_NAME_REQUIRED': '請填寫 key 的名稱',
+  'errors.API_KEY_VALUE_REQUIRED': '請貼上 API key',
+  'errors.API_KEY_NAME_TAKEN': '同一家供應商已經有這個名稱的 key',
+  'errors.API_KEY_NOT_FOUND': '找不到這組 API key，可能已經被刪除',
 
   // ===== 錯誤說明：供應商 =====
   'errors.PROVIDER_KEY_INVALID': 'API key 無效，請確認 key 是否正確',

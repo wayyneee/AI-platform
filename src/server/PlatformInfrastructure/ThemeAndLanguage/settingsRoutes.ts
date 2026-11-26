@@ -6,7 +6,7 @@ import type {
   PlatformSettings,
   SettingOptions,
 } from '../../../shared/PlatformInfrastructure/types.ts';
-import { getErrorLevel, isPlatformError, writeLog } from '../SystemLog/index.ts';
+import { logFailure, logOutcome } from '../SystemLog/index.ts';
 import { getSettings, listSettingOptions, updateSettings } from './settingsStore.ts';
 
 const MODULE_NAME = 'PlatformInfrastructure';
@@ -25,11 +25,11 @@ const updateSettingsBodySchema = {
 export async function registerSettingsRoutes(server: FastifyInstance): Promise<void> {
   // 單純讀取本機資料：只在失敗時寫 log
   server.get('/getSettings', async (): Promise<{ settings: PlatformSettings }> => ({
-    settings: logFailure('讀取平台設定', getSettings),
+    settings: logFailure(MODULE_NAME, '讀取平台設定', getSettings),
   }));
 
   server.get('/listSettingOptions', async (): Promise<{ options: SettingOptions }> => ({
-    options: logFailure('列出可選的主題與語言', () => listSettingOptions()),
+    options: logFailure(MODULE_NAME, '列出可選的主題與語言', () => listSettingOptions()),
   }));
 
   // 會改變資料：成功和失敗都寫
@@ -39,36 +39,9 @@ export async function registerSettingsRoutes(server: FastifyInstance): Promise<v
     async (request): Promise<{ settings: PlatformSettings }> => {
       const { theme, language } = request.body;
       const action = `儲存基礎設定（主題 ${theme}、語言 ${language}）`;
-      const startedAt = Date.now();
-      const settings = logFailure(action, () => updateSettings({ theme, language }));
-      writeLog({
-        level: 'success',
-        module: MODULE_NAME,
-        action,
-        durationMs: Date.now() - startedAt,
-      });
-      return { settings };
+      return {
+        settings: logOutcome(MODULE_NAME, action, () => updateSettings({ theme, language })),
+      };
     },
   );
-}
-
-// ===== 輔助 =====
-
-/** 執行一件事；失敗時寫一筆 log 再往外丟，最外層的錯誤攔截看到已寫過就不再寫。 */
-function logFailure<Result>(action: string, work: () => Result): Result {
-  const startedAt = Date.now();
-  try {
-    return work();
-  } catch (error) {
-    if (isPlatformError(error)) {
-      writeLog({
-        level: getErrorLevel(error.code),
-        module: MODULE_NAME,
-        action,
-        durationMs: Date.now() - startedAt,
-        error,
-      });
-    }
-    throw error;
-  }
 }

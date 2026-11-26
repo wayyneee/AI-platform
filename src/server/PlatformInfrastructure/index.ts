@@ -17,6 +17,7 @@ export {
   writeLog,
 } from './SystemLog/index.ts';
 export { getModelParams, listModels } from './ModelRegistry/index.ts';
+export { getTask, invokeModel, streamModel, submitTask } from './ModelInvocation/index.ts';
 export { getSettings } from './ThemeAndLanguage/index.ts';
 
 /** 登記本模組所有 HTTP 路由；由後端進入點以 `/api/PlatformInfrastructure` 為前綴登記。 */

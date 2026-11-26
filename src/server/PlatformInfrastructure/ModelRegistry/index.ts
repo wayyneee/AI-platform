@@ -27,5 +27,5 @@ export {
   updateModelKey,
 } from './modelStore.ts';
 export { registerModelRoutes } from './modelRoutes.ts';
-// 其他小模組寫 log 時描述 key 用，例如「個人（OpenRouter）」
-export { describeKey } from './registryLogText.ts';
+// 其他小模組寫 log 時描述 key、模型用，例如「個人（OpenRouter）」「GPT-5（OpenAI，LLM）」
+export { describeKey, describeModel } from './registryLogText.ts';

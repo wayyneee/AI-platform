@@ -517,3 +517,63 @@ export interface UsageStatsResult {
   keys: UsageKey[];
   stats: UsageStats | null;
 }
+
+// ===== 模型呼叫 =====
+
+/**
+ * 呼叫 LLM：哪個模組在呼叫、哪個已儲存的模型、參數、對話。
+ * callerModule 寫進 log 的模組欄，例如「ChatRoom → PlatformInfrastructure」（spec：看得出是誰在花錢）。
+ */
+export interface ChatInvocation {
+  /** 呼叫的核心模組，例如 ChatRoom */
+  callerModule: string;
+  /** 已儲存模型的編號（SavedModel.id） */
+  modelId: string;
+  /** 沒填的參數有預設值用預設值；不在定義中的參數略過不送 */
+  params: ParamValues;
+  input: ChatInput;
+  /** 中止呼叫或串流；中止時不記錄用量 */
+  signal?: AbortSignal;
+}
+
+/** 一次 LLM 呼叫的結果：回覆（含用量）與花費。 */
+export interface ChatInvocationResult {
+  result: ChatResult;
+  /** 依模型價格估算的花費；記錄用量失敗時為 null（結果照常回傳） */
+  cost: UsageCost | null;
+}
+
+/** 串流的一段：逐段的回覆文字、思考內容，最後一段帶完整結果與花費。 */
+export type ChatInvocationStreamEvent =
+  | { type: 'text'; text: string }
+  | { type: 'thinking'; text: string }
+  | ({ type: 'done' } & ChatInvocationResult);
+
+/** 送出圖片、影片、語音的生成任務：哪個模組在呼叫、哪個已儲存的模型、參數、輸入。 */
+export interface MediaTaskRequest {
+  /** 呼叫的核心模組，例如 MediaCreation */
+  callerModule: string;
+  /** 已儲存模型的編號（SavedModel.id） */
+  modelId: string;
+  params: ParamValues;
+  input: MediaInput;
+}
+
+/** 任務的狀態：排隊中、處理中、完成、失敗。 */
+export type MediaTaskStatus = 'queued' | 'running' | 'succeeded' | 'failed';
+
+/** 一個生成任務；完成或失敗的任務被 getTask 取走一次後就移除。 */
+export interface MediaTask {
+  id: string;
+  /** 已儲存模型的編號 */
+  modelId: string;
+  status: MediaTaskStatus;
+  /** 供應商有提供百分比時才有（0～100） */
+  percent?: number;
+  /** 完成時的結果 */
+  result?: MediaResult;
+  /** 完成時的花費；Forge 不花錢、記錄用量失敗時為 null */
+  cost?: UsageCost | null;
+  /** 失敗時的錯誤 */
+  error?: PlatformError;
+}

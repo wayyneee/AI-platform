@@ -366,6 +366,14 @@ export const platformInfrastructureTexts = {
   'errors.USAGE_KEY_NOT_FOUND': '找不到這組 key 的用量紀錄，可能已經被刪除',
   'errors.USAGE_KEY_NOT_DELETED': '只能刪除已刪除 key 的用量紀錄',
 
+  // ===== 錯誤說明：模型呼叫 =====
+  'errors.INVOCATION_PARAM_INVALID':
+    '參數的值超出範圍或不在可選的清單中，可以在 log 查看是哪個參數',
+  'errors.INVOCATION_MODEL_TYPE_MISMATCH': '這個模型的類型不能用這種方式呼叫',
+  'errors.INVOCATION_TASK_NOT_FOUND': '找不到這個生成任務，可能已經取走結果，或平台重新啟動過',
+  'errors.INVOCATION_TASK_TIMED_OUT': '影片超過 30 分鐘還沒完成，已視為失敗',
+  'errors.INVOCATION_UNEXPECTED_ERROR': '呼叫模型時發生未預期的錯誤，可以在 log 查看細節',
+
   // ===== 錯誤說明：供應商 =====
   'errors.PROVIDER_KEY_INVALID': 'API key 無效，請確認 key 是否正確',
   'errors.PROVIDER_QUOTA_EXCEEDED': '這組 key 的額度不足，請到供應商網站確認餘額或帳單',

@@ -1,7 +1,7 @@
 # 專案進度
 
 ## 1. 進度概括
-PlatformInfrastructure 實作中，分成 10 段（第 4 段拆成 4a、4b，見第 3 段）。spec、page.md、default 主題、四個 demo、自動檢查都已完成；真實 key 的手動驗收只做 OpenRouter、Grok 和本地 Forge。第 1 段後端地基、第 2 段第一個能操作的畫面、第 3 段共用元件補齊＋未儲存離開確認已完成（`npm run dev:server`＋`npm run dev:client` 可開啟平台設定）；第 4a 段五家 LLM 串接、第 4b 段圖片、影片、語音與 Forge 串接完成（自動測試通過，真實 key 驗收等 ChatRoom、MediaCreation 串接後）；第 5 段 API key 完成（API 串接頁的 API key 分頁可用，模型分頁暫時顯示「還在製作中」）。下一步：第 6 段模型（含刪除 key 時清空模型的 key 欄位、確認視窗列出模型數量）。
+PlatformInfrastructure 實作中，分成 10 段（第 4 段拆成 4a、4b，見第 3 段）。spec、page.md、default 主題、四個 demo、自動檢查都已完成；真實 key 的手動驗收只做 OpenRouter、Grok 和本地 Forge。第 1 段後端地基、第 2 段第一個能操作的畫面、第 3 段共用元件補齊＋未儲存離開確認已完成（`npm run dev:server`＋`npm run dev:client` 可開啟平台設定）；第 4a 段五家 LLM 串接、第 4b 段圖片、影片、語音與 Forge 串接完成（自動測試通過，真實 key 驗收等 ChatRoom、MediaCreation 串接後）；第 5 段 API key、第 6 段模型完成（API 串接頁的 API key、模型分頁與新增模型視窗可用；OpenRouter、Grok 用真實 key 新增模型的手動驗收待 PM）。下一步：第 7 段用量與花費。
 
 ## 2. 模組
 | 模組 | 狀態 |
@@ -11,12 +11,12 @@ PlatformInfrastructure 實作中，分成 10 段（第 4 段拆成 4a、4b，見
 | └ PlatformBootstrap | 完成 |
 | └ ThemeAndLanguage | 完成 |
 | └ ProviderConnectors | 完成（真實 key 驗收見待串接） |
-| └ ModelRegistry | 實作中（API key 完成；模型第 6 段） |
+| └ ModelRegistry | 完成（OpenRouter、Grok 真實 key 的手動驗收待 PM） |
 | └ UsageAndCost | spec 完成 |
 | └ ModelInvocation | spec 完成 |
 | └ SharedComponents | 完成（任務進度元件等 MediaCreation 串接後手動驗收） |
 | └ AppShell | 完成 |
-| └ Page | 實作中（基礎設定、API key 分頁完成；模型分頁、花費統計暫時顯示「這個頁面還在製作中」，第 6、7 段換掉） |
+| └ Page | 實作中（基礎設定、API 串接完成；花費統計暫時顯示「這個頁面還在製作中」，第 7 段換掉） |
 | **ChatRoom** | |
 | **NovelStudio** | |
 | **MediaCreation** | |
@@ -33,7 +33,7 @@ PlatformInfrastructure 實作中，分成 10 段（第 4 段拆成 4a、4b，見
 | 4a | ProviderConnectors 的 LLM：OpenAI、Gemini、Claude、Grok、OpenRouter 的格式轉換、回應解析、串流、錯誤代碼、模型偵測（能力、價格、可調參數） | 完成 |
 | 4b | ProviderConnectors 的圖片、影片、語音：Grok、OpenRouter、Forge 的送出、查進度、取結果、可選項目即時查詢；改圖、讓圖動、多個 LoRA | 完成 |
 | 5 | API key：ModelRegistry 的 key 部分、API key 分頁 | 完成 |
-| 6 | 模型：ModelRegistry 的模型部分（偵測、測試、能力、參數、價格）、模型分頁、新增模型視窗 | 未開始 |
+| 6 | 模型：ModelRegistry 的模型部分（偵測、測試、能力、參數、價格）、模型分頁、新增模型視窗 | 完成 |
 | 7 | 用量與花費：UsageAndCost、花費統計頁 | 未開始 |
 | 8 | 模型呼叫：ModelInvocation（呼叫、串流與中止、工具、搜尋、長時間任務） | 未開始 |
 | 9 | 收尾：啟動檔、README（含 OpenAI、Gemini、Claude 尚未用真實 key 驗證）、手動驗收、刪除 page-demo | 未開始 |

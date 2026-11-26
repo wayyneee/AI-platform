@@ -31,6 +31,7 @@ beforeEach(() => {
   savedKeys = [OPENROUTER_KEY, CLAUDE_KEY];
   routes = {
     listApiKeys: () => Response.json({ keys: savedKeys }),
+    listModels: () => Response.json({ models: [] }),
     addApiKey: (body) => {
       const key = {
         id: `k-${body.name}`,
@@ -196,7 +197,8 @@ describe('ApiSettings：API key 分頁', () => {
     await clickSave();
 
     const order = fetchMock.mock.calls.map(([url]) => String(url).split('/').pop());
-    expect(order.filter((name) => name !== 'listApiKeys')).toEqual(['addApiKey', 'updateApiKey']);
+    const sent = order.filter((name) => name !== 'listApiKeys' && name !== 'listModels');
+    expect(sent).toEqual(['addApiKey', 'updateApiKey']);
     expect(screen.getByText('部分儲存失敗').className).toContain('is-danger');
     // 新增成功的列變成已儲存；改名失敗的列保留輸入內容並紅框
     expect(nameInputs().map((input) => input.value)).toEqual(['新的', '工作用', '工作用']);

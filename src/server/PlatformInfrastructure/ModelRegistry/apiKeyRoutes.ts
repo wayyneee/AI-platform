@@ -6,22 +6,12 @@ import type {
   ApiKeyChanges,
   ApiKeySummary,
   NewApiKey,
-  ProviderId,
 } from '../../../shared/PlatformInfrastructure/types.ts';
 import { logFailure, logOutcome } from '../SystemLog/index.ts';
 import { addApiKey, deleteApiKey, findApiKey, listApiKeys, updateApiKey } from './apiKeyStore.ts';
+import { describeKey } from './registryLogText.ts';
 
 const MODULE_NAME = 'PlatformInfrastructure';
-// log 的文字不做多語系（conventions.md 第 9 段），供應商名稱直接寫在這裡
-const PROVIDER_LOG_NAMES: Record<ProviderId, string> = {
-  openai: 'OpenAI',
-  gemini: 'Gemini',
-  claude: 'Claude',
-  grok: 'Grok',
-  openrouter: 'OpenRouter',
-  forge: 'Forge',
-};
-
 const addApiKeyBodySchema = {
   type: 'object',
   required: ['provider', 'name', 'keyValue'],
@@ -101,11 +91,6 @@ export async function registerApiKeyRoutes(server: FastifyInstance): Promise<voi
 }
 
 // ===== log 文字 =====
-
-function describeKey(provider: ProviderId, name: string): string {
-  const providerName = PROVIDER_LOG_NAMES[provider] ?? provider;
-  return `${name.trim()}（${providerName}）`;
-}
 
 /** 修改的 log 文字：標出改名前後、是否換了 key，方便從 log 看出做了什麼。 */
 function describeUpdate(id: string, name: string, isKeyChanged: boolean): string {

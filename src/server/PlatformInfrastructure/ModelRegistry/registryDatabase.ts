@@ -1,4 +1,4 @@
-// ModelRegistry 的資料庫：API key（之後加上模型）存在本模組共用的資料庫檔，結構版本以 ModelRegistry 記錄。
+// ModelRegistry 的資料庫：API key 和模型存在本模組共用的資料庫檔，結構版本以 ModelRegistry 記錄。
 
 import { openDatabase, type ModuleDatabase } from '../PlatformBootstrap/index.ts';
 
@@ -18,6 +18,22 @@ const MIGRATIONS = [
     created_at TEXT NOT NULL,
     updated_at TEXT NOT NULL,
     UNIQUE (provider, name)
+  )`,
+  // 第 2 版：模型。刪除 key 時不刪模型，由外鍵把 key_id 清成 NULL（spec 規則）；
+  // 價格、能力、參數定義依類型形狀不同，存 JSON 文字
+  `CREATE TABLE models (
+    id TEXT PRIMARY KEY,
+    type TEXT NOT NULL,
+    provider TEXT NOT NULL,
+    model_id TEXT NOT NULL,
+    display_name TEXT NOT NULL,
+    key_id TEXT REFERENCES api_keys (id) ON DELETE SET NULL,
+    address TEXT,
+    price TEXT NOT NULL,
+    capabilities TEXT,
+    params TEXT NOT NULL,
+    created_at TEXT NOT NULL,
+    updated_at TEXT NOT NULL
   )`,
 ];
 

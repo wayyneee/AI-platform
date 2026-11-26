@@ -6,6 +6,7 @@ import { useEffect, useState } from 'react';
 import {
   PROVIDERS_REQUIRING_KEY,
   type ApiKeySummary,
+  type SavedModel,
 } from '../../../shared/PlatformInfrastructure/types.ts';
 import { useLeaveGuard } from '../AppShell/index.ts';
 import { addApiKey, deleteApiKey, updateApiKey } from '../ModelRegistry/index.ts';
@@ -41,6 +42,10 @@ interface ApiKeyPanelProps {
   savedKeys: ApiKeySummary[];
   /** 儲存或刪除成功後更新頁面保存的 key 清單（切換分頁回來時用它重建列表） */
   onSavedKeysChange: (update: (keys: ApiKeySummary[]) => ApiKeySummary[]) => void;
+  /** 已儲存的模型：刪除 key 前的確認視窗列出選用它的模型數量 */
+  models: SavedModel[];
+  /** key 刪除成功後通知頁面，讓模型分頁清空選用它的模型的 key */
+  onKeyDeleted: (keyId: string) => void;
   /** 回報有沒有未儲存的修改，讓頁面在切換分頁前詢問 */
   onDirtyChange: (isDirty: boolean) => void;
 }
@@ -48,8 +53,17 @@ interface ApiKeyPanelProps {
 // ===== 分頁 =====
 
 /** API key 分頁：key 列表（或空狀態）和儲存列。 */
-export function ApiKeyPanel({ savedKeys, onSavedKeysChange, onDirtyChange }: ApiKeyPanelProps) {
-  const editor = useKeyRowsEditor(savedKeys, onSavedKeysChange);
+export function ApiKeyPanel({
+  savedKeys,
+  onSavedKeysChange,
+  models,
+  onKeyDeleted,
+  onDirtyChange,
+}: ApiKeyPanelProps) {
+  const editor = useKeyRowsEditor(savedKeys, onSavedKeysChange, (key) => {
+    const usedCount = models.filter((model) => model.keyId === key.id).length;
+    return confirmAndDelete(key, usedCount, onKeyDeleted);
+  });
   useLeaveGuard(editor.isDirty);
   useEffect(() => onDirtyChange(editor.isDirty), [editor.isDirty, onDirtyChange]);
 
@@ -79,6 +93,7 @@ export function ApiKeyPanel({ savedKeys, onSavedKeysChange, onDirtyChange }: Api
 function useKeyRowsEditor(
   savedKeys: ApiKeySummary[],
   onSavedKeysChange: ApiKeyPanelProps['onSavedKeysChange'],
+  deleteSavedKey: (key: ApiKeySummary) => Promise<boolean>,
 ) {
   const [rows, setRows] = useState<KeyRow[]>(() => savedKeys.map(createSavedRow));
   const [feedback, setFeedback] = useState<SaveFeedback>(null);
@@ -99,7 +114,7 @@ function useKeyRowsEditor(
 
   const removeRow = async (row: KeyRow) => {
     // 還沒儲存的新列直接移除；已儲存的要確認後才刪
-    if (row.saved && !(await confirmAndDelete(row.saved))) return;
+    if (row.saved && !(await deleteSavedKey(row.saved))) return;
     setRows((current) => current.filter((item) => item.rowId !== row.rowId));
     // 列表變了，上一次儲存的結果小字已經不準
     setFeedback(null);
@@ -310,18 +325,34 @@ function countChanged(rows: KeyRow[]): number {
 
 // ===== 刪除 =====
 
-/** 刪除已儲存的 key：危險操作的確認視窗，確認後刪除並提示；回傳是否刪除成功。 */
-async function confirmAndDelete(key: ApiKeySummary): Promise<boolean> {
+/**
+ * 刪除已儲存的 key：危險操作的確認視窗列出選用它的模型數量（模型不刪，只清空 key 欄位），
+ * 確認後刪除並提示；回傳是否刪除成功。
+ */
+async function confirmAndDelete(
+  key: ApiKeySummary,
+  usedCount: number,
+  onKeyDeleted: (keyId: string) => void,
+): Promise<boolean> {
   const provider = getText(`PlatformInfrastructure.provider.${key.provider}`);
+  const message =
+    usedCount > 0
+      ? getText('PlatformInfrastructure.apiKeys.deleteMessageWithModels', {
+          count: usedCount,
+          name: key.name,
+          provider,
+        })
+      : getText('PlatformInfrastructure.apiKeys.deleteMessage', { name: key.name, provider });
   const isConfirmed = await showConfirm({
     title: getText('PlatformInfrastructure.apiKeys.deleteTitle'),
-    message: getText('PlatformInfrastructure.apiKeys.deleteMessage', { name: key.name, provider }),
+    message,
     confirmLabel: getText('PlatformInfrastructure.apiKeys.deleteConfirm'),
     isDanger: true,
   });
   if (!isConfirmed) return false;
   try {
     await deleteApiKey(key.id);
+    onKeyDeleted(key.id);
     showToast('success', getText('PlatformInfrastructure.apiKeys.deleted', { name: key.name }));
     return true;
   } catch (thrown) {

@@ -379,6 +379,8 @@ export interface ModelPrice {
   outputPerMillionTokens?: number;
   /** LLM：每次網頁搜尋 */
   perSearch?: number;
+  /** 圖片：每張；影片：每秒；語音：每 100 萬字 */
+  perUnit?: number;
 }
 
 /** 向供應商偵測到的一個模型：能力、自動帶入的價格、可調參數。 */
@@ -396,4 +398,57 @@ export interface DetectedModel {
   /** 圖片、影片、語音：可以輸入、輸出的類型（供應商有提供才有） */
   inputKinds?: ContentKind[];
   outputKinds?: ContentKind[];
+}
+
+// ===== 已儲存的模型 =====
+
+/** 各類型有哪些供應商（spec：OpenAI、Gemini、Claude 只有 LLM；Forge 只有圖片）；新增模型視窗的供應商選單依這裡列出。 */
+export const MODEL_TYPE_PROVIDERS: Readonly<Record<ModelType, readonly ProviderId[]>> = {
+  llm: ['openai', 'gemini', 'claude', 'grok', 'openrouter'],
+  image: ['grok', 'openrouter', 'forge'],
+  video: ['grok', 'openrouter'],
+  audio: ['grok', 'openrouter'],
+};
+
+/** Forge 的預設位址（新增模型視窗的提示文字）。 */
+export const FORGE_DEFAULT_ADDRESS = 'http://127.0.0.1:7860';
+
+/** 怎麼連到某個類型的模型：雲端供應商選已儲存的 key，Forge 填位址。 */
+export interface ModelConnectionChoice {
+  type: ModelType;
+  provider: ProviderId;
+  /** 雲端供應商：已儲存的 key 編號 */
+  keyId?: string;
+  /** Forge：位址，例如 http://127.0.0.1:7860 */
+  address?: string;
+}
+
+/** 測試一個模型：連線方式加上供應商的模型名稱。 */
+export interface ModelTestInput extends ModelConnectionChoice {
+  modelId: string;
+}
+
+/** 新增模型：要先用同樣的設定測試成功才能儲存（spec 規則）。 */
+export interface NewModel extends ModelTestInput {
+  displayName: string;
+  price: ModelPrice;
+}
+
+/** 一個已儲存的模型；其他模組從這裡挑選，依能力決定要用哪些功能。 */
+export interface SavedModel {
+  id: string;
+  type: ModelType;
+  provider: ProviderId;
+  /** 供應商的模型名稱 */
+  modelId: string;
+  displayName: string;
+  /** 選用的 key；key 被刪除後為 null，要重新選 key 才能使用。Forge 一律為 null */
+  keyId: string | null;
+  /** Forge 的位址；雲端供應商為 null */
+  address: string | null;
+  price: ModelPrice;
+  /** LLM 的七項能力；其他類型為 null */
+  capabilities: LlmCapabilities | null;
+  /** 可調參數的定義；即時選項（hasLiveOptions）在這裡是空的，用 getModelParams 查 */
+  params: ParamDefinition[];
 }

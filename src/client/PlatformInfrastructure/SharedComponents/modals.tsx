@@ -4,7 +4,7 @@
 import { useEffect, type ReactNode } from 'react';
 
 import { getText } from '../ThemeAndLanguage/index.ts';
-import { Button } from './basicControls.tsx';
+import { Button, joinClassNames } from './basicControls.tsx';
 import { createExternalStore, useStoreValue } from './externalStore.ts';
 
 /** 視窗內容用來控制視窗的方法。 */
@@ -13,12 +13,20 @@ export interface ModalControls {
   close: () => void;
   /** 告訴視窗目前有沒有未儲存的修改；有的話按 X、Esc 或換頁時會先詢問 */
   setHasUnsavedChanges: (hasUnsavedChanges: boolean) => void;
+  /** 和按 X 一樣：有未儲存的修改先詢問；給自己畫標題列的視窗（hasCustomFrame）放在自己的 X 上 */
+  requestClose: () => void;
+  /** 標題元素要用的 id，讓讀螢幕軟體知道視窗的名稱；自己畫標題列時放在標題上 */
+  titleId: string;
 }
 
 export interface ModalOptions {
   title: ReactNode;
   /** 視窗內容；需要自己關閉視窗或回報未儲存的修改時，傳入函式取得 ModalControls */
   content: ReactNode | ((controls: ModalControls) => ReactNode);
+  /** 視窗外框要加的 class，例如調整寬度 */
+  className?: string;
+  /** 為 true 時不畫共用的標題列和 X，由內容自己畫（例如新增模型視窗的插圖標題列） */
+  hasCustomFrame?: boolean;
 }
 
 /** showModal 回傳的控制把手：開啟視窗的那一方可以不詢問直接關閉它。 */
@@ -40,6 +48,8 @@ interface ModalEntry {
   title: ReactNode;
   body: ReactNode;
   footer?: ReactNode;
+  className?: string;
+  hasCustomFrame?: boolean;
   /** 被 X、Esc 或 closeAllModals 關掉時呼叫，例如讓確認視窗回傳「沒有確認」 */
   onDismiss?: () => void;
   /** 開啟前的焦點，關閉後還給它，鍵盤操作才能接著用 */
@@ -63,9 +73,17 @@ export function showModal(options: ModalOptions): ModalHandle {
       if (hasUnsavedChanges) unsavedModalIds.add(id);
       else unsavedModalIds.delete(id);
     },
+    requestClose: () => void requestCloseModal(id),
+    titleId: modalTitleId(id),
   };
   const body = typeof options.content === 'function' ? options.content(controls) : options.content;
-  addModal({ id, title: options.title, body });
+  addModal({
+    id,
+    title: options.title,
+    body,
+    className: options.className,
+    hasCustomFrame: options.hasCustomFrame,
+  });
   return { close: controls.close };
 }
 
@@ -157,15 +175,20 @@ export function ModalStack() {
 
 /** 一個視窗：標題和 X、內容、選填的按鈕列。背景不掛點擊事件，所以點背景不關閉。 */
 function ModalFrame({ entry }: { entry: ModalEntry }) {
-  const titleId = `platform-infrastructure-modal-title-${entry.id}`;
+  const titleId = modalTitleId(entry.id);
+  const className = joinClassNames('platform-infrastructure-modal', entry.className);
+  if (entry.hasCustomFrame) {
+    return (
+      <div className="platform-infrastructure-backdrop">
+        <div className={className} role="dialog" aria-modal="true" aria-labelledby={titleId}>
+          {entry.body}
+        </div>
+      </div>
+    );
+  }
   return (
     <div className="platform-infrastructure-backdrop">
-      <div
-        className="platform-infrastructure-modal"
-        role="dialog"
-        aria-modal="true"
-        aria-labelledby={titleId}
-      >
+      <div className={className} role="dialog" aria-modal="true" aria-labelledby={titleId}>
         <div className="platform-infrastructure-modal-header">
           <h2 className="platform-infrastructure-modal-title" id={titleId}>
             {entry.title}
@@ -205,6 +228,10 @@ function useCloseTopModalOnEscape(entries: ModalEntry[]): void {
 }
 
 // ===== 輔助 =====
+
+function modalTitleId(id: number): string {
+  return `platform-infrastructure-modal-title-${id}`;
+}
 
 function addModal(entry: Omit<ModalEntry, 'previousFocus'>): void {
   modalStore.set([...modalStore.get(), { ...entry, previousFocus: document.activeElement }]);

@@ -21,16 +21,7 @@ export function logFailure<Result>(
   try {
     return work();
   } catch (error) {
-    if (isPlatformError(error)) {
-      writeLog({
-        level: getErrorLevel(error.code),
-        module,
-        action,
-        durationMs: Date.now() - startedAt,
-        ...extra,
-        error,
-      });
-    }
+    writeFailureLog(module, action, error, startedAt, extra);
     throw error;
   }
 }
@@ -46,4 +37,73 @@ export function logOutcome<Result>(
   const result = logFailure(module, action, work, extra);
   writeLog({ level: 'success', module, action, durationMs: Date.now() - startedAt, ...extra });
   return result;
+}
+
+// ===== 要等待的事（連到外部服務） =====
+
+/**
+ * 執行一件要等待的事（例如連到供應商）：成功和失敗都寫一筆 log（conventions.md 第 9 段：會連到外部服務的操作）。
+ * describeSuccess 可以從結果補上狀態、用量等內容，例如「偵測到 8 個模型」。
+ */
+export async function logOutcomeAsync<Result>(
+  module: string,
+  action: string,
+  work: () => Promise<Result>,
+  extra: ActionLogExtra = {},
+  describeSuccess?: (result: Result) => ActionLogExtra,
+): Promise<Result> {
+  const startedAt = Date.now();
+  let result: Result;
+  try {
+    result = await work();
+  } catch (error) {
+    writeFailureLog(module, action, error, startedAt, extra);
+    throw error;
+  }
+  writeLog({
+    level: 'success',
+    module,
+    action,
+    durationMs: Date.now() - startedAt,
+    ...extra,
+    ...describeSuccess?.(result),
+  });
+  return result;
+}
+
+/** 執行一件要等待、但只讀資料的事：只在失敗時寫 log。 */
+export async function logFailureAsync<Result>(
+  module: string,
+  action: string,
+  work: () => Promise<Result>,
+  extra: ActionLogExtra = {},
+): Promise<Result> {
+  const startedAt = Date.now();
+  try {
+    return await work();
+  } catch (error) {
+    writeFailureLog(module, action, error, startedAt, extra);
+    throw error;
+  }
+}
+
+// ===== 輔助 =====
+
+/** 失敗的 log：等級依錯誤代碼；不是錯誤物件的意外錯誤交給最外層的錯誤攔截寫。 */
+function writeFailureLog(
+  module: string,
+  action: string,
+  error: unknown,
+  startedAt: number,
+  extra: ActionLogExtra,
+): void {
+  if (!isPlatformError(error)) return;
+  writeLog({
+    level: getErrorLevel(error.code),
+    module,
+    action,
+    durationMs: Date.now() - startedAt,
+    ...extra,
+    error,
+  });
 }

@@ -19,6 +19,10 @@ export interface RecordedRequest {
 
 type FakeReply = () => Response;
 
+// 假計時器每次快轉的時間與次數上限（最多快轉 200 秒，避免沒完成時卡住測試）
+const FAKE_TIMER_STEP_MS = 1000;
+const MAX_FAKE_TIMER_STEPS = 200;
+
 /** 換掉全域 fetch：依序回傳 replies，並記下每次請求。 */
 export function mockFetch(...replies: FakeReply[]): RecordedRequest[] {
   const requests: RecordedRequest[] = [];
@@ -42,6 +46,28 @@ export function mockFetch(...replies: FakeReply[]): RecordedRequest[] {
 export function jsonReply(body: unknown, status = 200): FakeReply {
   return () =>
     new Response(JSON.stringify(body), { status, headers: { 'content-type': 'application/json' } });
+}
+
+/** 檔案回應（音檔、影片）。 */
+export function binaryReply(bytes: Uint8Array, contentType: string, status = 200): FakeReply {
+  return () => new Response(bytes, { status, headers: { 'content-type': contentType } });
+}
+
+/**
+ * 等待會查進度的生成完成：用假的計時器快轉每次等待，不用真的等。
+ * 呼叫前要先 vi.useFakeTimers()；回傳完成的結果，或丟出的錯誤（用 catchAsyncError 接）。
+ */
+export async function settleWithFakeTimers<Result>(work: Promise<Result>): Promise<Result> {
+  let isSettled = false;
+  const tracked = work.finally(() => {
+    isSettled = true;
+  });
+  // 先接住錯誤，避免快轉期間出現未處理的 rejection
+  tracked.catch(() => undefined);
+  for (let step = 0; step < MAX_FAKE_TIMER_STEPS && !isSettled; step += 1) {
+    await vi.advanceTimersByTimeAsync(FAKE_TIMER_STEP_MS);
+  }
+  return tracked;
 }
 
 /** 連不上（fetch 本身丟出例外）。 */

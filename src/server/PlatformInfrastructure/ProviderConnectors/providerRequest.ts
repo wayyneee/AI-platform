@@ -23,6 +23,7 @@ export const ProviderErrorCodes = defineErrorCodes({
   PROVIDER_MODEL_NOT_FOUND: 'warning',
   PROVIDER_SERVER_ERROR: 'error',
   PROVIDER_UNREACHABLE: 'error',
+  PROVIDER_FORGE_NOT_RUNNING: 'error',
   PROVIDER_RESPONSE_INVALID: 'error',
   PROVIDER_CANCELLED: 'warning',
 });
@@ -175,6 +176,7 @@ function describeCode(code: ProviderErrorCode): string {
     PROVIDER_MODEL_NOT_FOUND: '找不到模型',
     PROVIDER_SERVER_ERROR: '供應商服務錯誤',
     PROVIDER_UNREACHABLE: '連不上供應商',
+    PROVIDER_FORGE_NOT_RUNNING: '連不上 Forge，可能沒有啟動或沒有加上 --api',
     PROVIDER_RESPONSE_INVALID: '供應商回應的格式無法解讀',
     PROVIDER_CANCELLED: '已取消',
   };

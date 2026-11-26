@@ -113,6 +113,7 @@ export const platformInfrastructureTexts = {
   'errors.PROVIDER_MODEL_NOT_FOUND': '供應商找不到這個模型，請確認模型是否還存在',
   'errors.PROVIDER_SERVER_ERROR': '供應商的服務發生錯誤，請稍後再試',
   'errors.PROVIDER_UNREACHABLE': '連不上供應商，請確認網路連線',
+  'errors.PROVIDER_FORGE_NOT_RUNNING': '請先啟動 Forge（需加上 --api）或改用 API',
   'errors.PROVIDER_RESPONSE_INVALID': '供應商回傳的內容無法解讀，可以在 log 查看細節',
   'errors.PROVIDER_CANCELLED': '已取消',
   'errors.THEME_LOAD_FAILED': '主題載入失敗，已改用 default 主題',

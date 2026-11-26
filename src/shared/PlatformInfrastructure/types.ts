@@ -114,10 +114,34 @@ export type ParamDefinition =
       default?: number;
     }
   | { key: string; kind: 'boolean'; default?: boolean }
-  | { key: string; kind: 'select'; options: string[]; default?: string };
+  | {
+      key: string;
+      kind: 'select';
+      options: string[];
+      default?: string;
+      /** 選項向供應商即時查詢（例如 Grok 的聲音、Forge 的取樣器）；存下的定義 options 是空的，查詢參數時才填入 */
+      hasLiveOptions?: boolean;
+    }
+  | {
+      /** 可以選多個、每個各自調權重（Forge 的 LoRA） */
+      key: string;
+      kind: 'weightedList';
+      options: string[];
+      weight: { min: number; max: number; default: number };
+      hasLiveOptions?: boolean;
+    };
+
+/** weightedList 參數的一項：選了哪個、權重多少。 */
+export interface WeightedChoice {
+  name: string;
+  weight: number;
+}
+
+/** 一個參數的值。 */
+export type ParamValue = number | string | boolean | WeightedChoice[];
 
 /** 呼叫時帶的參數值，key 對應 ParamDefinition.key。 */
-export type ParamValues = Record<string, number | string | boolean>;
+export type ParamValues = Record<string, ParamValue>;
 
 /** 平台共通的 LLM 參數 key；OpenRouter 另外有它回報的參數（見 ProviderConnectors）。 */
 export const LLM_PARAM_KEYS = {
@@ -230,7 +254,88 @@ export type ChatStreamEvent =
   | { type: 'thinking'; text: string }
   | { type: 'done'; result: ChatResult };
 
+// ===== 圖片、影片、語音 =====
+
+/** 非 LLM 的模型類型。 */
+export type MediaModelType = Exclude<ModelType, 'llm'>;
+
+/** 平台內建的圖片、影片、語音參數 key（spec：依各家官方文件內建）；各家只列出它支援的。 */
+export const MEDIA_PARAM_KEYS = {
+  /** 張數 */
+  count: 'count',
+  aspectRatio: 'aspectRatio',
+  resolution: 'resolution',
+  quality: 'quality',
+  seed: 'seed',
+  /** 影片秒數 */
+  duration: 'duration',
+  /** 影片是否一起生成聲音 */
+  generateAudio: 'generateAudio',
+  voice: 'voice',
+  language: 'language',
+  /** 語速 */
+  speed: 'speed',
+  // 以下是 Forge 的參數
+  width: 'width',
+  height: 'height',
+  steps: 'steps',
+  cfgScale: 'cfgScale',
+  sampler: 'sampler',
+  scheduler: 'scheduler',
+  /** 改圖時偏離原圖的程度 */
+  denoisingStrength: 'denoisingStrength',
+  loras: 'loras',
+} as const;
+
+/** 送給圖片、影片模型的圖片；data 是 base64（不含 data: 前綴）。 */
+export interface MediaImage {
+  /** 例如 image/png */
+  mimeType: string;
+  data: string;
+}
+
+/** 送給圖片、影片、語音模型的內容。 */
+export interface MediaInput {
+  /** 圖片、影片：提示詞；語音：要念的文字 */
+  prompt: string;
+  /** 不想出現的內容（目前只有 Forge 使用） */
+  negativePrompt?: string;
+  /** 圖片：參考圖，有附就是改圖 */
+  referenceImages?: MediaImage[];
+  /** 影片：第一個畫面，有附就是讓這張圖動起來 */
+  firstFrame?: MediaImage;
+}
+
+/** 生成出來的一個檔案；由呼叫端存到自己的資料夾。 */
+export interface MediaFile {
+  /** 例如 image/png、video/mp4、audio/mpeg */
+  mimeType: string;
+  data: Uint8Array;
+}
+
+/** 一次圖片、影片、語音生成的用量；計費單位：圖片以張、影片以秒、語音以輸入字數。 */
+export interface MediaUsage {
+  imageCount: number;
+  videoSeconds: number;
+  characterCount: number;
+}
+
+/** 圖片、影片、語音生成的結果。 */
+export interface MediaResult {
+  files: MediaFile[];
+  usage: MediaUsage;
+}
+
+/** 生成中的進度：排隊中、處理中；percent 只有供應商提供百分比時才有（0～100）。 */
+export interface MediaProgress {
+  status: 'queued' | 'running';
+  percent?: number;
+}
+
 // ===== 偵測到的模型 =====
+
+/** 模型可以輸入、輸出的內容類型（新增模型視窗的資訊卡顯示用）。 */
+export type ContentKind = 'text' | 'image' | 'video' | 'audio' | 'file';
 
 /** 模型價格（美元）；沒填的欄位代表只統計用量。 */
 export interface ModelPrice {
@@ -254,4 +359,7 @@ export interface DetectedModel {
   /** 抓得到價格的供應商才有（OpenRouter、Grok 的 LLM） */
   price?: ModelPrice;
   params: ParamDefinition[];
+  /** 圖片、影片、語音：可以輸入、輸出的類型（供應商有提供才有） */
+  inputKinds?: ContentKind[];
+  outputKinds?: ContentKind[];
 }

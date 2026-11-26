@@ -53,6 +53,7 @@ ChatRoom、NovelStudio、MediaCreation 都透過它的介面呼叫模型、寫 l
   - OpenAI：沒有共通的可調參數。
   - 所有供應商：支援思考的模型，可調參數多一個「思考程度」；網頁搜尋不是「不支援」的模型，可調參數多一個「網頁搜尋」。這兩個參數開不開、調多少，由呼叫端每次決定，本模組只照著送出。
 - 圖片、影片、語音的參數（尺寸、比例、張數、秒數、聲音等）依各家官方文件由平台內建；能即時查詢的選項（OpenRouter 的可選值、Grok 的聲音清單、Forge 的模型檔、LoRA、取樣器）向 API 即時查詢。
+- 圖片可以附參考圖改圖（Grok、OpenRouter、Forge）、影片可以附一張圖當第一個畫面；Forge 的 LoRA 可以選多個，各自調權重。
 - 其他模組使用時只顯示可調的參數；沒有可調參數時提示使用者。
 - 參數超出範圍或選項不在清單中時回報錯誤；不在定義中的參數略過不送；沒填的參數有預設值用預設值，沒有就交給供應商決定。
 
@@ -227,7 +228,7 @@ graph LR
 | getModelParams | 前後端 | 查詢某個模型的可調參數 | 模型 → 參數定義 | ModelRegistry |
 | invokeModel | 後端 | 呼叫模型並取得完整結果 | 模型、參數、輸入（LLM 為對話，可附圖片、PDF、工具清單、工具結果；之前的回覆帶上它的供應商原始內容）→ 結果（回覆文字、思考內容、工具請求、搜尋來源、供應商原始內容）、用量、花費 | ModelInvocation |
 | streamModel | 後端 | 串流呼叫 LLM，可中止 | 模型、參數、對話（同上）→ 逐段的回覆文字與思考內容，最後一段帶工具請求、搜尋來源、供應商原始內容、用量 | ModelInvocation |
-| submitTask | 後端 | 送出長時間生成任務 | 模型、參數、輸入 → 任務 | ModelInvocation |
+| submitTask | 後端 | 送出長時間生成任務 | 模型、參數、輸入（圖片可附參考圖、影片可附第一個畫面的圖）→ 任務 | ModelInvocation |
 | getTask | 後端 | 查詢任務的狀態、進度與結果（完成後只能取一次） | 任務 ID → 任務 | ModelInvocation |
 | useSharedComponents | 前端 | 使用共用元件 | 無 → 元件集合 | SharedComponents |
 | showModal | 前端 | 顯示彈出視窗，可以在關閉前先確認 | 標題、內容 | SharedComponents |
@@ -288,6 +289,7 @@ graph LR
 ### ProviderConnectors
 - [ ] 各家的對話、圖片、PDF、工具清單、工具結果、思考程度、網頁搜尋開關，正確轉成該家的格式
 - [ ] 各家回應中的回覆文字、思考內容、工具請求、搜尋來源、用量（含搜尋次數）正確取出，轉成統一格式
+- [ ] 圖片、影片、語音的參數、參考圖、第一個畫面、LoRA 正確轉成各家格式；結果、進度、用量（張數、秒數、字數）正確取出
 - [ ] 供應商的各種錯誤（key 無效、額度不足、太頻繁、拒絕、服務錯誤、連不上）對應到正確的錯誤代碼
 
 ### ModelRegistry
@@ -321,8 +323,8 @@ graph LR
 - [ ] 已取得結果但記錄用量失敗時，結果照常回傳，log 為錯誤並註明
 - [ ] （ChatRoom 串接後）OpenRouter、Grok 的 LLM：傳圖片、傳 PDF、調用工具、網頁搜尋、思考各試一次，結果都拿得到，花費統計出現用量（手動）
 - [ ] （ChatRoom 串接後）Gemini 兩輪對話，回覆有接續上文（手動）
-- [ ] （MediaCreation 串接後）Grok、OpenRouter 各生成圖片、短影片、語音都拿得到檔案，影片等待中有進度（手動）
-- [ ] （MediaCreation 串接後）Forge 選模型檔、LoRA 生成圖片，有進度、拿得到圖片（手動）
+- [ ] （MediaCreation 串接後）Grok、OpenRouter 各生成圖片、短影片、語音都拿得到檔案，影片等待中有進度；改圖、讓圖動各試一次（手動）
+- [ ] （MediaCreation 串接後）Forge 選模型檔、LoRA 生成圖片，有進度、拿得到圖片；改圖試一次（手動）
 
 ### SharedComponents、AppShell、Page
 - 見 page.md 的驗收條件。

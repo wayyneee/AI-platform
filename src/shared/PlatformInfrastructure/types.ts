@@ -452,3 +452,68 @@ export interface SavedModel {
   /** 可調參數的定義；即時選項（hasLiveOptions）在這裡是空的，用 getModelParams 查 */
   params: ParamDefinition[];
 }
+
+// ===== 用量與花費 =====
+
+/** 花費統計的時間單位：每小時、每天、每週（週一開始）、每月。 */
+export type UsageUnit = 'hour' | 'day' | 'week' | 'month';
+
+/** 各時間單位顯示的格數（spec：最近 24 小時、30 天、12 週、12 個月）。 */
+export const USAGE_SLOT_COUNTS: Readonly<Record<UsageUnit, number>> = {
+  hour: 24,
+  day: 30,
+  week: 12,
+  month: 12,
+};
+
+/** 一次呼叫記下的花費：花費只算有價格的部分；有沒有價格的用量時 hasUnpricedUsage 為 true。 */
+export interface UsageCost {
+  /** 美元；是依模型價格估算的參考值 */
+  costUsd: number;
+  /** 有用量算進了花費 */
+  hasPricedUsage: boolean;
+  /** 有用量因為沒填價格，沒有算進花費 */
+  hasUnpricedUsage: boolean;
+}
+
+/** 一段期間的用量與花費（一格或整段的加總）。 */
+export interface UsageAmounts extends UsageCost {
+  inputTokens: number;
+  outputTokens: number;
+  /** 網頁搜尋次數 */
+  searchCount: number;
+  imageCount: number;
+  videoSeconds: number;
+  /** 語音的輸入字數 */
+  characterCount: number;
+}
+
+/** 花費統計的一格；沒有用量的格子也有，數字全為 0。 */
+export interface UsageSlot extends UsageAmounts {
+  /** 這一格的開始時間（ISO 8601），依電腦的當地時間分格 */
+  start: string;
+}
+
+/** 花費統計可以選的 key：現有的 key，加上已刪除但還有用量紀錄的 key。 */
+export interface UsageKey {
+  id: string;
+  provider: ProviderId;
+  /** 已刪除的 key 是最後一筆紀錄當時的名稱 */
+  name: string;
+  isDeleted: boolean;
+}
+
+/** 一組 key 在某個時間單位下的統計。 */
+export interface UsageStats {
+  keyId: string;
+  unit: UsageUnit;
+  /** 由舊到新，最後一格是現在 */
+  slots: UsageSlot[];
+  totals: UsageAmounts;
+}
+
+/** 花費統計頁要的內容：可以選的 key，以及選中那組 key 的統計；沒有任何 key 時 stats 為 null。 */
+export interface UsageStatsResult {
+  keys: UsageKey[];
+  stats: UsageStats | null;
+}

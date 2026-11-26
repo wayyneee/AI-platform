@@ -5,6 +5,7 @@ import type { FastifyInstance } from 'fastify';
 import { registerApiKeyRoutes, registerModelRoutes } from './ModelRegistry/index.ts';
 import { registerLogRoutes } from './SystemLog/index.ts';
 import { registerSettingsRoutes } from './ThemeAndLanguage/index.ts';
+import { registerUsageRoutes } from './UsageAndCost/index.ts';
 
 export { initializePlatform, openDatabase } from './PlatformBootstrap/index.ts';
 export type { Migration, ModuleDatabase, OpenDatabaseOptions } from './PlatformBootstrap/index.ts';
@@ -24,4 +25,5 @@ export async function registerRoutes(server: FastifyInstance): Promise<void> {
   await server.register(registerSettingsRoutes);
   await server.register(registerApiKeyRoutes);
   await server.register(registerModelRoutes);
+  await server.register(registerUsageRoutes);
 }

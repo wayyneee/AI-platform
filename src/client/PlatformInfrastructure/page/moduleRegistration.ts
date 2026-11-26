@@ -5,7 +5,7 @@ import './page.css';
 import type { ModuleRegistration } from '../AppShell/index.ts';
 import { ApiSettings } from './ApiSettings.tsx';
 import { BasicSettings } from './BasicSettings.tsx';
-import { UsageStatsComingSoon } from './ComingSoonPage.tsx';
+import { UsageStats } from './UsageStats.tsx';
 
 /** 提供「平台設定」的登記資訊；由前端進入點交給 registerModule 登記進外殼。 */
 export function getModuleRegistration(): ModuleRegistration {
@@ -30,7 +30,7 @@ export function getModuleRegistration(): ModuleRegistration {
       {
         path: 'usage',
         labelKey: 'PlatformInfrastructure.nav.usageStats',
-        component: UsageStatsComingSoon,
+        component: UsageStats,
       },
     ],
   };

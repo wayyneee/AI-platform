@@ -54,8 +54,6 @@ export const platformInfrastructureTexts = {
   'PlatformInfrastructure.task.running': '處理中',
   'PlatformInfrastructure.task.completed': '完成',
   'PlatformInfrastructure.task.failed': '失敗',
-  // 暫時的：花費統計在之後的分段實作，完成時移除
-  'PlatformInfrastructure.common.comingSoon': '這個頁面還在製作中',
 
   // ===== 語言名稱（用各語言自己的寫法） =====
   'PlatformInfrastructure.language.zh-TW': '繁體中文',
@@ -251,6 +249,78 @@ export const platformInfrastructureTexts = {
   'PlatformInfrastructure.usageStats.title': '花費統計',
   'PlatformInfrastructure.usageStats.description':
     '依 API key 查看用量和花費，每一分錢花在哪裡都清清楚楚',
+  // 篩選列
+  'PlatformInfrastructure.usageStats.keyLabel': 'API key',
+  'PlatformInfrastructure.usageStats.keyOption': '{name}（{provider}）',
+  'PlatformInfrastructure.usageStats.deletedKeyOption': '{label}・已刪除',
+  'PlatformInfrastructure.usageStats.deleteRecords': '刪除紀錄',
+  'PlatformInfrastructure.usageStats.unit.hour': '每小時',
+  'PlatformInfrastructure.usageStats.unit.day': '每天',
+  'PlatformInfrastructure.usageStats.unit.week': '每週',
+  'PlatformInfrastructure.usageStats.unit.month': '每月',
+  // 提示
+  'PlatformInfrastructure.usageStats.estimateNotice':
+    '花費是依模型價格估算的參考值，實際金額以各供應商的帳單為準',
+  'PlatformInfrastructure.usageStats.partialPriceNotice':
+    '部分用量沒有設定價格，花費只計算有價格的部分',
+  'PlatformInfrastructure.usageStats.noPriceNotice':
+    '這組 key 用到的模型沒有設定價格，無法計算花費，只顯示用量',
+  // 長條圖
+  'PlatformInfrastructure.usageStats.costChartTitle': '花費',
+  'PlatformInfrastructure.usageStats.costChartEyebrow': 'Cost',
+  'PlatformInfrastructure.usageStats.costUnit': '單位：美元',
+  'PlatformInfrastructure.usageStats.unpricedLegend': '含未計價的用量',
+  'PlatformInfrastructure.usageStats.tokenChartTitle': 'Token 用量',
+  'PlatformInfrastructure.usageStats.tokenChartEyebrow': 'Tokens',
+  'PlatformInfrastructure.usageStats.inputLegend': '輸入',
+  'PlatformInfrastructure.usageStats.outputLegend': '輸出',
+  'PlatformInfrastructure.usageStats.tooltipUnpriced': '含未設定價格的用量，花費未計入',
+  // 時間：X 軸的 MM/DD、HH:00 是固定格式，這裡只放有文字的
+  'PlatformInfrastructure.usageStats.tooltipHour': '{date} {start}～{end}',
+  'PlatformInfrastructure.usageStats.tooltipDay': '{date}（{weekday}）',
+  'PlatformInfrastructure.usageStats.tooltipWeek': '{start}～{end}',
+  'PlatformInfrastructure.usageStats.tooltipMonth': '{year} 年 {month} 月',
+  'PlatformInfrastructure.usageStats.weekday.0': '日',
+  'PlatformInfrastructure.usageStats.weekday.1': '一',
+  'PlatformInfrastructure.usageStats.weekday.2': '二',
+  'PlatformInfrastructure.usageStats.weekday.3': '三',
+  'PlatformInfrastructure.usageStats.weekday.4': '四',
+  'PlatformInfrastructure.usageStats.weekday.5': '五',
+  'PlatformInfrastructure.usageStats.weekday.6': '六',
+  'PlatformInfrastructure.usageStats.range.hour': '最近 24 小時（{start}～{end}）',
+  'PlatformInfrastructure.usageStats.range.day': '最近 30 天（{start}～{end}）',
+  'PlatformInfrastructure.usageStats.range.week': '最近 12 週（{start}～{end}）',
+  'PlatformInfrastructure.usageStats.range.month': '最近 12 個月（{start}～{end}）',
+  // 用量的名稱與單位（摘要和滑鼠說明共用）
+  'PlatformInfrastructure.usageStats.cost': '花費',
+  'PlatformInfrastructure.usageStats.totalCost': '總花費',
+  'PlatformInfrastructure.usageStats.inputTokens': '輸入 token',
+  'PlatformInfrastructure.usageStats.outputTokens': '輸出 token',
+  'PlatformInfrastructure.usageStats.searchCount': '網頁搜尋',
+  'PlatformInfrastructure.usageStats.imageCount': '圖片',
+  'PlatformInfrastructure.usageStats.videoSeconds': '影片',
+  'PlatformInfrastructure.usageStats.characterCount': '語音',
+  'PlatformInfrastructure.usageStats.searchCountValue': '{count} 次',
+  'PlatformInfrastructure.usageStats.imageCountValue': '{count} 張',
+  'PlatformInfrastructure.usageStats.videoSecondsValue': '{count} 秒',
+  'PlatformInfrastructure.usageStats.characterCountValue': '{count} 字',
+  'PlatformInfrastructure.usageStats.costUnavailable': '無法計算',
+  'PlatformInfrastructure.usageStats.lessThanCent': '< $0.01',
+  'PlatformInfrastructure.usageStats.partialCostNote': '只計算有價格的部分',
+  // 摘要與空狀態
+  'PlatformInfrastructure.usageStats.summaryTitle': '用量摘要',
+  'PlatformInfrastructure.usageStats.summaryEyebrow': 'Summary',
+  'PlatformInfrastructure.usageStats.noUsage': '這段期間沒有用量',
+  'PlatformInfrastructure.usageStats.noUsageHint': '換一個時間單位或 API key 看看',
+  'PlatformInfrastructure.usageStats.noRecords': '還沒有任何用量紀錄',
+  'PlatformInfrastructure.usageStats.noRecordsHint':
+    '在平台上使用模型後，這裡會依 API key 統計用量和花費',
+  // 刪除紀錄
+  'PlatformInfrastructure.usageStats.deleteConfirmTitle': '刪除用量紀錄',
+  'PlatformInfrastructure.usageStats.deleteConfirmMessage':
+    '確定要刪除「{key}」的所有用量紀錄嗎？刪除後無法復原，花費統計也不會再列出這組 key。',
+  'PlatformInfrastructure.usageStats.deleteConfirmButton': '刪除',
+  'PlatformInfrastructure.usageStats.deletedToast': '已刪除「{key}」的用量紀錄',
 
   // ===== 錯誤說明：平台共通 =====
   'errors.PLATFORM_UNREACHABLE': '無法連線到平台，請確認平台是否還在執行',
@@ -290,6 +360,11 @@ export const platformInfrastructureTexts = {
   'errors.MODEL_NAME_REQUIRED': '請填寫顯示名稱',
   'errors.MODEL_PRICE_INVALID': '價格不能是負數',
   'errors.MODEL_NOT_FOUND': '找不到這個模型，可能已經被刪除，請重新選擇',
+
+  // ===== 錯誤說明：用量與花費 =====
+  'errors.USAGE_KEY_REQUIRED': '記錄用量時找不到使用的 API key，這次的用量沒有記下',
+  'errors.USAGE_KEY_NOT_FOUND': '找不到這組 key 的用量紀錄，可能已經被刪除',
+  'errors.USAGE_KEY_NOT_DELETED': '只能刪除已刪除 key 的用量紀錄',
 
   // ===== 錯誤說明：供應商 =====
   'errors.PROVIDER_KEY_INVALID': 'API key 無效，請確認 key 是否正確',

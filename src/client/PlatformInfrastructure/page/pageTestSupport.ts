@@ -8,7 +8,11 @@ import type {
   SavedModel,
 } from '../../../shared/PlatformInfrastructure/types.ts';
 
-export type FakeRoute = (body: Record<string, unknown>) => Response | Promise<Response>;
+/** 假的路由：POST 拿到送出的內容，GET 從 query 取查詢條件。 */
+export type FakeRoute = (
+  body: Record<string, unknown>,
+  query: URLSearchParams,
+) => Response | Promise<Response>;
 
 // ===== 假資料 =====
 
@@ -87,10 +91,11 @@ export const DETECTED_LLMS: DetectedModel[] = [
 /** 換掉 fetch：routes 可以在測試裡改，回傳送出內容的查詢方法。 */
 export function installFakeBackend(routes: Record<string, FakeRoute>) {
   const fetchMock = vi.fn(async (url: string, init?: RequestInit) => {
-    const interfaceName = url.split('?')[0].split('/').pop()!;
+    const [pathname, search = ''] = url.split('?');
+    const interfaceName = pathname.split('/').pop()!;
     const route = routes[interfaceName];
     if (!route) throw new Error(`假後端沒有 ${interfaceName}`);
-    return route(init?.body ? JSON.parse(init.body as string) : {});
+    return route(init?.body ? JSON.parse(init.body as string) : {}, new URLSearchParams(search));
   });
   vi.stubGlobal('fetch', fetchMock);
 

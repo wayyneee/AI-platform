@@ -331,6 +331,8 @@ export const platformInfrastructureTexts = {
   'errors.PLATFORM_REQUEST_INVALID': '送出的資料格式不正確',
   'errors.PLATFORM_ROUTE_NOT_FOUND': '找不到這個功能，平台可能需要更新',
   'errors.PLATFORM_TEST_DATA_DIRECTORY_MISSING': '自動測試沒有指定資料資料夾',
+  'errors.PLATFORM_CLIENT_NOT_BUILT': '畫面還沒打包，請用啟動檔重新啟動平台',
+  'errors.PLATFORM_BROWSER_OPEN_FAILED': '無法自動打開瀏覽器，請自己輸入啟動視窗顯示的網址',
 
   // ===== 錯誤說明：資料庫 =====
   'errors.DATABASE_OPEN_FAILED': '資料庫無法開啟，請確認 data 資料夾可以讀寫',

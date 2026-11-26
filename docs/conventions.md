@@ -32,6 +32,7 @@
 <project>/
 ├── CLAUDE.md                    AI 協作規則
 ├── README.md                    安裝、啟動、測試
+├── start.bat、start.sh           使用者一鍵啟動平台（Windows、macOS／Linux）
 ├── package.json                 套件清單、指令、格式設定（package-lock.json 由 npm 自動產生）
 ├── eslint.config.js             lint 規則（第 6、9 段的機器版）
 ├── .dependency-cruiser.cjs      模組邊界規則（第 4 段的機器版）
@@ -69,6 +70,7 @@
 │           └── <SubModule>/     前端小模組（有才建）
 ├── tests/e2e/                   跨模組的端對端測試
 ├── public/theme/<主題>/          theme.css、art.json、<Module>/<素材>.png
+├── dist/                        打包後的前端，由啟動檔產生（不進 git）
 └── data/                        執行時產生的資料（不進 git）
 ```
 

@@ -23,6 +23,14 @@
       "port": 4317
     },
     {
+      "name": "platform-start",
+      "runtimeExecutable": "npm",
+      "runtimeArgs": [
+        "start"
+      ],
+      "port": 4317
+    },
+    {
       "name": "platform-client",
       "runtimeExecutable": "npm",
       "runtimeArgs": [

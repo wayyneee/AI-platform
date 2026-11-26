@@ -7,7 +7,7 @@ import { registerLogRoutes } from './SystemLog/index.ts';
 import { registerSettingsRoutes } from './ThemeAndLanguage/index.ts';
 import { registerUsageRoutes } from './UsageAndCost/index.ts';
 
-export { initializePlatform, openDatabase } from './PlatformBootstrap/index.ts';
+export { initializePlatform, openDatabase, serveClientApp } from './PlatformBootstrap/index.ts';
 export type { Migration, ModuleDatabase, OpenDatabaseOptions } from './PlatformBootstrap/index.ts';
 export {
   createError,

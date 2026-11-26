@@ -6,11 +6,14 @@ import {
   handleUnexpectedError,
   initializePlatform,
   registerRoutes as registerPlatformInfrastructureRoutes,
+  serveClientApp,
 } from './PlatformInfrastructure/index.ts';
 
 // 只接受本機連線：平台在使用者自己的電腦上執行
 const HOST = '127.0.0.1';
 const PORT = 4317;
+// 啟動檔（npm start）帶這個參數：後端一起提供打包後的畫面；開發時畫面由 Vite 開發伺服器提供
+const SERVE_CLIENT_FLAG = '--serve-client';
 
 const server = Fastify();
 
@@ -22,5 +25,7 @@ initializePlatform();
 await server.register(registerPlatformInfrastructureRoutes, {
   prefix: '/api/PlatformInfrastructure',
 });
+
+if (process.argv.includes(SERVE_CLIENT_FLAG)) await serveClientApp(server);
 
 await server.listen({ host: HOST, port: PORT });

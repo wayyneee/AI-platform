@@ -15,6 +15,8 @@
     "boundaries": "depcruise src tests",
     "dev:server": "node --watch src/server/main.ts",
     "dev:client": "vite --config src/client/vite.config.ts",
+    "build": "vite build --config src/client/vite.config.ts",
+    "start": "npm run build && node src/server/main.ts --serve-client",
     "check": "npm run typecheck && npm run lint && npm run format:check && npm run boundaries",
     "test": "vitest run --dir src --passWithNoTests"
   },
@@ -42,6 +44,7 @@
     "vitest": "^5.1.1"
   },
   "dependencies": {
+    "@fastify/static": "^11.0.0",
     "fastify": "^5.12.8",
     "react": "^19.3.1",
     "react-dom": "^19.3.1"

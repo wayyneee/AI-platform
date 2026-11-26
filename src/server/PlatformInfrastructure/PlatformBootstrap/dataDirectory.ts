@@ -9,7 +9,7 @@ const MODULE_NAME = 'PlatformInfrastructure';
 // 自動測試用這個環境變數指向暫存資料夾（conventions.md 第 9 段）
 const DATA_DIRECTORY_ENV = 'PLATFORM_DATA_DIR';
 // 這個檔案在 src/server/PlatformInfrastructure/PlatformBootstrap/，往上四層是專案根目錄
-const PROJECT_ROOT = path.resolve(import.meta.dirname, '../../../..');
+export const PROJECT_ROOT = path.resolve(import.meta.dirname, '../../../..');
 const DEFAULT_DATA_DIRECTORY = path.join(PROJECT_ROOT, 'data');
 
 export const DataDirectoryErrorCodes = defineErrorCodes({

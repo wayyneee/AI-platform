@@ -217,6 +217,7 @@ graph LR
 | initializePlatform | 後端 | 後端啟動時初始化平台，由後端進入點呼叫 | 無 | PlatformBootstrap |
 | registerRoutes | 後端 | 登記本模組所有 HTTP 路由，由後端進入點以 `/api/PlatformInfrastructure` 為前綴登記 | 後端伺服器 | SystemLog、ThemeAndLanguage、ModelRegistry、UsageAndCost |
 | handleUnexpectedError | 後端 | 掛上後端最外層錯誤攔截，由後端進入點呼叫 | 後端伺服器 | SystemLog |
+| serveClientApp | 後端 | 用啟動檔執行時，由後端提供打包後的前端畫面，平台開好後打開瀏覽器；由後端進入點呼叫 | 後端伺服器 | PlatformBootstrap |
 | openDatabase | 後端 | 開啟模組自己的資料庫檔，不存在時建立，並自動升級結構 | 模組、檔名、各版本的升級內容 → 讀寫方法 | PlatformBootstrap |
 | createError | 前後端 | 建立錯誤物件 | 模組、介面、代碼、訊息、細節 → 錯誤物件 | SystemLog |
 | isPlatformError | 前後端 | 判斷某個值是不是錯誤物件 | 任意值 → 是／否 | SystemLog |
@@ -280,6 +281,8 @@ graph LR
 - [ ] 資料庫版本比程式新時，資料不被修改並回報錯誤
 - [ ] 錯誤細節中不含 SQL 參數（參數可能有 key）
 - [ ] 自動測試不碰正式的 `data/`
+- [ ] 用啟動檔執行時，平台網址打得開畫面，`/api` 照常運作；畫面還沒打包就啟動時，直接報錯停止
+- [ ] 雙擊啟動檔：沒有 Node.js 24 以上時提示安裝；第一次自動安裝套件；打包後自動打開瀏覽器進入平台；關掉視窗平台就停止（手動）
 
 ### ThemeAndLanguage
 - [ ] 沒有設定時，主題為 default、語言為繁體中文

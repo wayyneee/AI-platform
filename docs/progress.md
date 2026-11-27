@@ -1,7 +1,7 @@
 # 專案進度
 
 ## 1. 進度概括
-PlatformInfrastructure 實作完成，標為「待串接」：雙擊根目錄的 `start.bat`（macOS／Linux 用 `start.sh`）即可開啟平台；所有驗收條件都有自動測試，PM 決定 ChatRoom 等功能做好後實際使用時回饋問題（2026-11-27）。ChatRoom 的 spec 已經 PM 確認（2026-11-27），10 個後端小模組標為「spec 完成」。下一步：ChatRoom 的畫面規格（write-page）。
+PlatformInfrastructure 實作完成，標為「待串接」：雙擊根目錄的 `start.bat`（macOS／Linux 用 `start.sh`）即可開啟平台；所有驗收條件都有自動測試，PM 決定 ChatRoom 等功能做好後實際使用時回饋問題（2026-11-27）。ChatRoom 的 spec 已經 PM 確認（2026-11-27），畫面規格 page.md、demo 與 default 主題素材也已確認（2026-11-28），所有小模組都是「spec 完成」。下一步：實作 ChatRoom（implement，先排分段）。
 
 ## 2. 模組
 | 模組 | 狀態 |
@@ -28,7 +28,7 @@ PlatformInfrastructure 實作完成，標為「待串接」：雙擊根目錄的
 | └ Summary | spec 完成 |
 | └ ContextAssembly | spec 完成 |
 | └ Conversation | spec 完成 |
-| └ Page | |
+| └ Page | spec 完成 |
 | **NovelStudio** | |
 | **MediaCreation** | |
 
@@ -52,4 +52,6 @@ PlatformInfrastructure 實作完成，標為「待串接」：雙擊根目錄的
 | B001 | PlatformInfrastructure / Page | 設定頁頁首的看板角色上方有一塊白色方框：`.platform-infrastructure-body` 的 `z-index: 1` 形成獨立圖層，角色的 multiply 碰不到外殼背景圖 | 拿掉 body 的 z-index；demo 切換列的背景佔位文字改插在外殼最前面（skill 副本同步）；log 列 z-index 提高到 20，page.css 註明頁面內元件 z-index 不超過 10 | 2026-11-25 |
 
 ## 7. 想法牆
-（目前無）
+| 日期 | 想法 | 相關模組 |
+|---|---|---|
+| 2026-11-28 | 設定頁的頁首（看板角色橫幅）改成 SharedComponents 的共用元件，ChatRoom 和之後的模組直接用，不各自複製樣式；ChatRoom 實作時和 PM 討論 | PlatformInfrastructure、ChatRoom |

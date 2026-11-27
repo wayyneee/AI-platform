@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>角色模板 — ChatRoom demo</title>
+  <script src="../../../page-demo-kit/demo-toolbar.js" data-module="ChatRoom"></script>
+  <link rel="stylesheet" href="../../../../src/client/PlatformInfrastructure/AppShell/appShell.css">
+  <link rel="stylesheet" href="../../../../src/client/PlatformInfrastructure/SharedComponents/sharedComponents.css">
+  <link rel="stylesheet" href="page.css">
+</head>
+<body data-page="templates">
+<!-- ?open=template-dialog 直接打開編輯視窗；這個模板的模型已失效，示範選單紅框 -->
+<div id="chat-room-demo-content" class="chat-room-page">
+
+  <section class="chat-room-hero">
+    <div class="chat-room-hero-decor"><span class="platform-infrastructure-display-text">Templates</span></div>
+    <span class="platform-infrastructure-sparkle"></span>
+    <span class="platform-infrastructure-sparkle"></span>
+    <span class="platform-infrastructure-sparkle"></span>
+    <div class="chat-room-hero-title">
+      <span class="platform-infrastructure-eyebrow">Templates</span>
+      <h1>角色模板</h1>
+      <p>把常用的模型、參數和個性存成模板，建角色時一鍵套用，不用每次重調</p>
+    </div>
+    <img class="chat-room-hero-character" data-asset="templatesBanner" data-ratio="3:4" alt="">
+  </section>
+
+  <div class="chat-room-card-wall" data-state="normal">
+    <div class="chat-room-entity-card is-add" data-open="template-dialog">
+      <span class="chat-room-add-icon">+</span>新增模板
+    </div>
+    <div class="chat-room-entity-card" data-open="template-dialog">
+      <div class="chat-room-entity-card-cover"><span class="platform-infrastructure-sparkle"></span><span class="chat-room-entity-card-cover-mark">Detective</span></div>
+      <div class="chat-room-entity-card-body">
+        <div class="chat-room-entity-card-name">冷靜的偵探</div>
+        <div class="chat-room-entity-card-sub">Claude Opus 5.5（OpenRouter）</div>
+      </div>
+    </div>
+    <div class="chat-room-entity-card" data-open="template-dialog">
+      <div class="chat-room-entity-card-cover"><span class="platform-infrastructure-sparkle"></span><span class="chat-room-entity-card-cover-mark">Genki</span></div>
+      <div class="chat-room-entity-card-body">
+        <div class="chat-room-entity-card-name">元氣少女</div>
+        <div class="chat-room-entity-card-sub">Grok 5</div>
+      </div>
+    </div>
+    <div class="chat-room-entity-card" data-open="template-dialog">
+      <div class="chat-room-entity-card-cover"><span class="platform-infrastructure-sparkle"></span><span class="chat-room-entity-card-cover-mark">Tutor</span></div>
+      <div class="chat-room-entity-card-body">
+        <div class="chat-room-entity-card-name">語言家教</div>
+        <div class="chat-room-entity-card-sub">GPT-5.2 mini</div>
+      </div>
+    </div>
+    <div class="chat-room-entity-card" data-open="template-dialog">
+      <div class="chat-room-entity-card-cover"><span class="platform-infrastructure-sparkle"></span><span class="chat-room-entity-card-cover-mark">Cafe</span></div>
+      <div class="chat-room-entity-card-body">
+        <div class="chat-room-entity-card-name">溫柔的店長</div>
+        <div class="chat-room-entity-card-sub">Gemini 3 Flash</div>
+        <div class="chat-room-entity-card-tags"><span class="platform-infrastructure-badge is-danger">模型失效</span></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="platform-infrastructure-card" data-state="loading">
+    <div class="platform-infrastructure-loading"><span class="platform-infrastructure-spinner platform-infrastructure-spinner-large"></span><span>讀取中…</span></div>
+  </div>
+  <div class="platform-infrastructure-card" data-state="empty">
+    <div class="platform-infrastructure-empty">
+      <img class="platform-infrastructure-empty-image" src="../../../../public/theme/default/PlatformInfrastructure/emptyStateIllustration.png" alt="">
+      <p class="platform-infrastructure-empty-text">還沒有模板</p>
+      <button type="button" class="platform-infrastructure-button platform-infrastructure-button-primary" data-open="template-dialog"><i data-icon="plus" data-small></i>新增模板</button>
+    </div>
+  </div>
+  <div class="platform-infrastructure-card" data-state="error">
+    <div class="platform-infrastructure-empty">
+      <img class="platform-infrastructure-empty-image" src="../../../../public/theme/default/PlatformInfrastructure/emptyStateIllustration.png" alt="">
+      <p class="platform-infrastructure-empty-text">載入失敗</p>
+      <div class="platform-infrastructure-error-message">
+        <span class="platform-infrastructure-error-message-icon">!</span>
+        <div class="platform-infrastructure-error-message-body">
+          <div class="platform-infrastructure-error-message-title">讀取角色模板時發生問題，請稍後再試</div>
+          <div class="platform-infrastructure-error-message-source">ChatRoom／listTemplates（代碼：TEMPLATE_READ_FAILED）</div>
+        </div>
+      </div>
+      <button type="button" class="platform-infrastructure-button platform-infrastructure-button-primary">重試</button>
+    </div>
+  </div>
+</div>
+
+<!-- ===== TemplateDialog ===== -->
+<div class="platform-infrastructure-backdrop" id="template-dialog" data-modal hidden>
+  <div class="platform-infrastructure-modal chat-room-dialog" role="dialog" aria-label="角色模板">
+    <div class="chat-room-dialog-header">
+      <div class="chat-room-dialog-heading">
+        <span class="platform-infrastructure-eyebrow">Template</span>
+        <h2 class="platform-infrastructure-modal-title">溫柔的店長</h2>
+      </div>
+      <button type="button" class="platform-infrastructure-icon-button chat-room-dialog-close" aria-label="關閉" data-close>×</button>
+    </div>
+
+    <div class="chat-room-dialog-split">
+      <nav class="chat-room-section-nav">
+        <a href="#template-basic" class="is-active">基本</a>
+        <a href="#template-model">模型</a>
+      </nav>
+      <div class="chat-room-dialog-body">
+        <section id="template-basic">
+          <h3 class="chat-room-section-title">基本<span class="platform-infrastructure-eyebrow">Profile</span></h3>
+          <div class="chat-room-form-grid">
+            <div class="chat-room-form-field">
+              <label class="chat-room-form-label">模板名稱 <span class="chat-room-required">*</span></label>
+              <input class="platform-infrastructure-input" value="溫柔的店長">
+            </div>
+            <div class="chat-room-form-field">
+              <label class="chat-room-form-label">說話方式 <small>選填</small></label>
+              <input class="platform-infrastructure-input" value="輕聲細語，喜歡用「呢」「喔」結尾">
+            </div>
+            <div class="chat-room-form-field is-wide">
+              <label class="chat-room-form-label">描述 <small>選填：套用後可以再改</small></label>
+              <textarea class="platform-infrastructure-input chat-room-textarea">在街角開咖啡廳的女店長，記得每位熟客的口味，店裡永遠有剛出爐的甜點。</textarea>
+            </div>
+            <div class="chat-room-form-field is-wide">
+              <label class="chat-room-form-label">個性 <small>選填</small></label>
+              <textarea class="platform-infrastructure-input chat-room-textarea">溫柔、觀察入微，很會聽人說話；遇到不公平的事會意外地強硬。</textarea>
+            </div>
+            <div class="chat-room-form-field is-wide">
+              <label class="chat-room-form-label">情境 <small>選填</small></label>
+              <textarea class="platform-infrastructure-input chat-room-textarea"></textarea>
+            </div>
+            <div class="chat-room-form-field is-wide">
+              <label class="chat-room-form-label">對話範例 <small>選填</small></label>
+              <textarea class="platform-infrastructure-input chat-room-textarea"></textarea>
+            </div>
+            <div class="chat-room-form-field is-wide">
+              <label class="chat-room-form-label">開場白 <small>選填</small></label>
+              <textarea class="platform-infrastructure-input chat-room-textarea">歡迎光臨～今天想喝點什麼呢？</textarea>
+            </div>
+          </div>
+        </section>
+
+        <section id="template-model">
+          <h3 class="chat-room-section-title">模型<span class="platform-infrastructure-eyebrow">Model</span></h3>
+          <div class="chat-room-model-picker">
+            <div>
+              <div class="platform-infrastructure-select is-invalid">
+                <button type="button" class="platform-infrastructure-select-trigger is-placeholder">-- 請選擇 --</button>
+                <ul class="platform-infrastructure-select-list">
+                  <li class="platform-infrastructure-select-option is-selected" data-placeholder>-- 請選擇 --</li>
+                  <li class="platform-infrastructure-select-option" data-label="Claude Opus 5.5（OpenRouter）">Claude Opus 5.5（OpenRouter）<span class="platform-infrastructure-select-option-hint">context 200K・圖片・檔案・搜尋・思考・工具</span></li>
+                  <li class="platform-infrastructure-select-option" data-label="Grok 5">Grok 5<span class="platform-infrastructure-select-option-hint">context 256K・圖片・搜尋・思考・工具</span></li>
+                  <li class="platform-infrastructure-select-option" data-label="GPT-5.2 mini">GPT-5.2 mini<span class="platform-infrastructure-select-option-hint">context 400K・圖片・檔案・工具</span></li>
+                </ul>
+              </div>
+              <div class="chat-room-model-invalid">模型失效，請重新選擇（原本的 Gemini 3 Flash 已被刪除）</div>
+            </div>
+            <div class="platform-infrastructure-hint">選好模型後，這裡會顯示模型的能力、上限和可以調的參數</div>
+          </div>
+        </section>
+      </div>
+    </div>
+
+    <div class="chat-room-dialog-footer">
+      <span class="chat-room-dialog-footer-spacer"></span>
+      <button type="button" class="platform-infrastructure-button platform-infrastructure-button-subtle-danger" data-open="delete-template-confirm">刪除</button>
+      <span class="platform-infrastructure-feedback"></span>
+      <button type="button" class="platform-infrastructure-button platform-infrastructure-button-primary">儲存</button>
+    </div>
+  </div>
+</div>
+
+<div class="platform-infrastructure-backdrop" id="delete-template-confirm" data-modal hidden>
+  <div class="platform-infrastructure-modal" role="dialog" aria-label="刪除模板">
+    <div class="platform-infrastructure-modal-header"><h2 class="platform-infrastructure-modal-title">刪除模板</h2></div>
+    <div class="platform-infrastructure-modal-body">確定要刪除「溫柔的店長」嗎？已經用這個模板建立的角色不受影響。</div>
+    <div class="platform-infrastructure-modal-footer">
+      <button type="button" class="platform-infrastructure-button platform-infrastructure-button-secondary" data-close>取消</button>
+      <button type="button" class="platform-infrastructure-button platform-infrastructure-button-danger" data-close>刪除</button>
+    </div>
+  </div>
+</div>
+
+<script src="demo.js"></script>
+</body>
+</html>

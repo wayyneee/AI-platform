@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>人設 — ChatRoom demo</title>
+  <script src="../../../page-demo-kit/demo-toolbar.js" data-module="ChatRoom"></script>
+  <link rel="stylesheet" href="../../../../src/client/PlatformInfrastructure/AppShell/appShell.css">
+  <link rel="stylesheet" href="../../../../src/client/PlatformInfrastructure/SharedComponents/sharedComponents.css">
+  <link rel="stylesheet" href="page.css">
+</head>
+<body data-page="personas">
+<!--
+  ?open=persona-dialog          編輯「小夏」（可以刪除）
+  ?open=persona-dialog&variant=self  編輯「使用者」（沒有刪除按鈕）
+-->
+<div id="chat-room-demo-content" class="chat-room-page">
+
+  <section class="chat-room-hero">
+    <div class="chat-room-hero-decor"><span class="platform-infrastructure-display-text">Personas</span></div>
+    <span class="platform-infrastructure-sparkle"></span>
+    <span class="platform-infrastructure-sparkle"></span>
+    <span class="platform-infrastructure-sparkle"></span>
+    <div class="chat-room-hero-title">
+      <span class="platform-infrastructure-eyebrow">Personas</span>
+      <h1>人設</h1>
+      <p>你在聊天室裡的身分。可以是你自己，也可以是故事裡的另一個角色</p>
+    </div>
+    <img class="chat-room-hero-character" data-asset="personasBanner" data-ratio="3:4" alt="">
+  </section>
+
+  <div class="chat-room-card-wall" data-state="normal">
+    <div class="chat-room-entity-card is-add" data-open="persona-dialog">
+      <span class="chat-room-add-icon">+</span>新增人設
+    </div>
+    <div class="chat-room-entity-card" data-open="persona-dialog">
+      <img class="chat-room-entity-card-image" data-asset="defaultPersonaAvatar" data-ratio="1:1" alt="">
+      <span class="platform-infrastructure-badge is-accent chat-room-entity-card-flag">你本人</span>
+      <div class="chat-room-entity-card-body">
+        <div class="chat-room-entity-card-name">使用者</div>
+        <div class="chat-room-entity-card-sub">喜歡推理小說和咖啡的上班族</div>
+      </div>
+    </div>
+    <div class="chat-room-entity-card" data-open="persona-dialog">
+      <img class="chat-room-entity-card-image" src="samples/natsu.jpg" alt="">
+      <div class="chat-room-entity-card-body">
+        <div class="chat-room-entity-card-name">小夏</div>
+        <div class="chat-room-entity-card-sub">見習偵探，十九歲，衝動但直覺很準</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="platform-infrastructure-card" data-state="loading">
+    <div class="platform-infrastructure-loading"><span class="platform-infrastructure-spinner platform-infrastructure-spinner-large"></span><span>讀取中…</span></div>
+  </div>
+  <div class="platform-infrastructure-card" data-state="error">
+    <div class="platform-infrastructure-empty">
+      <img class="platform-infrastructure-empty-image" src="../../../../public/theme/default/PlatformInfrastructure/emptyStateIllustration.png" alt="">
+      <p class="platform-infrastructure-empty-text">載入失敗</p>
+      <div class="platform-infrastructure-error-message">
+        <span class="platform-infrastructure-error-message-icon">!</span>
+        <div class="platform-infrastructure-error-message-body">
+          <div class="platform-infrastructure-error-message-title">讀取人設時發生問題，請稍後再試</div>
+          <div class="platform-infrastructure-error-message-source">ChatRoom／listPersonas（代碼：PERSONA_READ_FAILED）</div>
+        </div>
+      </div>
+      <button type="button" class="platform-infrastructure-button platform-infrastructure-button-primary">重試</button>
+    </div>
+  </div>
+</div>
+
+<!-- ===== PersonaDialog ===== -->
+<div class="platform-infrastructure-backdrop" id="persona-dialog" data-modal hidden>
+  <div class="platform-infrastructure-modal chat-room-dialog is-small" role="dialog" aria-label="人設">
+    <div class="chat-room-dialog-header">
+      <div class="chat-room-dialog-heading">
+        <span class="platform-infrastructure-eyebrow">Persona</span>
+        <h2 class="platform-infrastructure-modal-title"><span data-variant="self" data-variant-not>小夏</span><span data-variant="self">使用者</span></h2>
+      </div>
+      <button type="button" class="platform-infrastructure-icon-button chat-room-dialog-close" aria-label="關閉" data-close>×</button>
+    </div>
+    <div class="chat-room-dialog-body">
+      <div class="chat-room-avatar-upload">
+        <div class="chat-room-avatar-upload-image">
+          <span data-variant="self" data-variant-not><img class="chat-room-avatar" src="samples/natsu.jpg" alt=""></span>
+          <span data-variant="self"><img class="chat-room-avatar" data-asset="defaultPersonaAvatar" data-ratio="1:1" alt=""></span>
+          <span class="chat-room-avatar-upload-badge"><i data-icon="camera" data-small></i></span>
+        </div>
+        <div class="platform-infrastructure-hint">點頭像上傳圖片，沒有上傳時用預設頭像</div>
+      </div>
+      <div class="chat-room-form-field">
+        <label class="chat-room-form-label">名稱 <span class="chat-room-required">*</span></label>
+        <input class="platform-infrastructure-input" value="小夏" data-variant="self" data-variant-not>
+        <input class="platform-infrastructure-input" value="使用者" data-variant="self">
+      </div>
+      <div class="chat-room-form-field">
+        <label class="chat-room-form-label">描述 <small>角色會知道的你：外表、身分、和他們的關係</small></label>
+        <textarea class="platform-infrastructure-input chat-room-textarea is-tall" data-variant="self" data-variant-not>十九歲的見習偵探，雷恩的助手。短黑髮、戴貝雷帽，隨身帶著筆記本。衝動但直覺很準，常常比雷恩先注意到細節。</textarea>
+        <textarea class="platform-infrastructure-input chat-room-textarea is-tall" data-variant="self">喜歡推理小說和咖啡的上班族，住在台北。</textarea>
+        <div class="platform-infrastructure-hint" data-variant="self">「使用者」代表真人的你，不能刪除；全域記憶只從這個人設的發言學習。</div>
+      </div>
+    </div>
+    <div class="chat-room-dialog-footer">
+      <span class="chat-room-dialog-footer-spacer"></span>
+      <button type="button" class="platform-infrastructure-button platform-infrastructure-button-subtle-danger" data-open="delete-persona-confirm" data-variant="self" data-variant-not>刪除</button>
+      <span class="platform-infrastructure-feedback"></span>
+      <button type="button" class="platform-infrastructure-button platform-infrastructure-button-primary" disabled>儲存</button>
+    </div>
+  </div>
+</div>
+
+<div class="platform-infrastructure-backdrop" id="delete-persona-confirm" data-modal hidden>
+  <div class="platform-infrastructure-modal" role="dialog" aria-label="刪除人設">
+    <div class="platform-infrastructure-modal-header"><h2 class="platform-infrastructure-modal-title">刪除人設</h2></div>
+    <div class="platform-infrastructure-modal-body">確定要刪除「小夏」嗎？人設會退出它在的所有聊天室，刪除後無法復原。以前的發言會保留。</div>
+    <div class="platform-infrastructure-modal-footer">
+      <button type="button" class="platform-infrastructure-button platform-infrastructure-button-secondary" data-close>取消</button>
+      <button type="button" class="platform-infrastructure-button platform-infrastructure-button-danger" data-close>刪除</button>
+    </div>
+  </div>
+</div>
+
+<script src="demo.js"></script>
+</body>
+</html>

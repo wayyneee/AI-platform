@@ -1,0 +1,374 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>角色 — ChatRoom demo</title>
+  <script src="../../../page-demo-kit/demo-toolbar.js" data-module="ChatRoom"></script>
+  <link rel="stylesheet" href="../../../../src/client/PlatformInfrastructure/AppShell/appShell.css">
+  <link rel="stylesheet" href="../../../../src/client/PlatformInfrastructure/SharedComponents/sharedComponents.css">
+  <link rel="stylesheet" href="page.css">
+</head>
+<body data-page="characters">
+<!--
+  情境（網址參數 ?variant=）：
+  new       新增角色：視窗上方有「套用模板」，沒有刪除
+  over      固定的部分放不下：空間分配變紅
+  no-model  平台沒有 LLM 模型，上方出現提示
+  ?open=character-dialog 直接打開編輯視窗
+-->
+<div id="chat-room-demo-content" class="chat-room-page">
+
+  <div class="chat-room-notice" data-variant="no-model">
+    <span class="chat-room-notice-icon">!</span>
+    <span class="chat-room-notice-text">還沒有可用的模型，請先到平台設定新增 API key 和模型</span>
+    <button type="button" class="platform-infrastructure-button platform-infrastructure-button-secondary platform-infrastructure-button-small">前往平台設定</button>
+  </div>
+
+  <section class="chat-room-hero">
+    <div class="chat-room-hero-decor"><span class="platform-infrastructure-display-text">Characters</span></div>
+    <span class="platform-infrastructure-sparkle"></span>
+    <span class="platform-infrastructure-sparkle"></span>
+    <span class="platform-infrastructure-sparkle"></span>
+    <div class="chat-room-hero-title">
+      <span class="platform-infrastructure-eyebrow">Characters</span>
+      <h1>角色</h1>
+      <p>為每個角色選模型、寫個性、掛上知識書，讓他們在聊天中慢慢長出自己的記憶</p>
+    </div>
+    <img class="chat-room-hero-character" data-asset="charactersBanner" data-ratio="3:4" alt="">
+  </section>
+
+  <div class="chat-room-card-wall" data-state="normal">
+    <div class="chat-room-entity-card is-add" data-open="character-dialog">
+      <span class="chat-room-add-icon">+</span>新增角色
+    </div>
+    <div class="chat-room-entity-card" data-open="character-dialog">
+      <img class="chat-room-entity-card-image" src="samples/rain.jpg" alt="">
+      <div class="chat-room-entity-card-body">
+        <div class="chat-room-entity-card-name">雷恩</div>
+        <div class="chat-room-entity-card-sub">Claude Opus 5.5（OpenRouter）</div>
+        <div class="chat-room-entity-card-tags"><span class="platform-infrastructure-badge is-primary">知識書 2</span><span class="platform-infrastructure-badge is-accent">角色記憶</span></div>
+      </div>
+    </div>
+    <div class="chat-room-entity-card" data-open="character-dialog">
+      <img class="chat-room-entity-card-image" src="samples/mia.jpg" alt="">
+      <div class="chat-room-entity-card-body">
+        <div class="chat-room-entity-card-name">米婭</div>
+        <div class="chat-room-entity-card-sub">Grok 5</div>
+        <div class="chat-room-entity-card-tags"><span class="platform-infrastructure-badge is-primary">知識書 1</span><span class="platform-infrastructure-badge is-accent">角色記憶</span></div>
+      </div>
+    </div>
+    <div class="chat-room-entity-card" data-open="character-dialog">
+      <img class="chat-room-entity-card-image" src="samples/boss.jpg" alt="">
+      <div class="chat-room-entity-card-body">
+        <div class="chat-room-entity-card-name">老闆娘</div>
+        <div class="chat-room-entity-card-sub">Gemini 3 Flash</div>
+        <div class="chat-room-entity-card-tags"><span class="platform-infrastructure-badge is-danger">模型失效</span></div>
+      </div>
+    </div>
+    <div class="chat-room-entity-card" data-open="character-dialog">
+      <img class="chat-room-entity-card-image" src="samples/emma.jpg" alt="">
+      <div class="chat-room-entity-card-body">
+        <div class="chat-room-entity-card-name">艾瑪</div>
+        <div class="chat-room-entity-card-sub">GPT-5.2 mini</div>
+        <div class="chat-room-entity-card-tags"><span class="platform-infrastructure-badge is-primary">知識書 1</span></div>
+      </div>
+    </div>
+    <div class="chat-room-entity-card" data-open="character-dialog">
+      <img class="chat-room-entity-card-image" data-asset="defaultCharacterAvatar" data-ratio="1:1" alt="">
+      <div class="chat-room-entity-card-body">
+        <div class="chat-room-entity-card-name">小報</div>
+        <div class="chat-room-entity-card-sub">Grok 5 Fast</div>
+        <div class="chat-room-entity-card-tags"><span class="platform-infrastructure-badge">網頁搜尋</span></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="platform-infrastructure-card" data-state="loading">
+    <div class="platform-infrastructure-loading"><span class="platform-infrastructure-spinner platform-infrastructure-spinner-large"></span><span>讀取中…</span></div>
+  </div>
+
+  <div class="platform-infrastructure-card" data-state="empty">
+    <div class="platform-infrastructure-empty">
+      <img class="platform-infrastructure-empty-image" src="../../../../public/theme/default/PlatformInfrastructure/emptyStateIllustration.png" alt="">
+      <p class="platform-infrastructure-empty-text">還沒有角色</p>
+      <button type="button" class="platform-infrastructure-button platform-infrastructure-button-primary" data-open="character-dialog"><i data-icon="plus" data-small></i>新增角色</button>
+    </div>
+  </div>
+
+  <div class="platform-infrastructure-card" data-state="error">
+    <div class="platform-infrastructure-empty">
+      <img class="platform-infrastructure-empty-image" src="../../../../public/theme/default/PlatformInfrastructure/emptyStateIllustration.png" alt="">
+      <p class="platform-infrastructure-empty-text">載入失敗</p>
+      <div class="platform-infrastructure-error-message">
+        <span class="platform-infrastructure-error-message-icon">!</span>
+        <div class="platform-infrastructure-error-message-body">
+          <div class="platform-infrastructure-error-message-title">讀取角色時發生問題，請稍後再試</div>
+          <div class="platform-infrastructure-error-message-source">ChatRoom／listCharacters（代碼：CHARACTER_READ_FAILED）</div>
+        </div>
+      </div>
+      <button type="button" class="platform-infrastructure-button platform-infrastructure-button-primary">重試</button>
+    </div>
+  </div>
+</div>
+
+<!-- ===== CharacterDialog ===== -->
+<div class="platform-infrastructure-backdrop" id="character-dialog" data-modal hidden>
+  <div class="platform-infrastructure-modal chat-room-dialog" role="dialog" aria-label="角色">
+    <div class="chat-room-dialog-header">
+      <span data-variant="new" data-variant-not><img class="chat-room-avatar" src="samples/rain.jpg" alt=""></span>
+      <div class="chat-room-dialog-heading">
+        <span class="platform-infrastructure-eyebrow">Character</span>
+        <h2 class="platform-infrastructure-modal-title"><span data-variant="new" data-variant-not>雷恩</span><span data-variant="new">新增角色</span></h2>
+      </div>
+      <button type="button" class="platform-infrastructure-icon-button chat-room-dialog-close" aria-label="關閉" data-close>×</button>
+    </div>
+
+    <div class="chat-room-dialog-split">
+      <nav class="chat-room-section-nav">
+        <a href="#character-basic" class="is-active">基本</a>
+        <a href="#character-model">模型</a>
+        <a href="#character-books">知識書</a>
+        <a href="#character-memory">記憶</a>
+        <a href="#character-limit">送出上限</a>
+      </nav>
+
+      <div class="chat-room-dialog-body">
+        <!-- 基本 -->
+        <section id="character-basic">
+          <h3 class="chat-room-section-title">基本<span class="platform-infrastructure-eyebrow">Profile</span></h3>
+          <div class="chat-room-template-bar" data-variant="new">
+            <span>套用模板</span>
+            <div class="platform-infrastructure-select">
+              <button type="button" class="platform-infrastructure-select-trigger is-placeholder">-- 請選擇 --</button>
+              <ul class="platform-infrastructure-select-list">
+                <li class="platform-infrastructure-select-option is-selected" data-placeholder>-- 請選擇 --</li>
+                <li class="platform-infrastructure-select-option">冷靜的偵探<span class="platform-infrastructure-select-option-hint">Claude Opus 5.5（OpenRouter）</span></li>
+                <li class="platform-infrastructure-select-option">元氣少女<span class="platform-infrastructure-select-option-hint">Grok 5</span></li>
+                <li class="platform-infrastructure-select-option">語言家教<span class="platform-infrastructure-select-option-hint">GPT-5.2 mini</span></li>
+              </ul>
+            </div>
+            <span class="platform-infrastructure-hint chat-room-hint-inline">複製模板的模型、參數和提示詞，之後改模板不影響這個角色</span>
+          </div>
+          <div class="chat-room-form-grid">
+            <div class="chat-room-avatar-upload chat-room-form-wide">
+              <div class="chat-room-avatar-upload-image">
+                <span data-variant="new" data-variant-not><img class="chat-room-avatar" src="samples/rain.jpg" alt=""></span>
+                <span data-variant="new"><img class="chat-room-avatar" data-asset="defaultCharacterAvatar" data-ratio="1:1" alt=""></span>
+                <span class="chat-room-avatar-upload-badge"><i data-icon="camera" data-small></i></span>
+              </div>
+              <div class="platform-infrastructure-hint">點頭像上傳圖片（PNG、JPG），沒有上傳時用預設頭像</div>
+            </div>
+            <div class="chat-room-form-field">
+              <label class="chat-room-form-label">名稱 <span class="chat-room-required">*</span></label>
+              <input class="platform-infrastructure-input" value="雷恩">
+            </div>
+            <div class="chat-room-form-field">
+              <label class="chat-room-form-label">說話方式 <small>選填</small></label>
+              <input class="platform-infrastructure-input" value="簡短、冷靜，常用反問句，偶爾冷笑話">
+            </div>
+            <div class="chat-room-form-field is-wide">
+              <label class="chat-room-form-label">描述 <span class="chat-room-required">*</span><small>角色是誰、外表、背景</small></label>
+              <textarea class="platform-infrastructure-input chat-room-textarea">三十五歲的私家偵探，前港警，因為一樁沒破的案子離開警隊。總是戴著舊軟呢帽，口袋裡放著已經戒掉的菸。</textarea>
+            </div>
+            <div class="chat-room-form-field is-wide">
+              <label class="chat-room-form-label">個性 <small>選填</small></label>
+              <textarea class="platform-infrastructure-input chat-room-textarea">觀察力極強、嘴硬心軟。不輕易相信人，但對夥伴很照顧。討厭被打斷推理。</textarea>
+            </div>
+            <div class="chat-room-form-field is-wide">
+              <label class="chat-room-form-label">情境 <small>選填</small></label>
+              <textarea class="platform-infrastructure-input chat-room-textarea" placeholder="角色現在身處的狀況"></textarea>
+            </div>
+            <div class="chat-room-form-field is-wide">
+              <label class="chat-room-form-label">對話範例 <small>選填</small></label>
+              <textarea class="platform-infrastructure-input chat-room-textarea">小夏：雷恩，你覺得是誰做的？
+雷恩：（把帽子蓋在臉上）覺得？偵探不用「覺得」。等證據說話。</textarea>
+            </div>
+            <div class="chat-room-form-field is-wide">
+              <label class="chat-room-form-label">開場白 <small>選填：新聊天室裡角色的第一句話</small></label>
+              <textarea class="platform-infrastructure-input chat-room-textarea">門沒鎖。進來吧，別踩到地上的檔案。</textarea>
+            </div>
+          </div>
+        </section>
+
+        <!-- 模型（ModelPicker） -->
+        <section id="character-model">
+          <h3 class="chat-room-section-title">模型<span class="platform-infrastructure-eyebrow">Model</span></h3>
+          <div class="chat-room-model-picker">
+            <div class="platform-infrastructure-select">
+              <button type="button" class="platform-infrastructure-select-trigger">Claude Opus 5.5（OpenRouter）</button>
+              <ul class="platform-infrastructure-select-list">
+                <li class="platform-infrastructure-select-option">-- 請選擇 --</li>
+                <li class="platform-infrastructure-select-option is-selected" data-label="Claude Opus 5.5（OpenRouter）">Claude Opus 5.5（OpenRouter）<span class="platform-infrastructure-select-option-hint">context 200K・圖片・檔案・搜尋・思考・工具</span></li>
+                <li class="platform-infrastructure-select-option" data-label="Grok 5">Grok 5<span class="platform-infrastructure-select-option-hint">context 256K・圖片・搜尋・思考・工具</span></li>
+                <li class="platform-infrastructure-select-option" data-label="Llama 4 70B（OpenRouter）">Llama 4 70B（OpenRouter）<span class="platform-infrastructure-select-option-hint">context 128K</span></li>
+              </ul>
+            </div>
+            <dl class="chat-room-model-info">
+              <dt>context 上限</dt><dd><strong>200,000</strong> token</dd>
+              <dt>輸出上限</dt><dd><strong>64,000</strong> token</dd>
+              <dt>能力</dt>
+              <dd>
+                <span class="platform-infrastructure-badge is-success">傳圖片</span>
+                <span class="platform-infrastructure-badge is-success">傳檔案</span>
+                <span class="platform-infrastructure-badge is-success">網頁搜尋</span>
+                <span class="platform-infrastructure-badge is-success">思考</span>
+                <span class="platform-infrastructure-badge is-success">調用工具</span>
+              </dd>
+            </dl>
+            <div class="chat-room-params">
+              <div class="chat-room-inline-field">
+                <div class="chat-room-inline-field-label">溫度<small>越高越有創意，越低越穩定</small></div>
+                <div class="chat-room-inline-field-control"><div class="chat-room-range"><input type="range" min="0" max="2" step="0.05" value="0.8" data-decimal><span class="chat-room-range-value"></span></div></div>
+              </div>
+              <div class="chat-room-inline-field">
+                <div class="chat-room-inline-field-label">輸出長度<small>每次回覆最多幾個 token</small></div>
+                <div class="chat-room-inline-field-control"><div class="chat-room-range"><input type="range" min="256" max="64000" step="256" value="4096" data-unit=" token"><span class="chat-room-range-value"></span></div></div>
+              </div>
+              <div class="chat-room-inline-field">
+                <div class="chat-room-inline-field-label">思考強度</div>
+                <div class="chat-room-inline-field-control">
+                  <div class="platform-infrastructure-tabs chat-room-segmented" data-tabs="effort">
+                    <button type="button" class="platform-infrastructure-tab" data-tab="low">低</button>
+                    <button type="button" class="platform-infrastructure-tab is-active" data-tab="medium">中</button>
+                    <button type="button" class="platform-infrastructure-tab" data-tab="high">高</button>
+                  </div>
+                </div>
+              </div>
+              <div class="chat-room-inline-field is-disabled">
+                <div class="chat-room-inline-field-label">Top P</div>
+                <div class="chat-room-inline-field-control"><div class="chat-room-range"><input type="range" min="0" max="1" step="0.05" value="1" disabled><span class="platform-infrastructure-badge is-warning">未知</span></div><span class="chat-room-param-status">送出時用供應商預設</span></div>
+              </div>
+              <div class="chat-room-inline-field is-disabled">
+                <div class="chat-room-inline-field-label">頻率懲罰</div>
+                <div class="chat-room-inline-field-control"><div class="chat-room-range"><input type="range" min="-2" max="2" step="0.1" value="0" disabled><span class="platform-infrastructure-badge">不支援</span></div><span class="chat-room-param-status">這個模型不支援調整</span></div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- 知識書 -->
+        <section id="character-books">
+          <h3 class="chat-room-section-title">知識書<span class="platform-infrastructure-eyebrow">Knowledge</span></h3>
+          <div class="chat-room-check-list">
+            <div class="chat-room-check-item is-checked"><span class="chat-room-check-box"></span><span class="chat-room-check-item-text">夜城地圖與地標<small>12 條・約 2,400 token（常駐約 900）</small></span></div>
+            <div class="chat-room-check-item is-checked"><span class="chat-room-check-box"></span><span class="chat-room-check-item-text">1930 年代港口生活<small>28 條・約 5,100 token（常駐約 1,200）</small></span></div>
+            <div class="chat-room-check-item"><span class="chat-room-check-box"></span><span class="chat-room-check-item-text">英文文法筆記<small>40 條・約 3,000 token</small></span></div>
+            <div class="chat-room-check-item"><span class="chat-room-check-box"></span><span class="chat-room-check-item-text">星港冒險隊設定集<small>18 條・約 4,600 token</small></span></div>
+          </div>
+        </section>
+
+        <!-- 記憶 -->
+        <section id="character-memory">
+          <h3 class="chat-room-section-title">角色記憶<span class="platform-infrastructure-eyebrow">Memory</span></h3>
+          <div class="chat-room-inline-field is-first">
+            <div class="chat-room-inline-field-label">角色記憶<small>角色自己記住經歷，在每個聊天室都帶著</small></div>
+            <div class="chat-room-inline-field-control"><button type="button" class="platform-infrastructure-toggle is-on" aria-label="角色記憶"></button></div>
+          </div>
+          <div class="chat-room-inline-field">
+            <div class="chat-room-inline-field-label">記憶大小</div>
+            <div class="chat-room-inline-field-control"><div class="chat-room-range"><input type="range" min="5000" max="30000" step="1000" value="10000" data-unit=" token"><span class="chat-room-range-value"></span></div></div>
+          </div>
+          <div class="chat-room-memory">
+            <div class="chat-room-memory-head">
+              <div class="chat-room-memory-usage">約 6,200／10,000 token<div class="platform-infrastructure-progress"><div class="platform-infrastructure-progress-fill" style="width:62%"></div></div></div>
+              <button type="button" class="platform-infrastructure-button platform-infrastructure-button-secondary platform-infrastructure-button-small"><i data-icon="plus" data-small></i>新增條目</button>
+            </div>
+            <div class="chat-room-memory-list">
+              <div class="chat-room-memory-item is-locked">
+                <span class="chat-room-importance"><button class="is-on"></button><button class="is-on"></button><button class="is-on"></button><button class="is-on"></button><button class="is-on"></button></span>
+                <div class="chat-room-memory-text"><input class="chat-room-memory-content" value="離開警隊的原因：七年前的「灰帽案」沒破，搭檔因此受傷。"><div class="chat-room-memory-meta">最後提到 11/20・記在「夜城偵探社」</div></div>
+                <button type="button" class="chat-room-lock is-on" aria-label="鎖定"><i data-icon="lock"></i></button>
+                <button type="button" class="platform-infrastructure-icon-button" aria-label="刪除">×</button>
+              </div>
+              <div class="chat-room-memory-item">
+                <span class="chat-room-importance"><button class="is-on"></button><button class="is-on"></button><button class="is-on"></button><button class="is-on"></button><button></button></span>
+                <div class="chat-room-memory-text"><input class="chat-room-memory-content" value="小夏找到了碼頭倉庫 02:17 的監視器畫面，和出入紀錄對不上。"><div class="chat-room-memory-meta">最後提到 今天 21:38・記在「夜城偵探社」</div></div>
+                <button type="button" class="chat-room-lock" aria-label="鎖定"><i data-icon="unlock"></i></button>
+                <button type="button" class="platform-infrastructure-icon-button" aria-label="刪除">×</button>
+              </div>
+              <div class="chat-room-memory-item">
+                <span class="chat-room-importance"><button class="is-on"></button><button class="is-on"></button><button></button><button></button><button></button></span>
+                <div class="chat-room-memory-text"><input class="chat-room-memory-content" value="米婭說她怕水，所以那次寶藏探險沒有一起下船。"><div class="chat-room-memory-meta">最後提到 11/24・記在「星港冒險隊」</div></div>
+                <button type="button" class="chat-room-lock" aria-label="鎖定"><i data-icon="unlock"></i></button>
+                <button type="button" class="platform-infrastructure-icon-button" aria-label="刪除">×</button>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- 送出上限 -->
+        <section id="character-limit">
+          <h3 class="chat-room-section-title">每次送出上限<span class="platform-infrastructure-eyebrow">Context</span></h3>
+          <div class="chat-room-inline-field is-first">
+            <div class="chat-room-inline-field-label">每次送出上限<small>角色每次說話最多帶多少內容</small></div>
+            <div class="chat-room-inline-field-control"><div class="chat-room-range"><input type="range" min="8000" max="200000" step="1000" value="128000" data-unit=" token"><span class="chat-room-range-value"></span></div></div>
+          </div>
+          <div class="platform-infrastructure-hint">上限越大，每次回覆越貴。底下的空間分配會跟著更新。</div>
+        </section>
+      </div>
+    </div>
+
+    <div class="chat-room-dialog-footer">
+      <!-- ContextBudgetBar -->
+      <div class="chat-room-budget" id="budget">
+        <div class="chat-room-budget-head"><strong>空間分配</strong><span>每次送出上限 128,000 token（數字都是約略估算）</span><span class="chat-room-budget-remaining" id="budget-remaining">聊天原文還有 76%</span></div>
+        <div class="chat-room-budget-bar">
+          <span class="chat-room-budget-segment is-prompt" style="width:1.5%" title="提示詞 約 1,900"></span>
+          <span class="chat-room-budget-segment is-knowledge" style="width:1.7%" title="常駐知識 約 2,100"></span>
+          <span class="chat-room-budget-segment is-memory" style="width:11.7%" title="記憶 約 15,000"></span>
+          <span class="chat-room-budget-segment is-summary" style="width:6.3%" title="摘要 約 8,000"></span>
+          <span class="chat-room-budget-segment is-history" style="width:75.6%" title="聊天原文 約 96,904"></span>
+          <span class="chat-room-budget-segment is-reply" style="width:3.2%" title="留給回覆 約 4,096"></span>
+        </div>
+        <div class="chat-room-budget-legend">
+          <span><i class="chat-room-budget-swatch is-prompt"></i>提示詞 1,900</span>
+          <span><i class="chat-room-budget-swatch is-knowledge"></i>常駐知識 2,100</span>
+          <span><i class="chat-room-budget-swatch is-memory"></i>記憶 15,000</span>
+          <span><i class="chat-room-budget-swatch is-summary"></i>摘要 8,000</span>
+          <span><i class="chat-room-budget-swatch is-history"></i>聊天原文 96,904</span>
+          <span><i class="chat-room-budget-swatch is-reply"></i>留給回覆 4,096</span>
+        </div>
+      </div>
+      <button type="button" class="platform-infrastructure-button platform-infrastructure-button-subtle-danger" data-open="delete-character-confirm" data-variant="new" data-variant-not>刪除</button>
+      <span class="platform-infrastructure-feedback"></span>
+      <button type="button" class="platform-infrastructure-button platform-infrastructure-button-primary" id="save-character">儲存</button>
+    </div>
+  </div>
+</div>
+
+<!-- 刪除角色的確認視窗 -->
+<div class="platform-infrastructure-backdrop" id="delete-character-confirm" data-modal hidden>
+  <div class="platform-infrastructure-modal" role="dialog" aria-label="刪除角色">
+    <div class="platform-infrastructure-modal-header"><h2 class="platform-infrastructure-modal-title">刪除角色</h2></div>
+    <div class="platform-infrastructure-modal-body">確定要刪除「雷恩」嗎？角色會退出它在的所有聊天室，角色記憶一併刪除，刪除後無法復原。以前的發言會保留。</div>
+    <div class="platform-infrastructure-modal-footer">
+      <button type="button" class="platform-infrastructure-button platform-infrastructure-button-secondary" data-close>取消</button>
+      <button type="button" class="platform-infrastructure-button platform-infrastructure-button-danger" data-close>刪除</button>
+    </div>
+  </div>
+</div>
+
+<script src="demo.js"></script>
+<script>
+  // 角色頁的假互動：over 情境時空間分配變紅；儲存回饋
+  (function () {
+    if (new URLSearchParams(location.search).get('variant') === 'over') {
+      document.getElementById('budget').classList.add('is-over');
+      document.getElementById('budget-remaining').textContent = '放不下：記憶和知識書超過上限 3,200 token，請調大上限或調小記憶';
+    }
+    var save = document.getElementById('save-character');
+    save.addEventListener('click', function () {
+      var feedback = save.previousElementSibling;
+      save.disabled = true;
+      save.innerHTML = '<span class="platform-infrastructure-spinner"></span>儲存中';
+      setTimeout(function () {
+        save.textContent = '儲存';
+        feedback.className = 'platform-infrastructure-feedback is-success';
+        feedback.textContent = '已儲存';
+      }, 800);
+    });
+  })();
+</script>
+</body>
+</html>

@@ -1,0 +1,695 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>聊天室 — ChatRoom demo</title>
+  <script src="../../../page-demo-kit/demo-toolbar.js" data-module="ChatRoom"></script>
+  <!-- 外殼與共用元件：直接用 PlatformInfrastructure 已實作的樣式 -->
+  <link rel="stylesheet" href="../../../../src/client/PlatformInfrastructure/AppShell/appShell.css">
+  <link rel="stylesheet" href="../../../../src/client/PlatformInfrastructure/SharedComponents/sharedComponents.css">
+  <link rel="stylesheet" href="page.css">
+</head>
+<body data-page="rooms">
+<!--
+  情境（網址參數 ?variant=）：
+  （預設）雷恩正在回覆，自己最後一則可以修改
+  idle      回覆都完成：最後一則角色訊息有重新生成、版本切換；老闆娘放不下固定的部分
+  blocked   聊天室裡沒有人設，輸入區換成提示
+  no-model  平台沒有 LLM 模型，上方出現提示；還沒選記憶模型，不能建立聊天室
+-->
+<div id="chat-room-demo-content" class="chat-room-rooms">
+
+  <!-- NoModelNotice -->
+  <div class="chat-room-notice" data-variant="no-model">
+    <span class="chat-room-notice-icon">!</span>
+    <span class="chat-room-notice-text">還沒有可用的模型，請先到平台設定新增 API key 和模型</span>
+    <button type="button" class="platform-infrastructure-button platform-infrastructure-button-secondary platform-infrastructure-button-small">前往平台設定</button>
+  </div>
+
+  <!-- ===== RoomList ===== -->
+  <aside class="chat-room-room-list">
+    <div class="chat-room-room-list-header">
+      <div>
+        <div class="platform-infrastructure-eyebrow">Rooms</div>
+        <div class="chat-room-room-list-title">聊天室</div>
+      </div>
+      <button type="button" class="platform-infrastructure-button platform-infrastructure-button-primary platform-infrastructure-button-small" data-open="create-room-dialog" data-variant="no-model" data-variant-not><i data-icon="plus" data-small></i>建立聊天室</button>
+      <div class="chat-room-room-list-blocked" data-variant="no-model">
+        <button type="button" class="platform-infrastructure-button platform-infrastructure-button-primary platform-infrastructure-button-small" disabled><i data-icon="plus" data-small></i>建立聊天室</button>
+        <div class="chat-room-room-list-hint">
+          <span>請先到聊天設定選擇記憶模型</span>
+          <a href="settings.html">前往聊天設定 ›</a>
+        </div>
+      </div>
+    </div>
+
+    <div class="chat-room-room-list-items" data-state="normal">
+      <div class="chat-room-room-item is-active" data-room="夜城偵探社">
+        <div class="chat-room-avatar-stack">
+          <img class="chat-room-avatar chat-room-avatar-small" src="samples/rain.jpg" alt="">
+          <img class="chat-room-avatar chat-room-avatar-small" src="samples/mia.jpg" alt="">
+          <img class="chat-room-avatar chat-room-avatar-small" src="samples/boss.jpg" alt="">
+        </div>
+        <div class="chat-room-room-item-text">
+          <div class="chat-room-room-item-name">夜城偵探社</div>
+          <div class="chat-room-room-item-preview">雷恩：不只是離開。如果潮水是…</div>
+        </div>
+        <span class="chat-room-room-item-time">21:42</span>
+      </div>
+      <div class="chat-room-room-item" data-room="咖啡廳日常">
+        <div class="chat-room-avatar-stack">
+          <img class="chat-room-avatar chat-room-avatar-small" src="samples/boss.jpg" alt="">
+        </div>
+        <div class="chat-room-room-item-text">
+          <div class="chat-room-room-item-name">咖啡廳日常</div>
+          <div class="chat-room-room-item-preview">老闆娘：今天的蛋糕是檸檬塔喔</div>
+        </div>
+        <span class="chat-room-room-item-time">18:05</span>
+      </div>
+      <div class="chat-room-room-item" data-room="英文家教">
+        <div class="chat-room-avatar-stack">
+          <img class="chat-room-avatar chat-room-avatar-small" src="samples/emma.jpg" alt="">
+        </div>
+        <div class="chat-room-room-item-text">
+          <div class="chat-room-room-item-name">英文家教</div>
+          <div class="chat-room-room-item-preview">艾瑪：Great job! Let's try the past…</div>
+        </div>
+        <span class="chat-room-room-item-time">昨天</span>
+      </div>
+      <div class="chat-room-room-item" data-room="星港冒險隊">
+        <div class="chat-room-avatar-stack">
+          <img class="chat-room-avatar chat-room-avatar-small" src="samples/mia.jpg" alt="">
+          <img class="chat-room-avatar chat-room-avatar-small" src="samples/rain.jpg" alt="">
+        </div>
+        <div class="chat-room-room-item-text">
+          <div class="chat-room-room-item-name">星港冒險隊</div>
+          <div class="chat-room-room-item-preview">米婭：地圖上的 X 是什麼意思啦</div>
+        </div>
+        <span class="chat-room-room-item-time">11/24</span>
+      </div>
+      <div class="chat-room-room-item" data-room="每日新聞助理">
+        <div class="chat-room-avatar-stack">
+          <img class="chat-room-avatar chat-room-avatar-small" data-asset="defaultCharacterAvatar" data-ratio="1:1" alt="">
+        </div>
+        <div class="chat-room-room-item-text">
+          <div class="chat-room-room-item-name">每日新聞助理</div>
+          <div class="chat-room-room-item-preview">小報：今天有三則科技新聞值得注意…</div>
+        </div>
+        <span class="chat-room-room-item-time">11/22</span>
+      </div>
+    </div>
+
+    <div class="chat-room-room-list-items" data-state="loading">
+      <div class="platform-infrastructure-loading"><span class="platform-infrastructure-spinner platform-infrastructure-spinner-large"></span><span>讀取中…</span></div>
+    </div>
+    <div class="chat-room-room-list-items" data-state="empty"></div>
+    <div class="chat-room-room-list-items" data-state="error">
+      <div class="platform-infrastructure-empty">
+        <p class="platform-infrastructure-empty-text">載入失敗</p>
+        <button type="button" class="platform-infrastructure-button platform-infrastructure-button-secondary platform-infrastructure-button-small">重試</button>
+      </div>
+    </div>
+  </aside>
+
+  <!-- ===== ChatView ===== -->
+  <section class="chat-room-chat" data-state="normal">
+
+    <!-- RoomHeader -->
+    <header class="chat-room-chat-header">
+      <div class="chat-room-chat-title">
+        <span class="platform-infrastructure-eyebrow">Group Chat</span>
+        <div class="chat-room-chat-name"><span id="room-name">夜城偵探社</span> <span class="platform-infrastructure-badge is-primary">自然</span></div>
+      </div>
+      <span class="chat-room-header-spacer"></span>
+
+      <!-- MemberBar -->
+      <div class="chat-room-member-bar">
+        <div class="chat-room-member is-speaking" data-menu-owner data-member="雷恩">
+          <img class="chat-room-avatar" src="samples/rain.jpg" alt="">雷恩
+          <span class="chat-room-member-muted-icon"><i data-icon="mute" data-small></i></span>
+          <div class="chat-room-menu">
+            <button type="button" class="chat-room-menu-item" data-action="speak"><i data-icon="speak" data-small></i>讓他說話</button>
+            <button type="button" class="chat-room-menu-item" data-action="mute"><i data-icon="mute" data-small></i><span>靜音</span></button>
+          </div>
+        </div>
+        <div class="chat-room-member" data-menu-owner data-member="米婭">
+          <img class="chat-room-avatar" src="samples/mia.jpg" alt="">米婭
+          <span class="chat-room-member-muted-icon"><i data-icon="mute" data-small></i></span>
+          <div class="chat-room-menu">
+            <button type="button" class="chat-room-menu-item" data-action="speak"><i data-icon="speak" data-small></i>讓他說話</button>
+            <button type="button" class="chat-room-menu-item" data-action="mute"><i data-icon="mute" data-small></i><span>靜音</span></button>
+          </div>
+        </div>
+        <div class="chat-room-member is-muted" data-menu-owner data-member="老闆娘">
+          <img class="chat-room-avatar" src="samples/boss.jpg" alt="">老闆娘
+          <span class="chat-room-member-muted-icon"><i data-icon="mute" data-small></i></span>
+          <div class="chat-room-menu">
+            <button type="button" class="chat-room-menu-item" data-action="speak"><i data-icon="speak" data-small></i>讓他說話</button>
+            <button type="button" class="chat-room-menu-item" data-action="mute"><i data-icon="mute" data-small></i><span>取消靜音</span></button>
+          </div>
+        </div>
+        <div class="chat-room-member is-persona" title="人設" data-variant="blocked" data-variant-not>
+          <img class="chat-room-avatar" src="samples/natsu.jpg" alt="">小夏
+        </div>
+      </div>
+
+      <button type="button" class="platform-infrastructure-icon-button" aria-label="聊天室設定" data-open="room-settings-dialog"><i data-icon="gear"></i></button>
+    </header>
+
+    <!-- MessageList -->
+    <div class="chat-room-messages" id="message-list">
+      <span class="chat-room-day-divider">11 月 26 日</span>
+
+      <!-- 已刪除角色的舊發言 -->
+      <div class="chat-room-message">
+        <img class="chat-room-avatar" data-asset="defaultCharacterAvatar" data-ratio="1:1" alt="">
+        <div class="chat-room-message-main">
+          <div class="chat-room-message-name is-deleted"><span class="chat-room-message-name-text">阿傑</span><span class="platform-infrastructure-badge">角色已刪除</span></div>
+          <div class="chat-room-bubble">倉庫的鑰匙只有三把，一把在管理員身上，一把在警局，最後一把……我也不知道。</div>
+          <div class="chat-room-message-meta"><span>11/26 23:10</span><span>輸入 2,108／輸出 64 token</span><span>$0.0009</span><span class="chat-room-meta-actions"><button type="button" class="chat-room-text-button"><i data-icon="copy" data-small></i>複製</button></span></div>
+        </div>
+      </div>
+      <div class="chat-room-system-line"><span class="chat-room-system-pill">阿傑 已退出聊天室</span></div>
+
+      <span class="chat-room-day-divider">今天</span>
+
+      <!-- 自己的訊息：附件 -->
+      <div class="chat-room-message is-own">
+        <img class="chat-room-avatar" src="samples/natsu.jpg" alt="">
+        <div class="chat-room-message-main">
+          <div class="chat-room-message-name">小夏</div>
+          <div class="chat-room-attachments">
+            <img class="chat-room-attachment-image" src="samples/clue.jpg" alt="監視器截圖">
+            <span class="chat-room-file-chip"><i data-icon="file"></i>倉庫出入紀錄.pdf <small>248 KB</small></span>
+          </div>
+          <div class="chat-room-bubble">雷恩，昨晚碼頭倉庫的監視器畫面我調到了，你看這張。</div>
+          <div class="chat-room-message-meta"><span>21:36</span><span class="chat-room-meta-actions"><button type="button" class="chat-room-text-button"><i data-icon="copy" data-small></i>複製</button></span></div>
+        </div>
+      </div>
+
+      <!-- 角色訊息：思考過程 -->
+      <div class="chat-room-message">
+        <img class="chat-room-avatar" src="samples/rain.jpg" alt="">
+        <div class="chat-room-message-main">
+          <div class="chat-room-message-name">雷恩</div>
+          <div class="chat-room-fold">
+            <button type="button" class="chat-room-fold-toggle">思考過程</button>
+            <div class="chat-room-fold-body">照片右下角的時間戳記是 02:17。PDF 的出入紀錄顯示倉庫在 02:05 關燈上鎖。兩者之間有 12 分鐘的空白，要讓小夏注意這個矛盾，並請米婭查潮汐。</div>
+          </div>
+          <div class="chat-room-bubble"><em>（推了推帽簷，盯著照片看了很久）</em>
+時間戳記是 02:17，但出入紀錄寫倉庫 02:05 就熄燈上鎖了。有人在黑暗裡待了十二分鐘……米婭，查一下那晚的潮汐表。</div>
+          <div class="chat-room-message-meta"><span>21:38</span><span>輸入 3,412／輸出 186 token</span><span>$0.0124</span><span class="chat-room-meta-actions"><button type="button" class="chat-room-text-button"><i data-icon="copy" data-small></i>複製</button></span></div>
+        </div>
+      </div>
+
+      <!-- 記憶更新 -->
+      <div class="chat-room-system-line">
+        <button type="button" class="chat-room-system-pill"><span class="platform-infrastructure-sparkle"></span>雷恩記住了一件事 ›</button>
+        <div class="chat-room-system-detail">小夏找到了碼頭倉庫 02:17 的監視器畫面，和出入紀錄對不上。（重要度 4）</div>
+      </div>
+
+      <!-- 角色訊息：搜尋來源 -->
+      <div class="chat-room-message">
+        <img class="chat-room-avatar" src="samples/mia.jpg" alt="">
+        <div class="chat-room-message-main">
+          <div class="chat-room-message-name">米婭</div>
+          <div class="chat-room-bubble">查到了！那晚滿潮是 02:20，水位剛好能讓小船直接靠進倉庫後門～<em>（得意地晃了晃手機）</em></div>
+          <div class="chat-room-fold">
+            <button type="button" class="chat-room-fold-toggle">來源 2</button>
+            <div class="chat-room-fold-body">
+              <ul class="chat-room-sources">
+                <li><a href="#">基隆港 11 月潮汐預報表</a><small>cwa.gov.tw</small></li>
+                <li><a href="#">港區夜間船舶進出公告</a><small>twport.com.tw</small></li>
+              </ul>
+            </div>
+          </div>
+          <div class="chat-room-message-meta"><span>21:39</span><span>輸入 3,980／輸出 92 token・搜尋 1 次</span><span>$0.0291</span><span class="chat-room-meta-actions"><button type="button" class="chat-room-text-button"><i data-icon="copy" data-small></i>複製</button></span></div>
+        </div>
+      </div>
+
+      <div class="chat-room-system-line">
+        <button type="button" class="chat-room-system-pill"><span class="platform-infrastructure-sparkle"></span>聊天室記憶已更新（新增 1 條）›</button>
+        <div class="chat-room-system-detail">案發當晚 02:20 滿潮，小船可以直接靠進倉庫後門。（重要度 3）</div>
+      </div>
+
+      <!-- 自己最後一則：角色還沒說完，可以修改 -->
+      <div class="chat-room-message is-own" id="last-own-message">
+        <img class="chat-room-avatar" src="samples/natsu.jpg" alt="">
+        <div class="chat-room-message-main">
+          <div class="chat-room-message-name">小夏</div>
+          <div class="chat-room-bubble" id="last-own-bubble">@雷恩 所以兇手是坐船離開的？</div>
+          <div class="chat-room-message-meta"><span>21:41</span><span class="chat-room-meta-actions">
+            <button type="button" class="chat-room-text-button" id="edit-button" data-variant="idle" data-variant-not><i data-icon="edit" data-small></i>修改</button>
+            <button type="button" class="chat-room-text-button"><i data-icon="copy" data-small></i>複製</button></span></div>
+        </div>
+      </div>
+
+      <!-- 串流中的回覆（預設情境） -->
+      <div class="chat-room-message" id="streaming-message" data-variant="idle" data-variant-not>
+        <img class="chat-room-avatar" src="samples/rain.jpg" alt="">
+        <div class="chat-room-message-main">
+          <div class="chat-room-message-name">雷恩</div>
+          <div class="chat-room-bubble"><span id="streaming-text">不只是離開。如果潮水是 02:20 滿潮，那他是算準了時間——</span><span class="chat-room-caret" id="streaming-caret"></span></div>
+          <div class="chat-room-message-meta" id="streaming-meta" hidden><span>21:42</span><span class="platform-infrastructure-badge is-warning">已中止</span><span class="chat-room-meta-actions"><button type="button" class="chat-room-text-button"><i data-icon="copy" data-small></i>複製</button></span></div>
+        </div>
+      </div>
+
+      <!-- 完成的回覆（idle 情境）：最後一則角色訊息，有重新生成和版本切換 -->
+      <div class="chat-room-message" data-variant="idle">
+        <img class="chat-room-avatar" src="samples/rain.jpg" alt="">
+        <div class="chat-room-message-main">
+          <div class="chat-room-message-name">雷恩</div>
+          <div class="chat-room-bubble">不只是離開。如果潮水是 02:20 滿潮，那他是算準了時間——這不是臨時起意，是一個熟悉這座港口的人。<em>（把照片推回小夏面前）</em>明天一早，我們去找港務局的夜班值班表。</div>
+          <div class="chat-room-message-meta"><span>21:42</span><span>輸入 4,286／輸出 143 token</span><span>$0.0147</span>
+            <span class="chat-room-meta-actions">
+              <span class="chat-room-version"><button type="button" class="chat-room-text-button" aria-label="上一個版本">‹</button>2 / 2<button type="button" class="chat-room-text-button" aria-label="下一個版本" disabled>›</button></span>
+              <button type="button" class="chat-room-text-button"><i data-icon="refresh" data-small></i>重新生成</button>
+              <button type="button" class="chat-room-text-button"><i data-icon="copy" data-small></i>複製</button>
+            </span></div>
+        </div>
+      </div>
+
+      <!-- 放不下固定的部分（idle 情境） -->
+      <div class="chat-room-inline-error" data-variant="idle">
+        <span class="platform-infrastructure-error-message-icon">!</span>
+        <span class="chat-room-inline-error-text">老闆娘的模型放不下設定的記憶和知識書，請到角色卡調整</span>
+        <a class="platform-infrastructure-button platform-infrastructure-button-secondary platform-infrastructure-button-small" href="characters.html?open=character-dialog">開啟角色卡</a>
+      </div>
+    </div>
+
+    <!-- Composer -->
+    <div class="chat-room-composer" data-variant="blocked" data-variant-not>
+      <div class="chat-room-mention" id="mention-list">
+        <div class="chat-room-mention-title">點名角色</div>
+        <button type="button" class="chat-room-menu-item" data-mention="雷恩"><img class="chat-room-avatar chat-room-avatar-small" src="samples/rain.jpg" alt="">雷恩</button>
+        <button type="button" class="chat-room-menu-item" data-mention="米婭"><img class="chat-room-avatar chat-room-avatar-small" src="samples/mia.jpg" alt="">米婭</button>
+        <button type="button" class="chat-room-menu-item" data-mention="老闆娘"><img class="chat-room-avatar chat-room-avatar-small" src="samples/boss.jpg" alt="">老闆娘</button>
+      </div>
+
+      <div class="chat-room-composer-status" id="composer-status">
+        <span data-variant="idle" data-variant-not id="status-replying"><span class="chat-room-typing"><span></span><span></span><span></span></span><strong>雷恩</strong>正在回覆…・接下來：米婭</span>
+      </div>
+
+      <div class="chat-room-composer-box">
+        <textarea class="chat-room-composer-input" id="composer-input" rows="2" placeholder="輸入訊息，@ 可以點名角色（Enter 送出，Shift+Enter 換行）"></textarea>
+        <div class="chat-room-composer-tools">
+          <div class="chat-room-persona-select" data-menu-owner>
+            <button type="button" class="chat-room-persona-trigger"><img class="chat-room-avatar" src="samples/natsu.jpg" alt="" id="persona-avatar"><span id="persona-name">小夏</span></button>
+            <div class="chat-room-menu">
+              <button type="button" class="chat-room-menu-item" data-persona="小夏" data-avatar="samples/natsu.jpg"><img class="chat-room-avatar chat-room-avatar-small" src="samples/natsu.jpg" alt="">小夏</button>
+              <button type="button" class="chat-room-menu-item" data-persona="使用者"><img class="chat-room-avatar chat-room-avatar-small" data-asset="defaultPersonaAvatar" data-ratio="1:1" alt="">使用者</button>
+            </div>
+          </div>
+          <button type="button" class="platform-infrastructure-icon-button" aria-label="附件" title="上傳圖片、PDF、文字檔"><i data-icon="clip"></i></button>
+          <button type="button" class="platform-infrastructure-button platform-infrastructure-button-secondary chat-room-auto-button" id="auto-button"><i data-icon="play" data-small></i>自動聊 3 輪</button>
+          <span class="chat-room-header-spacer"></span>
+          <button type="button" class="platform-infrastructure-button platform-infrastructure-button-danger chat-room-send-button" id="stop-button" aria-label="停止" title="停止" data-variant="idle" data-variant-not><i data-icon="stop"></i></button>
+          <button type="button" class="platform-infrastructure-button platform-infrastructure-button-primary chat-room-send-button" id="send-button" aria-label="送出" title="送出" data-variant="idle"><i data-icon="send"></i></button>
+        </div>
+      </div>
+    </div>
+
+    <!-- 不能發言（blocked 情境） -->
+    <div class="chat-room-composer" data-variant="blocked">
+      <div class="chat-room-composer-status"></div>
+      <div class="chat-room-composer-blocked">
+        <span class="chat-room-notice-icon">!</span>
+        <span>聊天室裡沒有人設，請到聊天室設定加入人設</span>
+        <button type="button" class="platform-infrastructure-button platform-infrastructure-button-secondary platform-infrastructure-button-small" data-open="room-settings-dialog">開啟聊天室設定</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- 對話區：載入中 -->
+  <section class="chat-room-chat" data-state="loading">
+    <div class="chat-room-chat-empty"><div class="platform-infrastructure-loading"><span class="platform-infrastructure-spinner platform-infrastructure-spinner-large"></span><span>讀取中…</span></div></div>
+  </section>
+
+  <!-- 對話區：沒有聊天室 -->
+  <section class="chat-room-chat" data-state="empty">
+    <div class="chat-room-chat-empty">
+      <span class="platform-infrastructure-display-text">Let's Talk</span>
+      <img class="chat-room-chat-empty-image" data-asset="roomsEmpty" data-ratio="1:1" alt="">
+      <p class="chat-room-chat-empty-text">還沒有聊天室</p>
+      <p>建立一個聊天室，把角色和你的人設放進來開始聊天</p>
+      <button type="button" class="platform-infrastructure-button platform-infrastructure-button-primary" data-open="create-room-dialog"><i data-icon="plus" data-small></i>建立聊天室</button>
+    </div>
+  </section>
+
+  <!-- 對話區：載入失敗 -->
+  <section class="chat-room-chat" data-state="error">
+    <div class="chat-room-chat-empty">
+      <img class="chat-room-chat-empty-image" src="../../../../public/theme/default/PlatformInfrastructure/emptyStateIllustration.png" alt="">
+      <p class="chat-room-chat-empty-text">載入失敗</p>
+      <div class="platform-infrastructure-error-message">
+        <span class="platform-infrastructure-error-message-icon">!</span>
+        <div class="platform-infrastructure-error-message-body">
+          <div class="platform-infrastructure-error-message-title">讀取聊天室時發生問題，請稍後再試</div>
+          <div class="platform-infrastructure-error-message-source">ChatRoom／listMessages（代碼：ROOM_READ_FAILED）</div>
+        </div>
+      </div>
+      <button type="button" class="platform-infrastructure-button platform-infrastructure-button-primary">重試</button>
+    </div>
+  </section>
+</div>
+
+<!-- ===== CreateRoomDialog ===== -->
+<div class="platform-infrastructure-backdrop" id="create-room-dialog" data-modal hidden>
+  <div class="platform-infrastructure-modal chat-room-dialog is-medium" role="dialog" aria-label="建立聊天室">
+    <div class="chat-room-dialog-header has-character">
+      <div class="chat-room-dialog-heading">
+        <span class="platform-infrastructure-eyebrow">New Room</span>
+        <h2 class="platform-infrastructure-modal-title">建立聊天室</h2>
+      </div>
+      <img class="chat-room-dialog-character" data-asset="createRoomHeader" data-ratio="1:1" alt="">
+      <button type="button" class="platform-infrastructure-icon-button chat-room-dialog-close" aria-label="關閉" data-close>×</button>
+    </div>
+    <div class="chat-room-dialog-body">
+      <div class="chat-room-form-field">
+        <label class="chat-room-form-label">名稱 <span class="chat-room-required">*</span></label>
+        <input class="platform-infrastructure-input" placeholder="例如：夜城偵探社">
+      </div>
+      <div class="chat-room-form-field">
+        <span class="chat-room-form-label">角色 <span class="chat-room-required">*</span><small>至少選一個，之後可以在聊天室設定加入或移出</small></span>
+        <div class="chat-room-check-list">
+          <div class="chat-room-check-item is-checked"><span class="chat-room-check-box"></span><img class="chat-room-avatar" src="samples/rain.jpg" alt=""><span class="chat-room-check-item-text">雷恩<small>Claude Opus 5.5（OpenRouter）</small></span></div>
+          <div class="chat-room-check-item is-checked"><span class="chat-room-check-box"></span><img class="chat-room-avatar" src="samples/mia.jpg" alt=""><span class="chat-room-check-item-text">米婭<small>Grok 5</small></span></div>
+          <div class="chat-room-check-item"><span class="chat-room-check-box"></span><img class="chat-room-avatar" src="samples/boss.jpg" alt=""><span class="chat-room-check-item-text">老闆娘<small>Gemini 3 Flash</small></span></div>
+          <div class="chat-room-check-item"><span class="chat-room-check-box"></span><img class="chat-room-avatar" src="samples/emma.jpg" alt=""><span class="chat-room-check-item-text">艾瑪<small>GPT-5.2 mini</small></span></div>
+        </div>
+      </div>
+      <div class="chat-room-form-field">
+        <span class="chat-room-form-label">人設 <span class="chat-room-required">*</span><small>至少選一個，發言時可以切換</small></span>
+        <div class="chat-room-check-list">
+          <div class="chat-room-check-item is-checked"><span class="chat-room-check-box"></span><img class="chat-room-avatar" data-asset="defaultPersonaAvatar" data-ratio="1:1" alt=""><span class="chat-room-check-item-text">使用者<small>你本人</small></span></div>
+          <div class="chat-room-check-item"><span class="chat-room-check-box"></span><img class="chat-room-avatar" src="samples/natsu.jpg" alt=""><span class="chat-room-check-item-text">小夏<small>見習偵探，十九歲</small></span></div>
+        </div>
+      </div>
+      <div class="chat-room-form-field">
+        <label class="chat-room-form-label">聊天室情境 <small>選填：這個聊天室的背景、地點、規則</small></label>
+        <textarea class="platform-infrastructure-input chat-room-textarea" placeholder="例如：1930 年代的港口城市，偵探社位在碼頭邊的二樓…"></textarea>
+      </div>
+      <div>
+        <div class="chat-room-inline-field">
+          <div class="chat-room-inline-field-label">全域記憶<small>角色會記得你本人的喜好與習慣</small></div>
+          <div class="chat-room-inline-field-control"><button type="button" class="platform-infrastructure-toggle is-on" aria-label="全域記憶"></button><span class="chat-room-locked-note"><i data-icon="lock" data-small></i>建立後不能修改</span></div>
+        </div>
+        <div class="chat-room-inline-field">
+          <div class="chat-room-inline-field-label">聊天室記憶大小</div>
+          <div class="chat-room-inline-field-control"><div class="chat-room-range"><input type="range" min="5000" max="30000" step="1000" value="10000" data-unit=" token"><span class="chat-room-range-value"></span></div></div>
+        </div>
+        <div class="chat-room-inline-field">
+          <div class="chat-room-inline-field-label">摘要大小</div>
+          <div class="chat-room-inline-field-control"><div class="chat-room-range"><input type="range" min="2000" max="50000" step="1000" value="8000" data-unit=" token"><span class="chat-room-range-value"></span></div></div>
+        </div>
+      </div>
+    </div>
+    <div class="chat-room-dialog-footer">
+      <span class="chat-room-dialog-footer-spacer"></span>
+      <button type="button" class="platform-infrastructure-button platform-infrastructure-button-primary" data-close>建立</button>
+    </div>
+  </div>
+</div>
+
+<!-- ===== RoomSettingsDialog ===== -->
+<div class="platform-infrastructure-backdrop" id="room-settings-dialog" data-modal hidden>
+  <div class="platform-infrastructure-modal chat-room-dialog is-medium" role="dialog" aria-label="聊天室設定">
+    <div class="chat-room-dialog-header">
+      <div class="chat-room-dialog-heading">
+        <span class="platform-infrastructure-eyebrow">Room Settings</span>
+        <h2 class="platform-infrastructure-modal-title">聊天室設定・夜城偵探社</h2>
+      </div>
+      <button type="button" class="platform-infrastructure-icon-button chat-room-dialog-close" aria-label="關閉" data-close>×</button>
+    </div>
+    <div class="chat-room-dialog-tabs">
+      <div class="platform-infrastructure-tabs" data-tabs="room">
+        <button type="button" class="platform-infrastructure-tab is-active" data-tab="basic">基本</button>
+        <button type="button" class="platform-infrastructure-tab" data-tab="members">成員</button>
+        <button type="button" class="platform-infrastructure-tab" data-tab="memory">記憶</button>
+        <button type="button" class="platform-infrastructure-tab" data-tab="summary">摘要</button>
+      </div>
+    </div>
+
+    <!-- 基本 -->
+    <div class="chat-room-dialog-body" data-tab-panel="room:basic">
+      <div class="chat-room-form-field">
+        <label class="chat-room-form-label">名稱 <span class="chat-room-required">*</span></label>
+        <input class="platform-infrastructure-input" value="夜城偵探社">
+      </div>
+      <div class="chat-room-form-field">
+        <label class="chat-room-form-label">聊天室情境 <small>選填</small></label>
+        <textarea class="platform-infrastructure-input chat-room-textarea">1930 年代的港口城市「夜城」，偵探社位在碼頭邊的二樓，樓下是老闆娘開的咖啡廳。最近碼頭倉庫接連發生失竊案。</textarea>
+      </div>
+      <div>
+        <div class="chat-room-inline-field">
+          <div class="chat-room-inline-field-label">發言方式</div>
+          <div class="chat-room-inline-field-control">
+            <div class="platform-infrastructure-tabs chat-room-segmented" data-tabs="mode">
+              <button type="button" class="platform-infrastructure-tab is-active" data-tab="natural">自然</button>
+              <button type="button" class="platform-infrastructure-tab" data-tab="turns">輪流</button>
+              <button type="button" class="platform-infrastructure-tab" data-tab="manual">手動</button>
+            </div>
+          </div>
+        </div>
+        <div class="chat-room-inline-field" data-tab-panel="mode:natural"><div class="chat-room-inline-field-label"></div><div class="platform-infrastructure-hint">被 @ 的角色依點名順序先回；其他角色依健談度決定要不要開口；都沒人開口就隨機一個</div></div>
+        <div class="chat-room-inline-field" data-tab-panel="mode:turns" hidden><div class="chat-room-inline-field-label"></div><div class="platform-infrastructure-hint">照成員順序每人說一次，順序在「成員」分頁拖曳調整</div></div>
+        <div class="chat-room-inline-field" data-tab-panel="mode:manual" hidden><div class="chat-room-inline-field-label"></div><div class="platform-infrastructure-hint">點成員頭像的「讓他說話」，誰被點誰說</div></div>
+        <div class="chat-room-inline-field">
+          <div class="chat-room-inline-field-label">自動模式輪數<small>按「自動聊」時接著聊幾輪</small></div>
+          <div class="chat-room-inline-field-control"><div class="chat-room-range"><input type="range" min="1" max="10" value="3" data-unit=" 輪"><span class="chat-room-range-value"></span></div></div>
+        </div>
+        <div class="chat-room-inline-field">
+          <div class="chat-room-inline-field-label">全域記憶</div>
+          <div class="chat-room-inline-field-control"><span class="platform-infrastructure-badge is-success">已開啟</span><span class="chat-room-locked-note"><i data-icon="lock" data-small></i>建立後不能修改</span></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 成員 -->
+    <div class="chat-room-dialog-body" data-tab-panel="room:members" hidden>
+      <div class="platform-infrastructure-card-header chat-room-members-toolbar">
+        <span class="platform-infrastructure-hint chat-room-hint-inline">拖曳 <i data-icon="drag" data-small></i> 調整順序，「輪流」時照這個順序說話</span>
+        <span class="platform-infrastructure-card-header-spacer"></span>
+        <button type="button" class="platform-infrastructure-button platform-infrastructure-button-secondary platform-infrastructure-button-small"><i data-icon="plus" data-small></i>加入角色</button>
+        <button type="button" class="platform-infrastructure-button platform-infrastructure-button-secondary platform-infrastructure-button-small"><i data-icon="plus" data-small></i>加入人設</button>
+      </div>
+      <div class="chat-room-member-list">
+        <div class="chat-room-member-row">
+          <span class="chat-room-drag-handle"><i data-icon="drag"></i></span>
+          <img class="chat-room-avatar" src="samples/rain.jpg" alt="">
+          <span class="chat-room-member-row-name">雷恩<small>角色</small></span>
+          <div class="chat-room-range"><span class="platform-infrastructure-hint chat-room-hint-inline">健談度</span><input type="range" min="0" max="100" value="70" data-unit="%"><span class="chat-room-range-value"></span></div>
+          <span class="chat-room-member-row-mute">靜音<button type="button" class="platform-infrastructure-toggle" aria-label="靜音"></button></span>
+          <button type="button" class="platform-infrastructure-button platform-infrastructure-button-subtle-danger platform-infrastructure-button-small" data-open="remove-member-confirm">移出</button>
+        </div>
+        <div class="chat-room-member-row">
+          <span class="chat-room-drag-handle"><i data-icon="drag"></i></span>
+          <img class="chat-room-avatar" src="samples/mia.jpg" alt="">
+          <span class="chat-room-member-row-name">米婭<small>角色</small></span>
+          <div class="chat-room-range"><span class="platform-infrastructure-hint chat-room-hint-inline">健談度</span><input type="range" min="0" max="100" value="85" data-unit="%"><span class="chat-room-range-value"></span></div>
+          <span class="chat-room-member-row-mute">靜音<button type="button" class="platform-infrastructure-toggle" aria-label="靜音"></button></span>
+          <button type="button" class="platform-infrastructure-button platform-infrastructure-button-subtle-danger platform-infrastructure-button-small" data-open="remove-member-confirm">移出</button>
+        </div>
+        <div class="chat-room-member-row">
+          <span class="chat-room-drag-handle"><i data-icon="drag"></i></span>
+          <img class="chat-room-avatar" src="samples/boss.jpg" alt="">
+          <span class="chat-room-member-row-name">老闆娘<small>角色</small></span>
+          <div class="chat-room-range"><span class="platform-infrastructure-hint chat-room-hint-inline">健談度</span><input type="range" min="0" max="100" value="30" data-unit="%"><span class="chat-room-range-value"></span></div>
+          <span class="chat-room-member-row-mute">靜音<button type="button" class="platform-infrastructure-toggle is-on" aria-label="靜音"></button></span>
+          <button type="button" class="platform-infrastructure-button platform-infrastructure-button-subtle-danger platform-infrastructure-button-small" data-open="remove-member-confirm">移出</button>
+        </div>
+        <div class="chat-room-member-row">
+          <span class="chat-room-drag-handle"><i data-icon="drag"></i></span>
+          <img class="chat-room-avatar" src="samples/natsu.jpg" alt="">
+          <span class="chat-room-member-row-name">小夏<small>人設</small></span>
+          <span></span>
+          <span></span>
+          <button type="button" class="platform-infrastructure-button platform-infrastructure-button-subtle-danger platform-infrastructure-button-small" data-open="remove-member-confirm">移出</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- 記憶 -->
+    <div class="chat-room-dialog-body" data-tab-panel="room:memory" hidden>
+      <div class="chat-room-inline-field is-first">
+        <div class="chat-room-inline-field-label">聊天室記憶大小</div>
+        <div class="chat-room-inline-field-control"><div class="chat-room-range"><input type="range" min="5000" max="30000" step="1000" value="10000" data-unit=" token"><span class="chat-room-range-value"></span></div></div>
+      </div>
+      <div class="chat-room-memory">
+        <div class="chat-room-memory-head">
+          <div class="chat-room-memory-usage">約 3,840／10,000 token<div class="platform-infrastructure-progress"><div class="platform-infrastructure-progress-fill" style="width:38%"></div></div></div>
+          <button type="button" class="platform-infrastructure-button platform-infrastructure-button-secondary platform-infrastructure-button-small"><i data-icon="plus" data-small></i>新增條目</button>
+        </div>
+        <div class="chat-room-memory-list">
+          <div class="chat-room-memory-item is-locked">
+            <span class="chat-room-importance"><button class="is-on"></button><button class="is-on"></button><button class="is-on"></button><button class="is-on"></button><button class="is-on"></button></span>
+            <div class="chat-room-memory-text"><input class="chat-room-memory-content" value="偵探社和老闆娘約定：案子沒破之前，咖啡錢都先記帳。"><div class="chat-room-memory-meta">最後提到 11/25</div></div>
+            <button type="button" class="chat-room-lock is-on" aria-label="鎖定"><i data-icon="lock"></i></button>
+            <button type="button" class="platform-infrastructure-icon-button" aria-label="刪除">×</button>
+          </div>
+          <div class="chat-room-memory-item">
+            <span class="chat-room-importance"><button class="is-on"></button><button class="is-on"></button><button class="is-on"></button><button></button><button></button></span>
+            <div class="chat-room-memory-text"><input class="chat-room-memory-content" value="案發當晚 02:20 滿潮，小船可以直接靠進倉庫後門。"><div class="chat-room-memory-meta">最後提到 今天 21:39</div></div>
+            <button type="button" class="chat-room-lock" aria-label="鎖定"><i data-icon="unlock"></i></button>
+            <button type="button" class="platform-infrastructure-icon-button" aria-label="刪除">×</button>
+          </div>
+          <div class="chat-room-memory-item">
+            <span class="chat-room-importance"><button class="is-on"></button><button class="is-on"></button><button class="is-on"></button><button class="is-on"></button><button></button></span>
+            <div class="chat-room-memory-text"><input class="chat-room-memory-content" value="倉庫的鑰匙只有三把：管理員、警局，第三把下落不明。"><div class="chat-room-memory-meta">最後提到 11/26</div></div>
+            <button type="button" class="chat-room-lock" aria-label="鎖定"><i data-icon="unlock"></i></button>
+            <button type="button" class="platform-infrastructure-icon-button" aria-label="刪除">×</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 摘要 -->
+    <div class="chat-room-dialog-body" data-tab-panel="room:summary" hidden>
+      <div class="chat-room-inline-field is-first">
+        <div class="chat-room-inline-field-label">摘要大小<small>超過時重寫成更精簡的版本</small></div>
+        <div class="chat-room-inline-field-control"><div class="chat-room-range"><input type="range" min="2000" max="50000" step="1000" value="8000" data-unit=" token"><span class="chat-room-range-value"></span></div></div>
+      </div>
+      <div class="chat-room-form-field">
+        <label class="chat-room-form-label">對話摘要 <small>約 1,260 token・可以修改，下一次說話就用新的內容</small></label>
+        <textarea class="platform-infrastructure-input chat-room-textarea is-tall">11 月 24 日起，碼頭第三倉庫連續三晚失竊，管理員報案後委託夜城偵探社調查。雷恩判斷竊賊熟悉倉庫的巡邏時間；米婭查出失竊的都是同一家貿易行的貨。小夏在咖啡廳聽老闆娘提到，最近有個戴灰帽的男人每晚都在打烊前來買外帶……</textarea>
+      </div>
+    </div>
+
+    <div class="chat-room-dialog-footer">
+      <span class="chat-room-dialog-footer-spacer"></span>
+      <span class="platform-infrastructure-feedback"></span>
+      <button type="button" class="platform-infrastructure-button platform-infrastructure-button-primary" disabled>儲存</button>
+    </div>
+  </div>
+</div>
+
+<!-- 移出成員的確認視窗 -->
+<div class="platform-infrastructure-backdrop" id="remove-member-confirm" data-modal hidden>
+  <div class="platform-infrastructure-modal" role="dialog" aria-label="移出成員">
+    <div class="platform-infrastructure-modal-header"><h2 class="platform-infrastructure-modal-title">移出聊天室</h2></div>
+    <div class="platform-infrastructure-modal-body">確定要把「老闆娘」移出這個聊天室嗎？以前的發言會保留，儲存後聊天室會顯示「老闆娘 已退出聊天室」。</div>
+    <div class="platform-infrastructure-modal-footer">
+      <button type="button" class="platform-infrastructure-button platform-infrastructure-button-secondary" data-close>取消</button>
+      <button type="button" class="platform-infrastructure-button platform-infrastructure-button-danger" data-close>移出</button>
+    </div>
+  </div>
+</div>
+
+<script src="demo.js"></script>
+<script>
+  // 聊天室頁的假互動：換聊天室、成員選單、@ 點名、切換人設、停止、修改、送出
+  (function () {
+    var input = document.getElementById('composer-input');
+    var mention = document.getElementById('mention-list');
+    var STREAM_TEXT = '這不是臨時起意，是一個熟悉這座港口的人。';
+    var streamTimer = null;
+
+    // 串流：一個字一個字接上去
+    function startStreaming() {
+      var target = document.getElementById('streaming-text');
+      if (!target) return;
+      var index = 0;
+      streamTimer = setInterval(function () {
+        if (index >= STREAM_TEXT.length) { clearInterval(streamTimer); return; }
+        target.textContent += STREAM_TEXT[index];
+        index += 1;
+      }, 180);
+    }
+
+    function stopStreaming() {
+      clearInterval(streamTimer);
+      var caret = document.getElementById('streaming-caret');
+      if (caret) caret.remove();
+      var meta = document.getElementById('streaming-meta');
+      if (meta) meta.hidden = false;
+      var status = document.getElementById('status-replying');
+      if (status) status.hidden = true;
+      var editButton = document.getElementById('edit-button');
+      document.querySelectorAll('.chat-room-member.is-speaking').forEach(function (m) { m.classList.remove('is-speaking'); });
+      document.getElementById('stop-button').hidden = true;
+      document.getElementById('send-button').hidden = false;
+      return editButton;
+    }
+
+    if (!new URLSearchParams(location.search).get('variant')) startStreaming();
+
+    document.addEventListener('click', function (event) {
+      var room = event.target.closest('.chat-room-room-item');
+      if (room) {
+        document.querySelectorAll('.chat-room-room-item').forEach(function (r) { r.classList.toggle('is-active', r === room); });
+        document.getElementById('room-name').textContent = room.getAttribute('data-room');
+        return;
+      }
+
+      var action = event.target.closest('[data-action]');
+      if (action) {
+        var member = action.closest('.chat-room-member');
+        if (action.getAttribute('data-action') === 'mute') {
+          var isMuted = member.classList.toggle('is-muted');
+          action.querySelector('span').textContent = isMuted ? '取消靜音' : '靜音';
+        }
+        return;
+      }
+
+      var persona = event.target.closest('[data-persona]');
+      if (persona) {
+        document.getElementById('persona-name').textContent = persona.getAttribute('data-persona');
+        var avatar = persona.querySelector('img');
+        document.getElementById('persona-avatar').src = avatar.src;
+        return;
+      }
+
+      var pick = event.target.closest('[data-mention]');
+      if (pick) {
+        input.value = input.value.replace(/@$/, '') + '@' + pick.getAttribute('data-mention') + ' ';
+        mention.classList.remove('is-open');
+        input.focus();
+        return;
+      }
+
+      if (event.target.closest('#stop-button')) {
+        stopStreaming();
+        return;
+      }
+
+      // 修改最後一則自己的訊息：角色正在說話時先中止
+      if (event.target.closest('#edit-button')) {
+        if (document.getElementById('streaming-caret')) stopStreaming();
+        var bubble = document.getElementById('last-own-bubble');
+        var original = bubble.textContent;
+        var box = document.createElement('div');
+        box.className = 'chat-room-edit-box';
+        box.innerHTML = '<textarea>' + original + '</textarea><div class="chat-room-edit-actions">' +
+          '<button type="button" class="platform-infrastructure-button platform-infrastructure-button-secondary platform-infrastructure-button-small" data-edit="cancel">取消</button>' +
+          '<button type="button" class="platform-infrastructure-button platform-infrastructure-button-primary platform-infrastructure-button-small" data-edit="resend">重送</button></div>';
+        bubble.replaceWith(box);
+        box.querySelector('textarea').focus();
+        return;
+      }
+
+      var editAction = event.target.closest('[data-edit]');
+      if (editAction) {
+        var editBox = editAction.closest('.chat-room-edit-box');
+        var text = editBox.querySelector('textarea').value;
+        var restored = document.createElement('div');
+        restored.className = 'chat-room-bubble';
+        restored.id = 'last-own-bubble';
+        restored.textContent = text;
+        editBox.replaceWith(restored);
+        if (editAction.getAttribute('data-edit') === 'resend') {
+          // 重送：拿掉被中止的回覆
+          var aborted = document.getElementById('streaming-message');
+          if (aborted) aborted.remove();
+        }
+      }
+    });
+
+    // 打 @ 跳出點名清單；打字會停止自動模式（這裡只示意清單）
+    input.addEventListener('input', function () {
+      mention.classList.toggle('is-open', /@$/.test(input.value));
+    });
+  })();
+</script>
+</body>
+</html>

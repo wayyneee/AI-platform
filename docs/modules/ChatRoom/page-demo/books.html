@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>知識書 — ChatRoom demo</title>
+  <script src="../../../page-demo-kit/demo-toolbar.js" data-module="ChatRoom"></script>
+  <link rel="stylesheet" href="../../../../src/client/PlatformInfrastructure/AppShell/appShell.css">
+  <link rel="stylesheet" href="../../../../src/client/PlatformInfrastructure/SharedComponents/sharedComponents.css">
+  <link rel="stylesheet" href="page.css">
+</head>
+<body data-page="books">
+<!--
+  ?open=book-dialog                    知識書編輯視窗
+  ?open=book-dialog,organize-dialog    AI 整理（預覽結果）
+  ?open=book-dialog&variant=no-organizer  沒選知識書整理模型：「AI 整理」改成提示
+-->
+<div id="chat-room-demo-content" class="chat-room-page">
+
+  <section class="chat-room-hero">
+    <div class="chat-room-hero-decor"><span class="platform-infrastructure-display-text">Knowledge</span></div>
+    <span class="platform-infrastructure-sparkle"></span>
+    <span class="platform-infrastructure-sparkle"></span>
+    <span class="platform-infrastructure-sparkle"></span>
+    <div class="chat-room-hero-title">
+      <span class="platform-infrastructure-eyebrow">Knowledge Books</span>
+      <h1>知識書</h1>
+      <p>寫下世界觀、人物關係和專業知識，掛在角色身上，聊天時自動帶進對話</p>
+    </div>
+    <img class="chat-room-hero-character" data-asset="knowledgeBooksBanner" data-ratio="3:4" alt="">
+  </section>
+
+  <div class="chat-room-card-wall" data-state="normal">
+    <div class="chat-room-entity-card is-add" data-open="book-dialog">
+      <span class="chat-room-add-icon">+</span>新增知識書
+    </div>
+    <div class="chat-room-entity-card" data-open="book-dialog">
+      <div class="chat-room-entity-card-cover"><span class="platform-infrastructure-sparkle"></span><span class="chat-room-entity-card-cover-mark">Map</span></div>
+      <div class="chat-room-entity-card-body">
+        <div class="chat-room-entity-card-name">夜城地圖與地標</div>
+        <div class="chat-room-entity-card-sub">12 條・約 2,400 token</div>
+        <div class="chat-room-entity-card-tags"><span class="platform-infrastructure-badge is-primary">2 個角色掛著</span></div>
+      </div>
+    </div>
+    <div class="chat-room-entity-card" data-open="book-dialog">
+      <div class="chat-room-entity-card-cover"><span class="platform-infrastructure-sparkle"></span><span class="chat-room-entity-card-cover-mark">1930s</span></div>
+      <div class="chat-room-entity-card-body">
+        <div class="chat-room-entity-card-name">1930 年代港口生活</div>
+        <div class="chat-room-entity-card-sub">28 條・約 5,100 token</div>
+        <div class="chat-room-entity-card-tags"><span class="platform-infrastructure-badge is-primary">3 個角色掛著</span></div>
+      </div>
+    </div>
+    <div class="chat-room-entity-card" data-open="book-dialog">
+      <div class="chat-room-entity-card-cover"><span class="platform-infrastructure-sparkle"></span><span class="chat-room-entity-card-cover-mark">Grammar</span></div>
+      <div class="chat-room-entity-card-body">
+        <div class="chat-room-entity-card-name">英文文法筆記</div>
+        <div class="chat-room-entity-card-sub">40 條・約 3,000 token</div>
+        <div class="chat-room-entity-card-tags"><span class="platform-infrastructure-badge is-primary">1 個角色掛著</span></div>
+      </div>
+    </div>
+    <div class="chat-room-entity-card" data-open="book-dialog">
+      <div class="chat-room-entity-card-cover"><span class="platform-infrastructure-sparkle"></span><span class="chat-room-entity-card-cover-mark">Star Port</span></div>
+      <div class="chat-room-entity-card-body">
+        <div class="chat-room-entity-card-name">星港冒險隊設定集</div>
+        <div class="chat-room-entity-card-sub">18 條・約 4,600 token</div>
+        <div class="chat-room-entity-card-tags"><span class="platform-infrastructure-badge">沒有角色掛著</span></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="platform-infrastructure-card" data-state="loading">
+    <div class="platform-infrastructure-loading"><span class="platform-infrastructure-spinner platform-infrastructure-spinner-large"></span><span>讀取中…</span></div>
+  </div>
+  <div class="platform-infrastructure-card" data-state="empty">
+    <div class="platform-infrastructure-empty">
+      <img class="platform-infrastructure-empty-image" src="../../../../public/theme/default/PlatformInfrastructure/emptyStateIllustration.png" alt="">
+      <p class="platform-infrastructure-empty-text">還沒有知識書</p>
+      <button type="button" class="platform-infrastructure-button platform-infrastructure-button-primary" data-open="book-dialog"><i data-icon="plus" data-small></i>新增知識書</button>
+    </div>
+  </div>
+  <div class="platform-infrastructure-card" data-state="error">
+    <div class="platform-infrastructure-empty">
+      <img class="platform-infrastructure-empty-image" src="../../../../public/theme/default/PlatformInfrastructure/emptyStateIllustration.png" alt="">
+      <p class="platform-infrastructure-empty-text">載入失敗</p>
+      <div class="platform-infrastructure-error-message">
+        <span class="platform-infrastructure-error-message-icon">!</span>
+        <div class="platform-infrastructure-error-message-body">
+          <div class="platform-infrastructure-error-message-title">讀取知識書時發生問題，請稍後再試</div>
+          <div class="platform-infrastructure-error-message-source">ChatRoom／listBooks（代碼：BOOK_READ_FAILED）</div>
+        </div>
+      </div>
+      <button type="button" class="platform-infrastructure-button platform-infrastructure-button-primary">重試</button>
+    </div>
+  </div>
+</div>
+
+<!-- ===== KnowledgeBookDialog ===== -->
+<div class="platform-infrastructure-backdrop" id="book-dialog" data-modal hidden>
+  <div class="platform-infrastructure-modal chat-room-dialog" role="dialog" aria-label="知識書">
+    <div class="chat-room-dialog-header">
+      <div class="chat-room-dialog-heading">
+        <span class="platform-infrastructure-eyebrow">Knowledge Book</span>
+        <input class="platform-infrastructure-input chat-room-book-title-input" value="夜城地圖與地標" aria-label="書名">
+      </div>
+      <span class="chat-room-header-spacer"></span>
+      <div class="chat-room-book-stats">
+        <span class="platform-infrastructure-badge is-primary">12 條・約 2,400 token</span>
+        <span class="platform-infrastructure-badge">常駐約 900</span>
+        <button type="button" class="platform-infrastructure-button platform-infrastructure-button-primary platform-infrastructure-button-small" data-open="organize-dialog" data-variant="no-organizer" data-variant-not><i data-icon="sparkle" data-small></i>AI 整理</button>
+        <button type="button" class="platform-infrastructure-button platform-infrastructure-button-primary platform-infrastructure-button-small" data-variant="no-organizer" disabled><i data-icon="sparkle" data-small></i>AI 整理</button>
+      </div>
+      <button type="button" class="platform-infrastructure-icon-button chat-room-dialog-close" aria-label="關閉" data-close>×</button>
+    </div>
+    <div class="chat-room-notice chat-room-dialog-notice" data-variant="no-organizer">
+      <span class="chat-room-notice-icon">!</span>
+      <span class="chat-room-notice-text">請先到聊天設定選擇知識書整理模型</span>
+      <a class="platform-infrastructure-button platform-infrastructure-button-secondary platform-infrastructure-button-small" href="settings.html">前往聊天設定</a>
+    </div>
+
+    <div class="chat-room-book-split">
+      <!-- 條目列表 -->
+      <div class="chat-room-entry-list">
+        <button type="button" class="platform-infrastructure-button platform-infrastructure-button-secondary platform-infrastructure-button-small"><i data-icon="plus" data-small></i>新增條目</button>
+        <div class="chat-room-entry-item is-active">
+          <span class="chat-room-entry-item-title">碼頭第三倉庫</span>
+          <span class="chat-room-entry-item-meta"><span class="platform-infrastructure-badge is-accent">觸發</span>約 260 token</span>
+        </div>
+        <div class="chat-room-entry-item">
+          <span class="chat-room-entry-item-title">夜城概況</span>
+          <span class="chat-room-entry-item-meta"><span class="platform-infrastructure-badge is-primary">常駐</span>約 420 token</span>
+        </div>
+        <div class="chat-room-entry-item">
+          <span class="chat-room-entry-item-title">燈塔街與舊市場</span>
+          <span class="chat-room-entry-item-meta"><span class="platform-infrastructure-badge is-accent">觸發</span>約 180 token</span>
+        </div>
+        <div class="chat-room-entry-item">
+          <span class="chat-room-entry-item-title">港務局</span>
+          <span class="chat-room-entry-item-meta"><span class="platform-infrastructure-badge is-accent">觸發</span>約 210 token</span>
+        </div>
+        <div class="chat-room-entry-item">
+          <span class="chat-room-entry-item-title">偵探社與咖啡廳</span>
+          <span class="chat-room-entry-item-meta"><span class="platform-infrastructure-badge is-primary">常駐</span>約 480 token</span>
+        </div>
+        <div class="chat-room-entry-item">
+          <span class="chat-room-entry-item-title">潮汐與夜間航行規定</span>
+          <span class="chat-room-entry-item-meta"><span class="platform-infrastructure-badge is-accent">觸發</span>約 230 token</span>
+        </div>
+      </div>
+
+      <!-- 條目編輯 -->
+      <div class="chat-room-entry-editor">
+        <div class="chat-room-form-field">
+          <label class="chat-room-form-label">標題</label>
+          <input class="platform-infrastructure-input" value="碼頭第三倉庫">
+        </div>
+        <div class="chat-room-form-field">
+          <span class="chat-room-form-label">放入方式</span>
+          <div class="platform-infrastructure-tabs chat-room-segmented" data-tabs="entry-mode">
+            <button type="button" class="platform-infrastructure-tab" data-tab="always">常駐</button>
+            <button type="button" class="platform-infrastructure-tab is-active" data-tab="keyword">關鍵字觸發</button>
+          </div>
+          <div class="platform-infrastructure-hint" data-tab-panel="entry-mode:always" hidden>每次說話都放進對話</div>
+          <div class="platform-infrastructure-hint" data-tab-panel="entry-mode:keyword">最近的對話出現任一個關鍵字時才放進去</div>
+        </div>
+        <div class="chat-room-form-field" data-tab-panel="entry-mode:keyword">
+          <span class="chat-room-form-label">關鍵字 <small>按 Enter 新增</small></span>
+          <div class="chat-room-keywords">
+            <span class="chat-room-keyword">倉庫<button type="button" aria-label="移除">×</button></span>
+            <span class="chat-room-keyword">第三倉庫<button type="button" aria-label="移除">×</button></span>
+            <span class="chat-room-keyword">碼頭<button type="button" aria-label="移除">×</button></span>
+            <input placeholder="輸入關鍵字">
+          </div>
+        </div>
+        <div class="chat-room-form-field">
+          <label class="chat-room-form-label">內容 <small>約 260 token</small></label>
+          <textarea class="platform-infrastructure-input chat-room-textarea is-tall">位在東碼頭最末端的紅磚倉庫，屬於「海燕貿易行」。正門面向海，後門直通一條窄水道，只有滿潮時小船才進得來。管理員老周每晚十點巡最後一次，鑰匙共三把。倉庫二樓有一扇破窗，從燈塔街的屋頂看得到。</textarea>
+        </div>
+        <div>
+          <button type="button" class="platform-infrastructure-button platform-infrastructure-button-subtle-danger platform-infrastructure-button-small"><i data-icon="trash" data-small></i>刪除這個條目</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="chat-room-dialog-footer">
+      <button type="button" class="platform-infrastructure-button platform-infrastructure-button-subtle-danger" data-open="delete-book-confirm">刪除知識書</button>
+      <span class="chat-room-dialog-footer-spacer"></span>
+      <span class="platform-infrastructure-feedback"></span>
+      <button type="button" class="platform-infrastructure-button platform-infrastructure-button-primary">儲存</button>
+    </div>
+  </div>
+</div>
+
+<!-- ===== AiOrganizeDialog ===== -->
+<div class="platform-infrastructure-backdrop" id="organize-dialog" data-modal hidden>
+  <div class="platform-infrastructure-modal chat-room-dialog is-medium" role="dialog" aria-label="AI 整理">
+    <div class="chat-room-dialog-header">
+      <div class="chat-room-dialog-heading">
+        <span class="platform-infrastructure-eyebrow">AI Organize</span>
+        <h2 class="platform-infrastructure-modal-title">AI 整理・夜城地圖與地標</h2>
+      </div>
+      <button type="button" class="platform-infrastructure-icon-button chat-room-dialog-close" aria-label="關閉" data-close>×</button>
+    </div>
+    <div class="chat-room-dialog-tabs">
+      <div class="platform-infrastructure-tabs" data-tabs="organize">
+        <button type="button" class="platform-infrastructure-tab" data-tab="paste">貼上文字切成條目</button>
+        <button type="button" class="platform-infrastructure-tab is-active" data-tab="command">下指令修改</button>
+      </div>
+    </div>
+    <div class="chat-room-dialog-body">
+      <div class="chat-room-form-field" data-tab-panel="organize:paste" hidden>
+        <label class="chat-room-form-label">要整理的文字 <small>貼上設定、筆記或文章，AI 會切成一條一條</small></label>
+        <textarea class="platform-infrastructure-input chat-room-textarea is-tall" placeholder="貼上一段文字…"></textarea>
+      </div>
+      <div class="chat-room-form-field" data-tab-panel="organize:command">
+        <label class="chat-room-form-label">指令 <small>告訴 AI 要怎麼改這本書</small></label>
+        <textarea class="platform-infrastructure-input chat-room-textarea">把港務局的條目補上夜班值班的規定；「燈塔街與舊市場」太短，幫我拆成兩條並補充細節；刪掉已經沒用的「舊航線」。</textarea>
+      </div>
+      <div class="chat-room-actions-end">
+        <button type="button" class="platform-infrastructure-button platform-infrastructure-button-secondary"><i data-icon="sparkle" data-small></i>開始整理</button>
+      </div>
+
+      <div>
+        <h3 class="chat-room-section-title">預覽<span class="platform-infrastructure-eyebrow">Preview</span></h3>
+        <div class="chat-room-preview-list">
+          <div class="chat-room-preview-item is-changed">
+            <span class="platform-infrastructure-badge is-warning">修改</span>
+            <span class="chat-room-preview-title">港務局</span>
+            <span class="chat-room-preview-body">新增：夜班從 22:00 到 06:00，值班員每兩小時巡一次東碼頭，紀錄放在港務局一樓。</span>
+          </div>
+          <div class="chat-room-preview-item is-added">
+            <span class="platform-infrastructure-badge is-success">新增</span>
+            <span class="chat-room-preview-title">燈塔街</span>
+            <span class="chat-room-preview-body">沿著海岸的石板坡道，屋頂相連，從最高的那棟可以看到碼頭第三倉庫的二樓窗戶。</span>
+          </div>
+          <div class="chat-room-preview-item is-added">
+            <span class="platform-infrastructure-badge is-success">新增</span>
+            <span class="chat-room-preview-title">舊市場</span>
+            <span class="chat-room-preview-body">清晨四點開市的魚市場，消息最靈通的地方；賣魚的阿蓮認識港口所有人。</span>
+          </div>
+          <div class="chat-room-preview-item is-removed">
+            <span class="platform-infrastructure-badge is-danger">刪除</span>
+            <span class="chat-room-preview-title">燈塔街與舊市場</span>
+            <span class="chat-room-preview-body">拆成「燈塔街」「舊市場」兩條</span>
+          </div>
+          <div class="chat-room-preview-item is-removed">
+            <span class="platform-infrastructure-badge is-danger">刪除</span>
+            <span class="chat-room-preview-title">舊航線</span>
+            <span class="chat-room-preview-body">已經不用的條目</span>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="chat-room-dialog-footer">
+      <span class="platform-infrastructure-hint chat-room-hint-inline">套用後回到知識書，按儲存才會真的存起來</span>
+      <span class="chat-room-dialog-footer-spacer"></span>
+      <button type="button" class="platform-infrastructure-button platform-infrastructure-button-primary" data-close>套用</button>
+    </div>
+  </div>
+</div>
+
+<div class="platform-infrastructure-backdrop" id="delete-book-confirm" data-modal hidden>
+  <div class="platform-infrastructure-modal" role="dialog" aria-label="刪除知識書">
+    <div class="platform-infrastructure-modal-header"><h2 class="platform-infrastructure-modal-title">刪除知識書</h2></div>
+    <div class="platform-infrastructure-modal-body">有 2 個角色掛著「夜城地圖與地標」，刪除後會從這些角色身上拿掉，而且無法復原。確定要刪除嗎？</div>
+    <div class="platform-infrastructure-modal-footer">
+      <button type="button" class="platform-infrastructure-button platform-infrastructure-button-secondary" data-close>取消</button>
+      <button type="button" class="platform-infrastructure-button platform-infrastructure-button-danger" data-close>刪除</button>
+    </div>
+  </div>
+</div>
+
+<script src="demo.js"></script>
+<script>
+  // 條目列表：點了換選中
+  document.addEventListener('click', function (event) {
+    var entry = event.target.closest('.chat-room-entry-item');
+    if (!entry) return;
+    document.querySelectorAll('.chat-room-entry-item').forEach(function (e) { e.classList.toggle('is-active', e === entry); });
+  });
+</script>
+</body>
+</html>

@@ -1,7 +1,7 @@
 # 專案進度
 
 ## 1. 進度概括
-PlatformInfrastructure 實作完成，標為「待串接」：雙擊根目錄的 `start.bat`（macOS／Linux 用 `start.sh`）即可開啟平台；平台設定（基礎設定、API 串接、花費統計）可用；invokeModel、streamModel、submitTask、getTask 可供其他模組後端使用。所有驗收條件都有自動測試；PM 決定不逐條手動驗收，改為 ChatRoom 等功能做好後，實際使用時回饋問題（2026-11-27）。真實 key 的驗證見待串接。page-demo 已刪除，畫面以實際 app 為準。下一步：ChatRoom 的 spec。
+PlatformInfrastructure 實作完成，標為「待串接」：雙擊根目錄的 `start.bat`（macOS／Linux 用 `start.sh`）即可開啟平台；所有驗收條件都有自動測試，PM 決定 ChatRoom 等功能做好後實際使用時回饋問題（2026-11-27）。ChatRoom 的 spec 已經 PM 確認（2026-11-27），10 個後端小模組標為「spec 完成」。下一步：ChatRoom 的畫面規格（write-page）。
 
 ## 2. 模組
 | 模組 | 狀態 |
@@ -18,6 +18,17 @@ PlatformInfrastructure 實作完成，標為「待串接」：雙擊根目錄的
 | └ AppShell | 完成 |
 | └ Page | 完成（基礎設定、API 串接、花費統計） |
 | **ChatRoom** | |
+| └ ChatSettings | spec 完成 |
+| └ CharacterTemplates | spec 完成 |
+| └ Rooms | spec 完成 |
+| └ Memory | spec 完成 |
+| └ Characters | spec 完成 |
+| └ UserPersonas | spec 完成 |
+| └ KnowledgeBooks | spec 完成 |
+| └ Summary | spec 完成 |
+| └ ContextAssembly | spec 完成 |
+| └ Conversation | spec 完成 |
+| └ Page | |
 | **NovelStudio** | |
 | **MediaCreation** | |
 
@@ -41,6 +52,4 @@ PlatformInfrastructure 實作完成，標為「待串接」：雙擊根目錄的
 | B001 | PlatformInfrastructure / Page | 設定頁頁首的看板角色上方有一塊白色方框：`.platform-infrastructure-body` 的 `z-index: 1` 形成獨立圖層，角色的 multiply 碰不到外殼背景圖 | 拿掉 body 的 z-index；demo 切換列的背景佔位文字改插在外殼最前面（skill 副本同步）；log 列 z-index 提高到 20，page.css 註明頁面內元件 z-index 不超過 10 | 2026-11-25 |
 
 ## 7. 想法牆
-| 日期 | 想法 | 相關模組 |
-|---|---|---|
-| 2026-11-26 | 發言後切到別的頁面，回覆不可以中斷：由 ChatRoom 後端呼叫 streamModel 並存下回覆，只有按停止才中止；切回聊天室時接著顯示（寫 ChatRoom spec 時納入） | ChatRoom |
+（目前無）

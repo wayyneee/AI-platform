@@ -176,7 +176,7 @@ ChatRoom、NovelStudio、MediaCreation 都透過它的介面呼叫模型、寫 l
 | ModelRegistry | 前後端 | API key、模型的新增與管理、偵測、測試、模型能力、可調參數定義 |
 | UsageAndCost | 前後端 | 用量紀錄、花費計算（含網頁搜尋）、花費統計 |
 | ModelInvocation | 後端 | 模型呼叫：檢查參數、串流與中止、長時間任務的排隊與追蹤、呼叫完記錄用量 |
-| SharedComponents | 前端 | 共用元件：基本元件、視窗類、回饋類（含任務進度顯示） |
+| SharedComponents | 前端 | 共用元件：基本元件、視窗類、回饋類（含任務進度顯示）、頁首 |
 | AppShell | 前端 | 外殼：navbar、側邊欄、log 列、套用主題、前端最外層錯誤攔截、模組登記與頁面切換、未儲存離開確認 |
 | Page | 前端 | 「平台設定」的子頁面：基礎設定、API 串接、花費統計，見 page.md |
 

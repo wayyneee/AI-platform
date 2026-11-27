@@ -68,38 +68,10 @@
       </div>
 
       <!-- MemoryEditor：全域記憶 -->
-      <div class="chat-room-memory">
-        <div class="chat-room-memory-head">
-          <div class="chat-room-memory-usage">全域記憶・約 2,150／10,000 token<div class="platform-infrastructure-progress"><div class="platform-infrastructure-progress-fill" style="width:21%"></div></div></div>
-          <button type="button" class="platform-infrastructure-button platform-infrastructure-button-secondary platform-infrastructure-button-small"><i data-icon="plus" data-small></i>新增條目</button>
-        </div>
-        <div class="chat-room-memory-list">
-          <div class="chat-room-memory-item is-locked">
-            <span class="chat-room-importance"><button class="is-on"></button><button class="is-on"></button><button class="is-on"></button><button class="is-on"></button><button class="is-on"></button></span>
-            <div class="chat-room-memory-text"><input class="chat-room-memory-content" value="對花生過敏。"><div class="chat-room-memory-meta">最後提到 11/18・記在「咖啡廳日常」</div></div>
-            <button type="button" class="chat-room-lock is-on" aria-label="鎖定"><i data-icon="lock"></i></button>
-            <button type="button" class="platform-infrastructure-icon-button" aria-label="刪除">×</button>
+      <div class="chat-room-memory-summary">
+            <div class="chat-room-memory-usage">43 條・約 2,150／10,000 token<div class="platform-infrastructure-progress"><div class="platform-infrastructure-progress-fill" style="width:21%"></div></div></div>
+            <button type="button" class="platform-infrastructure-button platform-infrastructure-button-secondary platform-infrastructure-button-small" data-open="memory-dialog" data-memory="global">管理記憶</button>
           </div>
-          <div class="chat-room-memory-item">
-            <span class="chat-room-importance"><button class="is-on"></button><button class="is-on"></button><button class="is-on"></button><button></button><button></button></span>
-            <div class="chat-room-memory-text"><input class="chat-room-memory-content" value="喜歡推理小說，最近在讀橫溝正史。"><div class="chat-room-memory-meta">最後提到 11/26・記在「夜城偵探社」</div></div>
-            <button type="button" class="chat-room-lock" aria-label="鎖定"><i data-icon="unlock"></i></button>
-            <button type="button" class="platform-infrastructure-icon-button" aria-label="刪除">×</button>
-          </div>
-          <div class="chat-room-memory-item">
-            <span class="chat-room-importance"><button class="is-on"></button><button class="is-on"></button><button class="is-on"></button><button class="is-on"></button><button></button></span>
-            <div class="chat-room-memory-text"><input class="chat-room-memory-content" value="正在準備多益考試，目標 850 分，考試日期是 12 月 14 日。"><div class="chat-room-memory-meta">最後提到 昨天・記在「英文家教」</div></div>
-            <button type="button" class="chat-room-lock" aria-label="鎖定"><i data-icon="unlock"></i></button>
-            <button type="button" class="platform-infrastructure-icon-button" aria-label="刪除">×</button>
-          </div>
-          <div class="chat-room-memory-item">
-            <span class="chat-room-importance"><button class="is-on"></button><button class="is-on"></button><button></button><button></button><button></button></span>
-            <div class="chat-room-memory-text"><input class="chat-room-memory-content" value="咖啡喜歡淺焙、不加糖。"><div class="chat-room-memory-meta">最後提到 11/22・記在「咖啡廳日常」</div></div>
-            <button type="button" class="chat-room-lock" aria-label="鎖定"><i data-icon="unlock"></i></button>
-            <button type="button" class="platform-infrastructure-icon-button" aria-label="刪除">×</button>
-          </div>
-        </div>
-      </div>
     </section>
 
     <section class="platform-infrastructure-card">
@@ -146,5 +118,6 @@
 </div>
 
 <script src="demo.js"></script>
+<script src="memory-dialog.js"></script>
 </body>
 </html>

@@ -250,11 +250,27 @@
         <!-- 知識書 -->
         <section id="character-books">
           <h3 class="chat-room-section-title">知識書<span class="platform-infrastructure-eyebrow">Knowledge</span></h3>
-          <div class="chat-room-check-list">
-            <div class="chat-room-check-item is-checked"><span class="chat-room-check-box"></span><span class="chat-room-check-item-text">夜城地圖與地標<small>12 條・約 2,400 token（常駐約 900）</small></span></div>
-            <div class="chat-room-check-item is-checked"><span class="chat-room-check-box"></span><span class="chat-room-check-item-text">1930 年代港口生活<small>28 條・約 5,100 token（常駐約 1,200）</small></span></div>
-            <div class="chat-room-check-item"><span class="chat-room-check-box"></span><span class="chat-room-check-item-text">英文文法筆記<small>40 條・約 3,000 token</small></span></div>
-            <div class="chat-room-check-item"><span class="chat-room-check-box"></span><span class="chat-room-check-item-text">星港冒險隊設定集<small>18 條・約 4,600 token</small></span></div>
+          <div class="chat-room-mounted-list" id="mounted-books">
+            <div class="chat-room-mounted-item" data-mounted="夜城地圖與地標"><span class="chat-room-check-item-text">夜城地圖與地標<small>12 條・約 2,400 token（常駐約 900）</small></span><button type="button" class="platform-infrastructure-icon-button" aria-label="移除" data-unmount>×</button></div>
+            <div class="chat-room-mounted-item" data-mounted="1930 年代港口生活"><span class="chat-room-check-item-text">1930 年代港口生活<small>28 條・約 5,100 token（常駐約 1,200）</small></span><button type="button" class="platform-infrastructure-icon-button" aria-label="移除" data-unmount>×</button></div>
+          </div>
+          <div class="chat-room-mounted-empty" id="mounted-empty" hidden>還沒有掛知識書</div>
+          <div class="chat-room-book-picker" data-menu-owner>
+            <button type="button" class="platform-infrastructure-button platform-infrastructure-button-secondary platform-infrastructure-button-small"><i data-icon="plus" data-small></i>掛上知識書</button>
+            <div class="chat-room-menu">
+              <input class="platform-infrastructure-input chat-room-picker-search" placeholder="搜尋書名" id="book-picker-search">
+              <div class="chat-room-picker-list">
+                <button type="button" class="chat-room-menu-item" data-pick-book="夜城地圖與地標" data-info="12 條・約 2,400 token（常駐約 900）" hidden><span>夜城地圖與地標<small>12 條・約 2,400 token（常駐約 900）</small></span></button>
+                <button type="button" class="chat-room-menu-item" data-pick-book="1930 年代港口生活" data-info="28 條・約 5,100 token（常駐約 1,200）" hidden><span>1930 年代港口生活<small>28 條・約 5,100 token（常駐約 1,200）</small></span></button>
+                <button type="button" class="chat-room-menu-item" data-pick-book="英文文法筆記" data-info="40 條・約 3,000 token"><span>英文文法筆記<small>40 條・約 3,000 token</small></span></button>
+                <button type="button" class="chat-room-menu-item" data-pick-book="星港冒險隊設定集" data-info="18 條・約 4,600 token"><span>星港冒險隊設定集<small>18 條・約 4,600 token</small></span></button>
+                <button type="button" class="chat-room-menu-item" data-pick-book="海燕貿易行內部資料" data-info="9 條・約 1,800 token"><span>海燕貿易行內部資料<small>9 條・約 1,800 token</small></span></button>
+                <button type="button" class="chat-room-menu-item" data-pick-book="夜城人物關係表" data-info="22 條・約 3,600 token（常駐約 600）"><span>夜城人物關係表<small>22 條・約 3,600 token（常駐約 600）</small></span></button>
+                <button type="button" class="chat-room-menu-item" data-pick-book="咖啡與甜點食譜" data-info="31 條・約 4,200 token"><span>咖啡與甜點食譜<small>31 條・約 4,200 token</small></span></button>
+                <button type="button" class="chat-room-menu-item" data-pick-book="多益單字 2000" data-info="120 條・約 9,800 token"><span>多益單字 2000<small>120 條・約 9,800 token</small></span></button>
+              </div>
+              <div class="chat-room-picker-empty" id="book-picker-empty" hidden>沒有符合的知識書</div>
+            </div>
           </div>
         </section>
 
@@ -269,31 +285,9 @@
             <div class="chat-room-inline-field-label">記憶大小</div>
             <div class="chat-room-inline-field-control"><div class="chat-room-range"><input type="range" min="5000" max="30000" step="1000" value="10000" data-unit=" token"><span class="chat-room-range-value"></span></div></div>
           </div>
-          <div class="chat-room-memory">
-            <div class="chat-room-memory-head">
-              <div class="chat-room-memory-usage">約 6,200／10,000 token<div class="platform-infrastructure-progress"><div class="platform-infrastructure-progress-fill" style="width:62%"></div></div></div>
-              <button type="button" class="platform-infrastructure-button platform-infrastructure-button-secondary platform-infrastructure-button-small"><i data-icon="plus" data-small></i>新增條目</button>
-            </div>
-            <div class="chat-room-memory-list">
-              <div class="chat-room-memory-item is-locked">
-                <span class="chat-room-importance"><button class="is-on"></button><button class="is-on"></button><button class="is-on"></button><button class="is-on"></button><button class="is-on"></button></span>
-                <div class="chat-room-memory-text"><input class="chat-room-memory-content" value="離開警隊的原因：七年前的「灰帽案」沒破，搭檔因此受傷。"><div class="chat-room-memory-meta">最後提到 11/20・記在「夜城偵探社」</div></div>
-                <button type="button" class="chat-room-lock is-on" aria-label="鎖定"><i data-icon="lock"></i></button>
-                <button type="button" class="platform-infrastructure-icon-button" aria-label="刪除">×</button>
-              </div>
-              <div class="chat-room-memory-item">
-                <span class="chat-room-importance"><button class="is-on"></button><button class="is-on"></button><button class="is-on"></button><button class="is-on"></button><button></button></span>
-                <div class="chat-room-memory-text"><input class="chat-room-memory-content" value="小夏找到了碼頭倉庫 02:17 的監視器畫面，和出入紀錄對不上。"><div class="chat-room-memory-meta">最後提到 今天 21:38・記在「夜城偵探社」</div></div>
-                <button type="button" class="chat-room-lock" aria-label="鎖定"><i data-icon="unlock"></i></button>
-                <button type="button" class="platform-infrastructure-icon-button" aria-label="刪除">×</button>
-              </div>
-              <div class="chat-room-memory-item">
-                <span class="chat-room-importance"><button class="is-on"></button><button class="is-on"></button><button></button><button></button><button></button></span>
-                <div class="chat-room-memory-text"><input class="chat-room-memory-content" value="米婭說她怕水，所以那次寶藏探險沒有一起下船。"><div class="chat-room-memory-meta">最後提到 11/24・記在「星港冒險隊」</div></div>
-                <button type="button" class="chat-room-lock" aria-label="鎖定"><i data-icon="unlock"></i></button>
-                <button type="button" class="platform-infrastructure-icon-button" aria-label="刪除">×</button>
-              </div>
-            </div>
+          <div class="chat-room-memory-summary">
+            <div class="chat-room-memory-usage">124 條・約 6,200／10,000 token<div class="platform-infrastructure-progress"><div class="platform-infrastructure-progress-fill" style="width:62%"></div></div></div>
+            <button type="button" class="platform-infrastructure-button platform-infrastructure-button-secondary platform-infrastructure-button-small" data-open="memory-dialog" data-memory="character">管理記憶</button>
           </div>
         </section>
 
@@ -350,7 +344,53 @@
 </div>
 
 <script src="demo.js"></script>
+<script src="memory-dialog.js"></script>
 <script>
+  // 掛知識書：清單只列還沒掛的書，點了就掛上；已掛的可以移除
+  (function () {
+    var mountedList = document.getElementById('mounted-books');
+    var search = document.getElementById('book-picker-search');
+
+    function refresh() {
+      var keyword = search.value.trim();
+      var mountedNames = Array.prototype.map.call(mountedList.children, function (item) { return item.getAttribute('data-mounted'); });
+      var shown = 0;
+      document.querySelectorAll('[data-pick-book]').forEach(function (option) {
+        var name = option.getAttribute('data-pick-book');
+        var isShown = mountedNames.indexOf(name) === -1 && name.indexOf(keyword) !== -1;
+        option.hidden = !isShown;
+        if (isShown) shown += 1;
+      });
+      document.getElementById('book-picker-empty').hidden = shown > 0;
+      document.getElementById('mounted-empty').hidden = mountedNames.length > 0;
+    }
+
+    // 點搜尋框不要讓小選單關掉
+    search.addEventListener('click', function (event) { event.stopPropagation(); });
+    search.addEventListener('input', refresh);
+
+    document.addEventListener('click', function (event) {
+      var pick = event.target.closest('[data-pick-book]');
+      if (pick) {
+        var item = document.createElement('div');
+        item.className = 'chat-room-mounted-item';
+        item.setAttribute('data-mounted', pick.getAttribute('data-pick-book'));
+        item.innerHTML = '<span class="chat-room-check-item-text">' + pick.getAttribute('data-pick-book') + '<small>' + pick.getAttribute('data-info') + '</small></span>' +
+          '<button type="button" class="platform-infrastructure-icon-button" aria-label="移除" data-unmount>×</button>';
+        mountedList.appendChild(item);
+        search.value = '';
+        refresh();
+        return;
+      }
+      var unmount = event.target.closest('[data-unmount]');
+      if (unmount) {
+        unmount.closest('.chat-room-mounted-item').remove();
+        refresh();
+      }
+    });
+    refresh();
+  })();
+
   // 角色頁的假互動：over 情境時空間分配變紅；儲存回饋
   (function () {
     if (new URLSearchParams(location.search).get('variant') === 'over') {

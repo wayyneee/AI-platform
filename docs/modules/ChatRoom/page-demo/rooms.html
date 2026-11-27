@@ -516,32 +516,10 @@
         <div class="chat-room-inline-field-label">聊天室記憶大小</div>
         <div class="chat-room-inline-field-control"><div class="chat-room-range"><input type="range" min="5000" max="30000" step="1000" value="10000" data-unit=" token"><span class="chat-room-range-value"></span></div></div>
       </div>
-      <div class="chat-room-memory">
-        <div class="chat-room-memory-head">
-          <div class="chat-room-memory-usage">約 3,840／10,000 token<div class="platform-infrastructure-progress"><div class="platform-infrastructure-progress-fill" style="width:38%"></div></div></div>
-          <button type="button" class="platform-infrastructure-button platform-infrastructure-button-secondary platform-infrastructure-button-small"><i data-icon="plus" data-small></i>新增條目</button>
-        </div>
-        <div class="chat-room-memory-list">
-          <div class="chat-room-memory-item is-locked">
-            <span class="chat-room-importance"><button class="is-on"></button><button class="is-on"></button><button class="is-on"></button><button class="is-on"></button><button class="is-on"></button></span>
-            <div class="chat-room-memory-text"><input class="chat-room-memory-content" value="偵探社和老闆娘約定：案子沒破之前，咖啡錢都先記帳。"><div class="chat-room-memory-meta">最後提到 11/25</div></div>
-            <button type="button" class="chat-room-lock is-on" aria-label="鎖定"><i data-icon="lock"></i></button>
-            <button type="button" class="platform-infrastructure-icon-button" aria-label="刪除">×</button>
+      <div class="chat-room-memory-summary">
+            <div class="chat-room-memory-usage">74 條・約 3,840／10,000 token<div class="platform-infrastructure-progress"><div class="platform-infrastructure-progress-fill" style="width:38%"></div></div></div>
+            <button type="button" class="platform-infrastructure-button platform-infrastructure-button-secondary platform-infrastructure-button-small" data-open="memory-dialog" data-memory="room">管理記憶</button>
           </div>
-          <div class="chat-room-memory-item">
-            <span class="chat-room-importance"><button class="is-on"></button><button class="is-on"></button><button class="is-on"></button><button></button><button></button></span>
-            <div class="chat-room-memory-text"><input class="chat-room-memory-content" value="案發當晚 02:20 滿潮，小船可以直接靠進倉庫後門。"><div class="chat-room-memory-meta">最後提到 今天 21:39</div></div>
-            <button type="button" class="chat-room-lock" aria-label="鎖定"><i data-icon="unlock"></i></button>
-            <button type="button" class="platform-infrastructure-icon-button" aria-label="刪除">×</button>
-          </div>
-          <div class="chat-room-memory-item">
-            <span class="chat-room-importance"><button class="is-on"></button><button class="is-on"></button><button class="is-on"></button><button class="is-on"></button><button></button></span>
-            <div class="chat-room-memory-text"><input class="chat-room-memory-content" value="倉庫的鑰匙只有三把：管理員、警局，第三把下落不明。"><div class="chat-room-memory-meta">最後提到 11/26</div></div>
-            <button type="button" class="chat-room-lock" aria-label="鎖定"><i data-icon="unlock"></i></button>
-            <button type="button" class="platform-infrastructure-icon-button" aria-label="刪除">×</button>
-          </div>
-        </div>
-      </div>
     </div>
 
     <!-- 摘要 -->
@@ -577,6 +555,7 @@
 </div>
 
 <script src="demo.js"></script>
+<script src="memory-dialog.js"></script>
 <script>
   // 聊天室頁的假互動：換聊天室、成員選單、@ 點名、切換人設、停止、修改、送出
   (function () {

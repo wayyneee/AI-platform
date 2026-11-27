@@ -30,11 +30,15 @@
     <img class="chat-room-hero-character" data-asset="knowledgeBooksBanner" data-ratio="3:4" alt="">
   </section>
 
+  <div class="chat-room-wall-toolbar" data-state="normal">
+    <input class="platform-infrastructure-input chat-room-wall-search" placeholder="搜尋書名" id="book-search" aria-label="搜尋書名">
+    <span class="platform-infrastructure-hint chat-room-hint-inline" id="book-count">共 8 本</span>
+  </div>
   <div class="chat-room-card-wall" data-state="normal">
     <div class="chat-room-entity-card is-add" data-open="book-dialog">
       <span class="chat-room-add-icon">+</span>新增知識書
     </div>
-    <div class="chat-room-entity-card" data-open="book-dialog">
+    <div class="chat-room-entity-card" data-open="book-dialog" data-book-name="夜城地圖與地標">
       <div class="chat-room-entity-card-cover"><span class="platform-infrastructure-sparkle"></span><span class="chat-room-entity-card-cover-mark">Map</span></div>
       <div class="chat-room-entity-card-body">
         <div class="chat-room-entity-card-name">夜城地圖與地標</div>
@@ -42,7 +46,7 @@
         <div class="chat-room-entity-card-tags"><span class="platform-infrastructure-badge is-primary">2 個角色掛著</span></div>
       </div>
     </div>
-    <div class="chat-room-entity-card" data-open="book-dialog">
+    <div class="chat-room-entity-card" data-open="book-dialog" data-book-name="1930 年代港口生活">
       <div class="chat-room-entity-card-cover"><span class="platform-infrastructure-sparkle"></span><span class="chat-room-entity-card-cover-mark">1930s</span></div>
       <div class="chat-room-entity-card-body">
         <div class="chat-room-entity-card-name">1930 年代港口生活</div>
@@ -50,7 +54,7 @@
         <div class="chat-room-entity-card-tags"><span class="platform-infrastructure-badge is-primary">3 個角色掛著</span></div>
       </div>
     </div>
-    <div class="chat-room-entity-card" data-open="book-dialog">
+    <div class="chat-room-entity-card" data-open="book-dialog" data-book-name="英文文法筆記">
       <div class="chat-room-entity-card-cover"><span class="platform-infrastructure-sparkle"></span><span class="chat-room-entity-card-cover-mark">Grammar</span></div>
       <div class="chat-room-entity-card-body">
         <div class="chat-room-entity-card-name">英文文法筆記</div>
@@ -58,13 +62,49 @@
         <div class="chat-room-entity-card-tags"><span class="platform-infrastructure-badge is-primary">1 個角色掛著</span></div>
       </div>
     </div>
-    <div class="chat-room-entity-card" data-open="book-dialog">
+    <div class="chat-room-entity-card" data-open="book-dialog" data-book-name="星港冒險隊設定集">
       <div class="chat-room-entity-card-cover"><span class="platform-infrastructure-sparkle"></span><span class="chat-room-entity-card-cover-mark">Star Port</span></div>
       <div class="chat-room-entity-card-body">
         <div class="chat-room-entity-card-name">星港冒險隊設定集</div>
         <div class="chat-room-entity-card-sub">18 條・約 4,600 token</div>
         <div class="chat-room-entity-card-tags"><span class="platform-infrastructure-badge">沒有角色掛著</span></div>
       </div>
+    </div>
+    <div class="chat-room-entity-card" data-open="book-dialog" data-book-name="海燕貿易行內部資料">
+      <div class="chat-room-entity-card-cover"><span class="platform-infrastructure-sparkle"></span><span class="chat-room-entity-card-cover-mark">Trade</span></div>
+      <div class="chat-room-entity-card-body">
+        <div class="chat-room-entity-card-name">海燕貿易行內部資料</div>
+        <div class="chat-room-entity-card-sub">9 條・約 1,800 token</div>
+        <div class="chat-room-entity-card-tags"><span class="platform-infrastructure-badge is-primary">1 個角色掛著</span></div>
+      </div>
+    </div>
+    <div class="chat-room-entity-card" data-open="book-dialog" data-book-name="夜城人物關係表">
+      <div class="chat-room-entity-card-cover"><span class="platform-infrastructure-sparkle"></span><span class="chat-room-entity-card-cover-mark">People</span></div>
+      <div class="chat-room-entity-card-body">
+        <div class="chat-room-entity-card-name">夜城人物關係表</div>
+        <div class="chat-room-entity-card-sub">22 條・約 3,600 token</div>
+        <div class="chat-room-entity-card-tags"><span class="platform-infrastructure-badge is-primary">3 個角色掛著</span></div>
+      </div>
+    </div>
+    <div class="chat-room-entity-card" data-open="book-dialog" data-book-name="咖啡與甜點食譜">
+      <div class="chat-room-entity-card-cover"><span class="platform-infrastructure-sparkle"></span><span class="chat-room-entity-card-cover-mark">Recipe</span></div>
+      <div class="chat-room-entity-card-body">
+        <div class="chat-room-entity-card-name">咖啡與甜點食譜</div>
+        <div class="chat-room-entity-card-sub">31 條・約 4,200 token</div>
+        <div class="chat-room-entity-card-tags"><span class="platform-infrastructure-badge is-primary">1 個角色掛著</span></div>
+      </div>
+    </div>
+    <div class="chat-room-entity-card" data-open="book-dialog" data-book-name="多益單字 2000">
+      <div class="chat-room-entity-card-cover"><span class="platform-infrastructure-sparkle"></span><span class="chat-room-entity-card-cover-mark">TOEIC</span></div>
+      <div class="chat-room-entity-card-body">
+        <div class="chat-room-entity-card-name">多益單字 2000</div>
+        <div class="chat-room-entity-card-sub">120 條・約 9,800 token</div>
+        <div class="chat-room-entity-card-tags"><span class="platform-infrastructure-badge is-primary">1 個角色掛著</span></div>
+      </div>
+    </div>
+    <div class="chat-room-wall-no-match" id="book-no-match" hidden>
+      <span>沒有符合的知識書</span>
+      <button type="button" class="platform-infrastructure-button platform-infrastructure-button-secondary platform-infrastructure-button-small" id="book-search-clear">清除搜尋</button>
     </div>
   </div>
 
@@ -271,6 +311,25 @@
 
 <script src="demo.js"></script>
 <script>
+  // 知識書搜尋：只留下書名符合的卡片，「新增」卡一直顯示
+  (function () {
+    var input = document.getElementById('book-search');
+    var cards = document.querySelectorAll('[data-book-name]');
+    function filter() {
+      var keyword = input.value.trim();
+      var shown = 0;
+      cards.forEach(function (card) {
+        var isMatch = card.getAttribute('data-book-name').indexOf(keyword) !== -1;
+        card.hidden = !isMatch;
+        if (isMatch) shown += 1;
+      });
+      document.getElementById('book-no-match').hidden = shown > 0;
+      document.getElementById('book-count').textContent = keyword ? '找到 ' + shown + '／' + cards.length + ' 本' : '共 ' + cards.length + ' 本';
+    }
+    input.addEventListener('input', filter);
+    document.getElementById('book-search-clear').addEventListener('click', function () { input.value = ''; filter(); input.focus(); });
+  })();
+
   // 條目列表：點了換選中
   document.addEventListener('click', function (event) {
     var entry = event.target.closest('.chat-room-entry-item');

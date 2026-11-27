@@ -17,14 +17,20 @@ import {
   listSettingOptions,
   updateSettings,
 } from '../ThemeAndLanguage/index.ts';
-import { PageHero, type PageHeroContent } from './PageHero.tsx';
-import { LoadFailed, LoadingCard, SaveBar, type SaveFeedback } from './settingsPageParts.tsx';
+import {
+  LoadFailed,
+  LoadingCard,
+  SaveBar,
+  type SaveFeedback,
+  SettingsHero,
+  type SettingsHeroContent,
+} from './settingsPageParts.tsx';
 
 const MODULE_NAME = 'PlatformInfrastructure';
 // page.md：儲存成功後 1.5 秒重新整理頁面
 const RELOAD_DELAY_MS = 1500;
 
-const HERO: PageHeroContent = {
+const HERO: SettingsHeroContent = {
   displayKey: 'PlatformInfrastructure.basicSettings.display',
   eyebrowKey: 'PlatformInfrastructure.basicSettings.eyebrow',
   titleKey: 'PlatformInfrastructure.basicSettings.title',
@@ -62,7 +68,7 @@ export function BasicSettings() {
 
   return (
     <div className="platform-infrastructure-page">
-      <PageHero content={HERO} />
+      <SettingsHero content={HERO} />
       {loadState.status === 'loading' && <LoadingCard />}
       {loadState.status === 'failed' && <LoadFailed error={loadState.error} onRetry={load} />}
       {loadState.status === 'ready' && (

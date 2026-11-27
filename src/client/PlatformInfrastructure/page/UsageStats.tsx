@@ -21,8 +21,12 @@ import {
 import { toPlatformError } from '../SystemLog/index.ts';
 import { getText } from '../ThemeAndLanguage/index.ts';
 import { deleteUsage, getUsageStats } from '../UsageAndCost/index.ts';
-import { PageHero, type PageHeroContent } from './PageHero.tsx';
-import { LoadFailed, LoadingCard } from './settingsPageParts.tsx';
+import {
+  LoadFailed,
+  LoadingCard,
+  SettingsHero,
+  type SettingsHeroContent,
+} from './settingsPageParts.tsx';
 import { UsageStatsContent } from './UsageStatsContent.tsx';
 import { usageKeyLabel, usageKeyName } from './usageDisplay.ts';
 
@@ -31,7 +35,7 @@ const MODULE_NAME = 'PlatformInfrastructure';
 const DEFAULT_UNIT: UsageUnit = 'day';
 const UNITS: UsageUnit[] = ['hour', 'day', 'week', 'month'];
 
-const HERO: PageHeroContent = {
+const HERO: SettingsHeroContent = {
   displayKey: 'PlatformInfrastructure.usageStats.display',
   eyebrowKey: 'PlatformInfrastructure.usageStats.eyebrow',
   titleKey: 'PlatformInfrastructure.usageStats.title',
@@ -65,7 +69,7 @@ export function UsageStats() {
 
   return (
     <div className="platform-infrastructure-page">
-      <PageHero content={HERO} />
+      <SettingsHero content={HERO} />
       {loadState.status === 'loading' && <LoadingCard />}
       {loadState.status === 'failed' && (
         <LoadFailed error={loadState.error} onRetry={() => void load(unit, undefined, false)} />

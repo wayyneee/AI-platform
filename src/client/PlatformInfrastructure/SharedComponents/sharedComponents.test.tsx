@@ -17,6 +17,7 @@ import {
 } from './modals.tsx';
 import { NOTICE_LIMIT, showError, showToast } from './notices.tsx';
 import { OverlayHost } from './OverlayHost.tsx';
+import { PageHero } from './PageHero.tsx';
 import { Select, type SelectOption } from './Select.tsx';
 
 afterEach(() => {
@@ -328,6 +329,32 @@ describe('SharedComponents 基本元件', () => {
     fireEvent.click(toggle);
     expect(toggle.getAttribute('aria-checked')).toBe('true');
     expect(toggle.className).toContain('is-on');
+  });
+});
+
+// ===== 頁首 =====
+
+describe('SharedComponents 頁首', () => {
+  it('頁首顯示英文淡字、英文小標、標題、說明和使用模組提供的看板角色圖', () => {
+    const { container } = render(
+      <PageHero
+        display="Characters"
+        eyebrow="Characters"
+        title="角色"
+        description="為每個角色選模型、寫個性"
+        bannerUrl="/theme/default/ChatRoom/charactersBanner.png"
+      />,
+    );
+    expect(screen.getByRole('heading', { level: 1, name: '角色' })).toBeTruthy();
+    expect(screen.getByText('為每個角色選模型、寫個性')).toBeTruthy();
+    expect(container.querySelector('.platform-infrastructure-display-text')?.textContent).toBe(
+      'Characters',
+    );
+    expect(container.querySelector('.platform-infrastructure-eyebrow')?.textContent).toBe(
+      'Characters',
+    );
+    const banner = container.querySelector('img.platform-infrastructure-hero-character');
+    expect(banner?.getAttribute('src')).toBe('/theme/default/ChatRoom/charactersBanner.png');
   });
 });
 

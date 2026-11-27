@@ -1,9 +1,10 @@
-// SharedComponents 的唯一入口：全平台共用的基本元件、視窗類、回饋類元件，以及它們的樣式。
+// SharedComponents 的唯一入口：全平台共用的基本元件、視窗類、回饋類元件、頁首，以及它們的樣式。
 
 import './sharedComponents.css';
 
 import { Badge, Button, Tabs, TextInput, Toggle } from './basicControls.tsx';
 import { EmptyState, ErrorMessage, LoadingState, TaskProgress } from './feedback.tsx';
+import { PageHero } from './PageHero.tsx';
 import { Select } from './Select.tsx';
 
 export { Badge, Button, joinClassNames, Tabs, TextInput, Toggle } from './basicControls.tsx';
@@ -43,6 +44,8 @@ export type { ConfirmOptions, ModalControls, ModalHandle, ModalOptions } from '.
 export { NOTICE_LIMIT, showError, showToast, TOAST_DURATIONS_MS } from './notices.tsx';
 export type { ToastType } from './notices.tsx';
 export { OverlayHost } from './OverlayHost.tsx';
+export { PageHero } from './PageHero.tsx';
+export type { PageHeroProps } from './PageHero.tsx';
 export { Select } from './Select.tsx';
 export type { SelectOption, SelectProps } from './Select.tsx';
 
@@ -52,6 +55,7 @@ const sharedComponents = {
   EmptyState,
   ErrorMessage,
   LoadingState,
+  PageHero,
   Select,
   Tabs,
   TaskProgress,

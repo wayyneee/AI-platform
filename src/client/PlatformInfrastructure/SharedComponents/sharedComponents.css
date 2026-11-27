@@ -1,6 +1,6 @@
 /*
  * 共用元件（SharedComponents）的樣式：裝飾、卡片與表單、輸入框、下拉選單、按鈕、讀取中、空狀態、
- * 錯誤訊息、提示訊息、視窗、分頁、開關、標籤、任務進度。從 page-demo/page.css 搬來。
+ * 錯誤訊息、提示訊息、視窗、分頁、開關、標籤、任務進度、頁首。從 page-demo/page.css 搬來。
  * 只使用 theme.css 的變數；class 一律加 platform-infrastructure- 前綴。
  */
 
@@ -843,4 +843,124 @@
   background: var(--color-surface);
   border: 1px solid var(--color-danger-soft);
   box-shadow: var(--shadow-lg);
+}
+
+/* ===== 頁首（漸層底＋點點＋大型英文淡字＋看板角色） ===== */
+
+.platform-infrastructure-hero {
+  position: relative;
+  min-height: 230px;
+  border-radius: var(--radius-lg);
+  background: var(--gradient-hero);
+  box-shadow: var(--shadow-md);
+  border: 1px solid var(--color-surface);
+}
+
+/* 裝飾層：裁在圓角裡；角色另外放在外面，才能破框 */
+.platform-infrastructure-hero-decor {
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.platform-infrastructure-hero-decor::before {
+  content: '';
+  position: absolute;
+  top: -40px;
+  right: 120px;
+  width: 300px;
+  height: 300px;
+  border-radius: 50%;
+  background: var(--color-surface);
+  opacity: 0.55;
+}
+
+.platform-infrastructure-hero-decor::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  width: 260px;
+  height: 120px;
+  background: var(--pattern-dots);
+  background-size: var(--pattern-dots-size);
+  mask-image: linear-gradient(45deg, black, transparent 75%);
+}
+
+.platform-infrastructure-hero-decor .platform-infrastructure-display-text {
+  position: absolute;
+  left: var(--space-5);
+  bottom: -14px;
+  -webkit-text-stroke-color: var(--color-surface);
+  opacity: 0.9;
+}
+
+.platform-infrastructure-hero-title {
+  position: relative;
+  padding: var(--space-6) var(--space-6) var(--space-7);
+  max-width: 60%;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--space-2);
+}
+
+.platform-infrastructure-hero-title .platform-infrastructure-eyebrow {
+  padding: var(--space-1) var(--space-3);
+  border-radius: var(--radius-pill);
+  background-color: var(--color-surface);
+  box-shadow: var(--shadow-sm);
+}
+
+.platform-infrastructure-hero-title h1 {
+  margin: 0;
+  font-size: var(--font-size-xxl);
+  font-weight: var(--font-weight-black);
+  line-height: var(--line-height-tight);
+}
+
+.platform-infrastructure-hero-title p {
+  margin: 0;
+  color: var(--color-text-muted);
+}
+
+/* 看板角色：白底圖用 multiply 融進漸層，頭部超出頁首上緣 */
+.platform-infrastructure-hero-character {
+  position: absolute;
+  right: var(--space-6);
+  bottom: 0;
+  height: 290px; /* 比頁首高約 60px，頭部破框 */
+  aspect-ratio: 3 / 4;
+  object-fit: cover;
+  object-position: top;
+  mix-blend-mode: multiply;
+  pointer-events: none;
+  /* 四邊淡出：就算圖裡的角色碰到邊，也不會出現方框的切邊 */
+  -webkit-mask-image:
+    linear-gradient(90deg, transparent 0, black 12%, black 88%, transparent 100%),
+    linear-gradient(180deg, transparent 0, black 8%, black 80%, transparent 100%);
+  -webkit-mask-composite: source-in;
+  mask-image:
+    linear-gradient(90deg, transparent 0, black 12%, black 88%, transparent 100%),
+    linear-gradient(180deg, transparent 0, black 8%, black 80%, transparent 100%);
+  mask-composite: intersect;
+}
+
+.platform-infrastructure-hero .platform-infrastructure-sparkle:nth-of-type(1) {
+  top: 28px;
+  right: 300px;
+}
+.platform-infrastructure-hero .platform-infrastructure-sparkle:nth-of-type(2) {
+  top: 120px;
+  right: 330px;
+  width: 10px;
+  height: 10px;
+}
+.platform-infrastructure-hero .platform-infrastructure-sparkle:nth-of-type(3) {
+  bottom: 26px;
+  right: 24px;
+  width: 12px;
+  height: 12px;
 }

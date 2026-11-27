@@ -14,12 +14,16 @@ import { toPlatformError } from '../SystemLog/index.ts';
 import { getText } from '../ThemeAndLanguage/index.ts';
 import { ApiKeyPanel } from './ApiKeyPanel.tsx';
 import { ModelPanel, type ModelsUpdate } from './ModelPanel.tsx';
-import { PageHero, type PageHeroContent } from './PageHero.tsx';
-import { LoadFailed, LoadingCard } from './settingsPageParts.tsx';
+import {
+  LoadFailed,
+  LoadingCard,
+  SettingsHero,
+  type SettingsHeroContent,
+} from './settingsPageParts.tsx';
 
 const MODULE_NAME = 'PlatformInfrastructure';
 
-const HERO: PageHeroContent = {
+const HERO: SettingsHeroContent = {
   displayKey: 'PlatformInfrastructure.apiSettings.display',
   eyebrowKey: 'PlatformInfrastructure.apiSettings.eyebrow',
   titleKey: 'PlatformInfrastructure.apiSettings.title',
@@ -58,7 +62,7 @@ export function ApiSettings() {
 
   return (
     <div className="platform-infrastructure-page">
-      <PageHero content={HERO} />
+      <SettingsHero content={HERO} />
       {loadState.status === 'loading' && <LoadingCard />}
       {loadState.status === 'failed' && <LoadFailed error={loadState.error} onRetry={load} />}
       {loadState.status === 'ready' && (
